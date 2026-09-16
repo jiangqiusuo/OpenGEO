@@ -1,0 +1,29 @@
+name: Bug 报告
+description: 报告可复现的错误
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: textarea
+    id: behavior
+    attributes:
+      label: 实际行为
+      description: 请说明发生了什么，以及你预期的行为。
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: OpenGEO 版本或 commit
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: 运行环境
+      description: Node.js、pnpm、操作系统等信息。请删除凭据和私有数据。

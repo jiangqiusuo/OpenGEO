@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.opengeo.example/opengeo-publication.v1.schema.json",
+  "title": "OpenGEO Publication v1",
+  "type": "object",
+  "required": [
+    "id",
+    "object",
+    "channel_type",
+    "status",
+    "content_asset_id",
+    "created_at"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^pub_"
+    },
+    "object": {
+      "const": "opengeo.publication"
+    },
+    "channel_type": {
+      "enum": [
+        "owned_site",
+        "paid_media",
+        "social_channel"
+      ]
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "pending_confirmation",
+        "queued",
+        "publishing",
+        "published",
+        "failed",
+        "submission_unknown",
+        "cancelled"
+      ]
+    },
+    "content_asset_id": {
+      "type": "string"
+    },
+    "target_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "published_url": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "proof_asset_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "failure": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}

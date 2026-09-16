@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.opengeo.example/opengeo-job.v1.schema.json",
+  "title": "OpenGEO Job v1",
+  "type": "object",
+  "required": [
+    "id",
+    "object",
+    "capability_id",
+    "status",
+    "result_state",
+    "turnaround_class",
+    "timestamps"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^job_"
+    },
+    "object": {
+      "const": "opengeo.job"
+    },
+    "capability_id": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "queued",
+        "running",
+        "partial",
+        "succeeded",
+        "failed",
+        "cancelled",
+        "finalized_partial"
+      ]
+    },
+    "result_state": {
+      "enum": [
+        "none",
+        "partial",
+        "sufficient",
+        "complete",
+        "finalized_partial"
+      ]
+    },
+    "turnaround_class": {
+      "enum": [
+        "best_effort",
+        "expedited",
+        "interactive"
+      ]
+    },
+    "progress": {
+      "type": "object",
+      "properties": {
+        "total_items": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "completed_items": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failed_items": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cancelled_items": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "completion_ratio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "requested_config": {
+      "type": "object"
+    },
+    "effective_config": {
+      "type": "object"
+    },
+    "billing": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "enum": [
+            "quoted",
+            "reserved",
+            "partially_settled",
+            "settled",
+            "released",
+            "refunded"
+          ]
+        },
+        "currency": {
+          "type": "string"
+        },
+        "reserved_amount": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "settled_amount": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "health": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "enum": [
+            "operational",
+            "delayed",
+            "degraded",
+            "unavailable"
+          ]
+        },
+        "estimated_completion_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "message": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "timestamps": {
+      "type": "object",
+      "required": [
+        "created_at",
+        "updated_at"
+      ],
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "started_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "completed_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    },
+    "links": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

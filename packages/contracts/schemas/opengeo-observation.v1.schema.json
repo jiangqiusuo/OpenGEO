@@ -1,0 +1,354 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.opengeo.example/opengeo-observation.v1.schema.json",
+  "title": "OpenGEO Observation v1",
+  "type": "object",
+  "required": [
+    "id",
+    "object",
+    "schema_version",
+    "job_id",
+    "prompt",
+    "target",
+    "collection",
+    "answer",
+    "quality",
+    "provenance"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^obs_"
+    },
+    "object": {
+      "const": "opengeo.observation"
+    },
+    "schema_version": {
+      "type": "string"
+    },
+    "job_id": {
+      "type": "string",
+      "pattern": "^job_"
+    },
+    "prompt": {
+      "type": "object",
+      "required": [
+        "prompt_id",
+        "version_id",
+        "text"
+      ],
+      "properties": {
+        "prompt_id": {
+          "type": "string"
+        },
+        "version_id": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "target": {
+      "type": "object",
+      "required": [
+        "engine",
+        "surface",
+        "interaction_mode",
+        "turnaround_class"
+      ],
+      "properties": {
+        "engine": {
+          "type": "string"
+        },
+        "surface": {
+          "enum": [
+            "web",
+            "mobile",
+            "api",
+            "local"
+          ]
+        },
+        "interaction_mode": {
+          "type": "string"
+        },
+        "turnaround_class": {
+          "enum": [
+            "best_effort",
+            "expedited",
+            "interactive"
+          ]
+        },
+        "language": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "region": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "collection": {
+      "type": "object",
+      "required": [
+        "method",
+        "profile_version",
+        "observed_at",
+        "repeat_index"
+      ],
+      "properties": {
+        "method": {
+          "enum": [
+            "managed_api",
+            "local_sampler",
+            "manual_import"
+          ]
+        },
+        "profile_version": {
+          "type": "string"
+        },
+        "requested_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "repeat_index": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "answer": {
+      "$ref": "#/$defs/optionalText"
+    },
+    "retrieved_sources": {
+      "$ref": "#/$defs/sourceCollection"
+    },
+    "explicit_citations": {
+      "$ref": "#/$defs/sourceCollection"
+    },
+    "brand_mentions": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "rankings": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "recommended_questions": {
+      "$ref": "#/$defs/genericCollection"
+    },
+    "search_terms": {
+      "$ref": "#/$defs/genericCollection"
+    },
+    "videos": {
+      "$ref": "#/$defs/genericCollection"
+    },
+    "products": {
+      "$ref": "#/$defs/genericCollection"
+    },
+    "evidence": {
+      "type": "object"
+    },
+    "quality": {
+      "type": "object",
+      "required": [
+        "is_valid",
+        "completeness_score",
+        "warnings"
+      ],
+      "properties": {
+        "is_valid": {
+          "type": "boolean"
+        },
+        "completeness_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "normalizer_version",
+        "entity_parser_version",
+        "ranking_parser_version"
+      ],
+      "properties": {
+        "normalizer_version": {
+          "type": "string"
+        },
+        "entity_parser_version": {
+          "type": "string"
+        },
+        "ranking_parser_version": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "extensions": {
+      "type": "object"
+    }
+  },
+  "$defs": {
+    "availability": {
+      "enum": [
+        "observed",
+        "not_requested",
+        "not_supported",
+        "not_available",
+        "failed_to_extract",
+        "redacted",
+        "unknown"
+      ]
+    },
+    "optionalText": {
+      "type": "object",
+      "required": [
+        "availability"
+      ],
+      "properties": {
+        "availability": {
+          "$ref": "#/$defs/availability"
+        },
+        "format": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "sourceCollection": {
+      "type": "object",
+      "required": [
+        "availability",
+        "items"
+      ],
+      "properties": {
+        "availability": {
+          "$ref": "#/$defs/availability"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "url"
+            ],
+            "properties": {
+              "index": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "url": {
+                "type": "string"
+              },
+              "canonical_url": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "domain": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "title": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "summary": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "site_name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "published_at": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "icon_asset_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "genericCollection": {
+      "type": "object",
+      "required": [
+        "availability",
+        "items"
+      ],
+      "properties": {
+        "availability": {
+          "$ref": "#/$defs/availability"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

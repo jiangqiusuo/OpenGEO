@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.opengeo.example/opengeo-capability.v1.schema.json",
+  "title": "OpenGEO Capability v1",
+  "type": "object",
+  "required": [
+    "capability_id",
+    "family",
+    "version",
+    "request_schema_ref",
+    "result_schema_ref",
+    "execution",
+    "billing"
+  ],
+  "properties": {
+    "capability_id": {
+      "type": "string"
+    },
+    "family": {
+      "enum": [
+        "discovery",
+        "observation",
+        "retrieval",
+        "analysis",
+        "generation",
+        "distribution",
+        "verification"
+      ]
+    },
+    "version": {
+      "type": "string"
+    },
+    "request_schema_ref": {
+      "type": "string"
+    },
+    "result_schema_ref": {
+      "type": "string"
+    },
+    "target": {
+      "type": "object"
+    },
+    "execution": {
+      "type": "object",
+      "required": [
+        "public_model",
+        "turnaround_classes",
+        "supports_partial_results",
+        "supports_cancel"
+      ],
+      "properties": {
+        "public_model": {
+          "const": "job"
+        },
+        "turnaround_classes": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "best_effort",
+              "expedited",
+              "interactive"
+            ]
+          },
+          "minItems": 1
+        },
+        "supports_partial_results": {
+          "type": "boolean"
+        },
+        "supports_cancel": {
+          "type": "boolean"
+        },
+        "supports_prefer_wait": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "dimensions": {
+      "type": "object"
+    },
+    "optional_modules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "billing": {
+      "type": "object",
+      "required": [
+        "unit"
+      ],
+      "properties": {
+        "unit": {
+          "type": "string"
+        },
+        "quoteable": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "health": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "enum": [
+            "operational",
+            "delayed",
+            "degraded",
+            "unavailable"
+          ]
+        },
+        "observed_p50_seconds": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "observed_p90_seconds": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "sample_size": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

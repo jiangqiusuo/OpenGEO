@@ -1,0 +1,481 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "OpenGEO Community API",
+    "version": "0.1.0",
+    "description": "OpenGEO 公共 API 契约骨架。当前仅提供 Mock 语义，不连接真实供应商。默认所有长时操作均通过 Job 异步执行。"
+  },
+  "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
+  "servers": [
+    {
+      "url": "http://localhost:8787",
+      "description": "本地 Mock 服务"
+    }
+  ],
+  "tags": [
+    {
+      "name": "System",
+      "description": "服务健康与能力目录"
+    },
+    {
+      "name": "Monitoring",
+      "description": "观测任务与 Job 生命周期"
+    },
+    {
+      "name": "Jobs",
+      "description": "公共 Job 查询与控制"
+    },
+    {
+      "name": "Planned",
+      "description": "预留能力，当前不可用"
+    }
+  ],
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "operationId": "getHealth",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "服务健康状态",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "ok"
+                      ]
+                    },
+                    "contract_version": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/capabilities": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "operationId": "listCapabilities",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "能力目录",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "../packages/contracts/schemas/opengeo-capability.v1.schema.json"
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/monitor-runs": {
+      "post": {
+        "tags": [
+          "Monitoring"
+        ],
+        "operationId": "createMonitorRun",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/PreferWait"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MonitorRunRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "已创建异步 Job",
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../packages/contracts/schemas/opengeo-job.v1.schema.json"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "在 Prefer: wait 窗口内完成的同一 Job",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../packages/contracts/schemas/opengeo-job.v1.schema.json"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      }
+    },
+    "/v1/jobs/{job_id}": {
+      "get": {
+        "tags": [
+          "Jobs"
+        ],
+        "operationId": "getJob",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/JobId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Job 状态",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../packages/contracts/schemas/opengeo-job.v1.schema.json"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/v1/jobs/{job_id}/items": {
+      "get": {
+        "tags": [
+          "Jobs"
+        ],
+        "operationId": "listJobItems",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/JobId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Job 领域结果（观测项）",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "../packages/contracts/schemas/opengeo-observation.v1.schema.json"
+                      }
+                    },
+                    "availability": {
+                      "type": "string",
+                      "enum": [
+                        "observed",
+                        "not_requested",
+                        "not_supported",
+                        "not_available",
+                        "failed_to_extract",
+                        "redacted",
+                        "unknown"
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/v1/jobs/{job_id}/finalize-partial": {
+      "post": {
+        "tags": [
+          "Jobs"
+        ],
+        "operationId": "finalizePartial",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/JobId"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FinalizePartialRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "已请求定稿",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../packages/contracts/schemas/opengeo-job.v1.schema.json"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "当前状态不允许定稿"
+          }
+        }
+      }
+    },
+    "/v1/jobs/{job_id}/cancel": {
+      "post": {
+        "tags": [
+          "Jobs"
+        ],
+        "operationId": "cancelJob",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/JobId"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "已请求取消",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../packages/contracts/schemas/opengeo-job.v1.schema.json"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "当前状态不允许取消"
+          }
+        }
+      }
+    },
+    "/v1/generation-jobs": {
+      "post": {
+        "tags": [
+          "Planned"
+        ],
+        "operationId": "createGenerationJob",
+        "responses": {
+          "501": {
+            "description": "预留能力，当前不可用"
+          }
+        }
+      }
+    },
+    "/v1/publications": {
+      "post": {
+        "tags": [
+          "Planned"
+        ],
+        "operationId": "createPublication",
+        "responses": {
+          "501": {
+            "description": "预留能力，当前不可用"
+          }
+        }
+      }
+    },
+    "/v1/verification-runs": {
+      "post": {
+        "tags": [
+          "Planned"
+        ],
+        "operationId": "createVerificationRun",
+        "responses": {
+          "501": {
+            "description": "预留能力，当前不可用"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "OpenGEO API Key",
+        "description": "使用 Workspace API Key，例如 Authorization: Bearer og_live_..."
+      }
+    },
+    "parameters": {
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "description": "调用方生成的唯一键。相同 Workspace、能力和请求可安全重放；同键不同请求返回 409。",
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        }
+      },
+      "JobId": {
+        "name": "job_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^job_"
+        }
+      },
+      "PreferWait": {
+        "name": "Prefer",
+        "in": "header",
+        "required": false,
+        "description": "可选等待提示，例如 wait=90；不改变 Job 语义。",
+        "schema": {
+          "type": "string",
+          "pattern": "^wait=[0-9]+$"
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "请求参数无效"
+      },
+      "NotFound": {
+        "description": "资源不存在"
+      }
+    },
+    "schemas": {
+      "Job": {
+        "$ref": "../packages/contracts/schemas/opengeo-job.v1.schema.json"
+      },
+      "Observation": {
+        "$ref": "../packages/contracts/schemas/opengeo-observation.v1.schema.json"
+      },
+      "Capability": {
+        "$ref": "../packages/contracts/schemas/opengeo-capability.v1.schema.json"
+      },
+      "Prompt": {
+        "$ref": "../packages/contracts/schemas/opengeo-prompt.v1.schema.json"
+      },
+      "Publication": {
+        "$ref": "../packages/contracts/schemas/opengeo-publication.v1.schema.json"
+      },
+      "MetricResult": {
+        "$ref": "../packages/contracts/schemas/opengeo-metric-result.v1.schema.json"
+      },
+      "MonitorRunRequest": {
+        "type": "object",
+        "required": [
+          "capability_id",
+          "prompts"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "capability_id": {
+            "const": "observe.ai_answer"
+          },
+          "prompts": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "../packages/contracts/schemas/opengeo-prompt.v1.schema.json"
+                },
+                {
+                  "type": "string",
+                  "minLength": 1
+                }
+              ]
+            }
+          },
+          "turnaround_class": {
+            "type": "string",
+            "enum": [
+              "best_effort",
+              "expedited",
+              "interactive"
+            ],
+            "default": "best_effort"
+          },
+          "interaction_mode": {
+            "type": "string",
+            "enum": [
+              "standard",
+              "reasoning",
+              "search",
+              "reasoning_search"
+            ],
+            "default": "search"
+          },
+          "completion_policy": {
+            "type": "object"
+          }
+        }
+      },
+      "FinalizePartialRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "cancel_remaining": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      }
+    }
+  }
+}

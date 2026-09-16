@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.opengeo.example/opengeo-prompt.v1.schema.json",
+  "title": "OpenGEO Prompt v1",
+  "type": "object",
+  "required": [
+    "prompt_id",
+    "objective_id",
+    "version_id",
+    "text",
+    "source",
+    "status",
+    "default_sampling"
+  ],
+  "properties": {
+    "prompt_id": {
+      "type": "string",
+      "pattern": "^prm_"
+    },
+    "objective_id": {
+      "type": "string",
+      "pattern": "^obj_"
+    },
+    "version_id": {
+      "type": "string",
+      "pattern": "^prmv_"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "language": {
+      "type": "string"
+    },
+    "intent": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "topic": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "manual",
+            "csv_import",
+            "keyword_discovery",
+            "suggestion_discovery",
+            "provider_recommended_question",
+            "ai_keyword_discovery",
+            "ai_generated",
+            "human_rewrite",
+            "prompt_advisor"
+          ]
+        },
+        "source_text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "parent_prompt_version_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "suggested",
+        "approved",
+        "archived"
+      ]
+    },
+    "approved_by": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "default_sampling": {
+      "type": "object",
+      "required": [
+        "repeat_count",
+        "interaction_mode",
+        "turnaround_class"
+      ],
+      "properties": {
+        "repeat_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "interaction_mode": {
+          "type": "string"
+        },
+        "turnaround_class": {
+          "enum": [
+            "best_effort",
+            "expedited",
+            "interactive"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
+
