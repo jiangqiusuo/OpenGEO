@@ -1,8 +1,8 @@
-# OpenGEO Community
+# OpenGEO
 
-OpenGEO 是面向生成式搜索优化（GEO）的开源契约、指标和客户端基础设施。它把监测、生成、发布和复测等长时操作统一表达为稳定的 OpenGEO Job，并为 Community 产品与商业 API 提供同一套公开数据结构。
+OpenGEO 提供用于构建 GEO 工具的开放数据契约、指标实现和 TypeScript 开发工具。当前版本包含可复用的 Schema、Mock API、客户端与基础测试设施。
 
-> 当前版本为 `0.1.0` 的早期开发版。公共契约、能力目录、基础指标、Mock API 和薄客户端已经可运行；真实监测、付费能力和 SaaS 服务不在本仓库中。
+> 当前版本为 `0.1.0` 的早期开发版，适合用于本地实验、契约集成和工具开发。
 
 ## 已实现
 
@@ -32,7 +32,7 @@ pnpm build
 pnpm mock
 ```
 
-默认地址为 `http://localhost:8787`。Mock API 只返回虚构示例，不会调用外部服务或消费任何余额。
+默认地址为 `http://localhost:8787`。Mock API 只返回虚构示例，不产生外部副作用。
 
 ## 仓库结构
 
@@ -52,15 +52,9 @@ tests/               跨包契约和安全边界测试
 - `turnaround_class` 表示交付速度，`interaction_mode` 表示回答方式，两者保持独立。
 - 部分结果、未请求、不支持、不可用和解析失败使用不同状态表达。
 - OpenAPI 与 JSON Schema 是 endpoint reference 的数据源。
-- 公共响应不得包含外部执行方、内部任务 ID、采购成本、路由策略或真实凭据。
+- 响应字段遵循已发布契约，示例数据不得包含敏感信息。
 
 更多说明见 [公共契约](docs/contracts.md) 和 [OpenAPI 文档](openapi/openapi.json)。
-
-## 开源与商业边界
-
-本仓库公开公共契约、指标、Mock、客户端和未来的 Community 产品。商业 API 服务端、多租户计费、私有执行适配、内部路由和运营系统位于独立私有仓库。
-
-这种边界允许第三方围绕稳定公开契约构建工具，同时保护商业运行所需的凭据、成本和执行策略。
 
 ## 参与贡献
 
@@ -68,4 +62,4 @@ tests/               跨包契约和安全边界测试
 
 ## 许可证
 
-OpenGEO Community 使用 [Apache License 2.0](LICENSE)。
+OpenGEO 使用 [Apache License 2.0](LICENSE)。

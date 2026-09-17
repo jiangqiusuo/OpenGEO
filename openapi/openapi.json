@@ -3,7 +3,7 @@
   "info": {
     "title": "OpenGEO Community API",
     "version": "0.1.0",
-    "description": "OpenGEO 公共 API 契约骨架。当前仅提供 Mock 语义，不连接真实供应商。默认所有长时操作均通过 Job 异步执行。"
+    "description": "OpenGEO API 契约骨架。当前提供 Mock 语义，便于本地开发和契约验证。默认所有长时操作均通过 Job 异步执行。"
   },
   "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
   "servers": [
