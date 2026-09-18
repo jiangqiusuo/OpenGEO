@@ -3,7 +3,7 @@ import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
 import SwaggerParser from '@apidevtools/swagger-parser';
 import { fileURLToPath } from 'node:url';
-import { schemaRegistry, fixtureJobs, fixtureObservations, fixturePrompt, CAPABILITIES } from '@opengeo/contracts';
+import { schemaRegistry, fixtureJobs, fixtureObservations, fixturePrompt, CAPABILITIES, PUBLIC_CONTRACT_VERSION } from '@opengeo/contracts';
 
 const ajv = new Ajv2020({ strict: false, allErrors: true });
 addFormats(ajv);
@@ -67,6 +67,7 @@ describe('G0 公共契约', () => {
   it('OpenAPI 3.1 文档可解析且外部 Schema refs 可解析', async () => {
     const document = await SwaggerParser.dereference(fileURLToPath(new URL('../openapi/openapi.json', import.meta.url)));
     const api = document as unknown as { openapi?: string; paths?: Record<string, unknown>; components?: { schemas?: Record<string, unknown> } };
+    expect((document as { info?: { version?: string } }).info?.version).toBe(PUBLIC_CONTRACT_VERSION);
     expect((api.paths?.['/v1/monitor-runs'] as {post?: unknown})?.post).toBeTruthy();
     expect(api.components?.schemas?.Job).toBeTruthy();
     expect(api.components?.schemas?.Observation).toBeTruthy();

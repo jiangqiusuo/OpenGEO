@@ -2,7 +2,7 @@
 
 OpenGEO 提供用于构建 GEO 工具的开放数据契约、指标实现和 TypeScript 开发工具。当前版本包含可复用的 Schema、Mock API、客户端与基础测试设施。
 
-> 当前版本为 `0.1.0` 的早期开发版，适合用于本地实验、契约集成和工具开发。
+> 当前公开契约版本为 `0.1.0`，适合用于本地 Mock、契约集成和 Community 工具开发。版本规则见 [版本与兼容策略](docs/versioning.md)。
 
 ## 已实现
 
@@ -54,7 +54,7 @@ tests/               跨包契约和安全边界测试
 - OpenAPI 与 JSON Schema 是 endpoint reference 的数据源。
 - 响应字段遵循已发布契约，示例数据不得包含敏感信息。
 
-更多说明见 [Quickstart](docs/quickstart.md)、[公共契约](docs/contracts.md) 和 [OpenAPI 文档](openapi/openapi.json)。
+更多说明见 [Quickstart](docs/quickstart.md)、[公共契约](docs/contracts.md)、[版本与兼容策略](docs/versioning.md)、[变更日志](CHANGELOG.md) 和 [OpenAPI 文档](openapi/openapi.json)。
 
 ## 参与贡献
 
