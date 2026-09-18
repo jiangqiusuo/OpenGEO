@@ -54,7 +54,7 @@ tests/               跨包契约和安全边界测试
 - OpenAPI 与 JSON Schema 是 endpoint reference 的数据源。
 - 响应字段遵循已发布契约，示例数据不得包含敏感信息。
 
-更多说明见 [公共契约](docs/contracts.md) 和 [OpenAPI 文档](openapi/openapi.json)。
+更多说明见 [Quickstart](docs/quickstart.md)、[公共契约](docs/contracts.md) 和 [OpenAPI 文档](openapi/openapi.json)。
 
 ## 参与贡献
 
