@@ -1,0 +1,41 @@
+# OpenGEO
+
+OpenGEO is an OpenAPI-first GEO developer contract and Community toolkit.
+
+## Start here
+
+- Quickstart: /docs/quickstart.md
+- API reference guide: /docs/api-reference.md
+- Contracts: /docs/contracts.md
+- Versioning: /docs/versioning.md
+- OpenAPI 3.1: /openapi/openapi.json
+
+## Core API groups
+
+- GET /health
+- GET /v1/capabilities
+- POST /v1/monitor-runs
+- GET /v1/jobs/{job_id}
+- GET /v1/jobs/{job_id}/items
+- POST /v1/jobs/{job_id}/finalize-partial
+- POST /v1/jobs/{job_id}/cancel
+- POST /v1/generation-jobs
+- POST /v1/publications
+- POST /v1/verification-runs
+
+## Stable concepts
+
+- Long-running operations use the OpenGEO Job contract.
+- `turnaround_class` is separate from `interaction_mode`.
+- `Idempotency-Key` is required for create operations.
+- `Prefer: wait=N` changes client waiting behavior, not Job semantics.
+- OpenAPI and JSON Schema are the reference for fields and examples.
+
+## Local development
+
+```bash
+pnpm install
+pnpm mock
+```
+
+The local Mock API runs at `http://localhost:8787` and does not call external providers.
