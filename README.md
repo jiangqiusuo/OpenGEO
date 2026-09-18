@@ -58,7 +58,7 @@ tests/               跨包契约和安全边界测试
 
 ## 参与贡献
 
-提交 Issue 或 Pull Request 前请阅读 [CONTRIBUTING.md](CONTRIBUTING.md) 和 [公开仓库治理基线](docs/repository-governance.md)。安全问题请按照 [SECURITY.md](SECURITY.md) 私下报告。
+提交 Issue 或 Pull Request 前请阅读 [CONTRIBUTING.md](CONTRIBUTING.md)、[开发工作流](docs/development-workflow.md) 和 [公开仓库治理基线](docs/repository-governance.md)。安全问题请按照 [SECURITY.md](SECURITY.md) 私下报告。
 
 ## 许可证
 

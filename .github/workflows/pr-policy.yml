@@ -1,0 +1,27 @@
+name: PR policy
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  pr-policy:
+    name: pr-policy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate title and description
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          if [[ ! "$PR_TITLE" =~ ^(feat|fix|docs|refactor|test|chore|build|ci)(\([a-z0-9._/-]+\))?!?:\ .+ ]]; then
+            echo "PR title must follow Conventional Commits, for example: feat(cli): add job command"
+            exit 1
+          fi
+          if [[ -z "${PR_BODY//[[:space:]]/}" ]]; then
+            echo "PR description is required."
+            exit 1
+          fi
