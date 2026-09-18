@@ -14,7 +14,8 @@
     "test:metrics": "vitest run tests/metrics",
     "build": "tsc -p tsconfig.build.json",
     "mock": "tsx apps/mock-api/src/server.ts",
-    "demo": "tsx scripts/demo.ts"
+    "cli": "tsx packages/cli/src/bin.ts",
+    "demo": "tsx packages/cli/src/bin.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

@@ -13,7 +13,8 @@
     "paths": {
       "@opengeo/contracts": ["packages/contracts/src/index.ts"],
       "@opengeo/metrics": ["packages/metrics/src/index.ts"],
-      "@opengeo/client": ["packages/client/src/index.ts"]
+      "@opengeo/client": ["packages/client/src/index.ts"],
+      "@opengeo/cli": ["packages/cli/src/index.ts"]
     }
   },
   "include": ["packages/**/*.ts", "apps/**/*.ts", "tests/**/*.ts", "scripts/**/*.ts", "vitest.config.ts"],
