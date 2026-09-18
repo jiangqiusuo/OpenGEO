@@ -24,6 +24,8 @@ OpenGEO 的公开接口以仓库中的 [OpenAPI 3.1 定义](../openapi/openapi.j
 | Publication | `POST /v1/publications` | 创建发布记录 |
 | Verification | `POST /v1/verification-runs` | 创建复测 Job |
 
+`Generation`、`Publication` 和 `Verification` 当前是契约中保留的 Planned endpoint，Mock 会返回 `501`；它们不应被当作已经可用的生产能力。
+
 ## 统一请求规则
 
 - 所有长时操作返回 OpenGEO Job，客户端只需要处理同一套生命周期。
@@ -41,6 +43,7 @@ curl -X POST "http://localhost:8787/v1/monitor-runs" \
   -H "idempotency-key: docs-example-001" \
   -H "prefer: wait=5" \
   -d '{
+    "capability_id": "observe.ai_answer",
     "prompts": ["OpenGEO 在这个问题中的可见度如何？"],
     "turnaround_class": "best_effort",
     "interaction_mode": "search"
@@ -65,6 +68,7 @@ import { OpenGEOClient } from '@opengeo/client';
 const client = new OpenGEOClient({ baseUrl: 'http://localhost:8787' });
 const job = await client.createMonitorRun(
   {
+    capability_id: 'observe.ai_answer',
     prompts: ['OpenGEO 在这个问题中的可见度如何？'],
     turnaround_class: 'best_effort',
     interaction_mode: 'search',

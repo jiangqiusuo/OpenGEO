@@ -27,6 +27,7 @@ curl -X POST http://localhost:8787/v1/monitor-runs \
   -H 'idempotency-key: quickstart-001' \
   -H 'prefer: wait=5' \
   -d '{
+    "capability_id": "observe.ai_answer",
     "prompts": ["OpenGEO 在这个问题中的可见度如何？"],
     "turnaround_class": "best_effort",
     "interaction_mode": "search"
@@ -60,6 +61,7 @@ import { OpenGEOClient } from '@opengeo/client';
 const client = new OpenGEOClient({ baseUrl: 'http://localhost:8787' });
 const job = await client.createMonitorRun(
   {
+    capability_id: 'observe.ai_answer',
     prompts: ['OpenGEO 在这个问题中的可见度如何？'],
     turnaround_class: 'best_effort',
     interaction_mode: 'search',

@@ -1,5 +1,5 @@
 export interface OpenGEOClientOptions { baseUrl: string; fetch?: typeof globalThis.fetch }
-export interface MonitorRunRequest { prompts: Array<string | Record<string, unknown>>; capability_id?: 'observe.ai_answer'; turnaround_class?: 'best_effort' | 'expedited' | 'interactive'; interaction_mode?: 'standard' | 'reasoning' | 'search' | 'reasoning_search'; monitoring_profile?: 'cn-search-v1' | 'global-llm-v1' }
+export interface MonitorRunRequest { capability_id: 'observe.ai_answer'; prompts: Array<string | Record<string, unknown>>; turnaround_class?: 'best_effort' | 'expedited' | 'interactive'; interaction_mode?: 'standard' | 'reasoning' | 'search' | 'reasoning_search'; monitoring_profile?: 'cn-search-v1' | 'global-llm-v1' }
 export class OpenGEOClient {
   private readonly request: typeof globalThis.fetch;
   constructor(private readonly options: OpenGEOClientOptions) { this.request = options.fetch ?? globalThis.fetch; }

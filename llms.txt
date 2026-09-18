@@ -23,6 +23,8 @@ OpenGEO is an OpenAPI-first GEO developer contract and Community toolkit.
 - POST /v1/publications
 - POST /v1/verification-runs
 
+Generation, Publication, and Verification paths are currently contract placeholders and return 501 in the Mock.
+
 ## Stable concepts
 
 - Long-running operations use the OpenGEO Job contract.
