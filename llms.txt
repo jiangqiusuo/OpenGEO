@@ -6,6 +6,9 @@ OpenGEO is an OpenAPI-first GEO developer contract and Community toolkit.
 
 - Quickstart: /docs/quickstart.md
 - API reference guide: /docs/api-reference.md
+- Job, polling, and webhook status: /docs/webhooks-and-polling.md
+- Errors and limits: /docs/errors-and-limits.md
+- Language clients: /docs/languages.md
 - Contracts: /docs/contracts.md
 - Versioning: /docs/versioning.md
 - OpenAPI 3.1: /openapi/openapi.json
