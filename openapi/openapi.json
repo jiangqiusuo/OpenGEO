@@ -461,6 +461,14 @@
             ],
             "default": "search"
           },
+          "monitoring_profile": {
+            "type": "string",
+            "enum": [
+              "cn-search-v1",
+              "global-llm-v1"
+            ],
+            "description": "可选的托管监测配置。配置不可用时，服务返回 monitoring_unavailable。"
+          },
           "completion_policy": {
             "type": "object"
           }
