@@ -35,6 +35,21 @@ describe('Community CLI', () => {
     expect(stdout.value()).not.toContain('private-key');
   });
 
+  it('supports Job items, partial finalization, and cancellation commands', async () => {
+    const fetch = vi.fn(async (_input: RequestInfo | URL, _init?: RequestInit) => new Response(JSON.stringify({ status: 'queued' }), { status: 200, headers: { 'content-type': 'application/json' } }));
+    const stdout = io(); const stderr = io();
+    expect(await runCli(['items', 'job_cli'], { fetch, stdout: stdout.stream, stderr: stderr.stream, env: {} })).toBe(0);
+    expect(await runCli(['finalize', 'job_cli', '--cancel-remaining'], { fetch, stdout: stdout.stream, stderr: stderr.stream, env: {} })).toBe(0);
+    expect(await runCli(['cancel', 'job_cli'], { fetch, stdout: stdout.stream, stderr: stderr.stream, env: {} })).toBe(0);
+    expect(fetch.mock.calls.map(([url]) => String(url))).toEqual([
+      'http://localhost:8787/v1/jobs/job_cli/items',
+      'http://localhost:8787/v1/jobs/job_cli/finalize-partial',
+      'http://localhost:8787/v1/jobs/job_cli/cancel',
+    ]);
+    expect(JSON.parse(String(fetch.mock.calls[1][1]?.body))).toEqual({ cancel_remaining: true });
+    expect(stderr.value()).toBe('');
+  });
+
   it('rejects invalid monitor arguments before sending a request', async () => {
     const fetch = vi.fn(async (_input: RequestInfo | URL, _init?: RequestInit) => new Response()); const stdout = io(); const stderr = io();
     expect(await runCli(['monitor', '--prompt', 'test', '--idempotency-key', 'cli-002', '--wait', '-1'], { fetch, stdout: stdout.stream, stderr: stderr.stream, env: {} })).toBe(1);

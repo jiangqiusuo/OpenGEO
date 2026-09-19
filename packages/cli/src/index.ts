@@ -9,6 +9,9 @@ Usage:
   pnpm cli -- capabilities [--base-url URL]
   pnpm cli -- monitor --prompt TEXT --idempotency-key KEY [options]
   pnpm cli -- job JOB_ID [--base-url URL]
+  pnpm cli -- items JOB_ID [--base-url URL]
+  pnpm cli -- finalize JOB_ID [--cancel-remaining] [--base-url URL]
+  pnpm cli -- cancel JOB_ID [--base-url URL]
 
 Monitor options:
   --turnaround best_effort|expedited|interactive
@@ -53,6 +56,24 @@ export async function runCli(argv: string[], dependencies: CliDependencies = {})
       const id = argv[1];
       if (!id || id.startsWith('--')) throw new Error('job_id_required');
       output(stdout, await client.getJob(id));
+      return 0;
+    }
+    if (command === 'items') {
+      const id = argv[1];
+      if (!id || id.startsWith('--')) throw new Error('job_id_required');
+      output(stdout, await client.getJobItems(id));
+      return 0;
+    }
+    if (command === 'finalize') {
+      const id = argv[1];
+      if (!id || id.startsWith('--')) throw new Error('job_id_required');
+      output(stdout, await client.finalizePartial(id, { cancel_remaining: argv.includes('--cancel-remaining') }));
+      return 0;
+    }
+    if (command === 'cancel') {
+      const id = argv[1];
+      if (!id || id.startsWith('--')) throw new Error('job_id_required');
+      output(stdout, await client.cancelJob(id));
       return 0;
     }
     if (command === 'monitor') {

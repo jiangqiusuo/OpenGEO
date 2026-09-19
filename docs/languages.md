@@ -23,6 +23,8 @@ const job = await client.createMonitorRun(
 console.log(job);
 ```
 
+同一客户端还提供 `getJobItems(jobId)`、`finalizePartial(jobId, { cancel_remaining })` 和 `cancelJob(jobId)`，分别对应 Job 结果项、部分结果定稿和取消接口。它们都沿用同一套认证和 HTTP 错误处理。
+
 ### cURL
 
 ```bash
