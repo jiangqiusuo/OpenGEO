@@ -12,4 +12,19 @@ describe('Community client',()=>{
     expect(new Headers(init.headers).get('prefer')).toBe('wait=1');
     expect(String(init.body)).not.toMatch(/provider|dataforseo|token|secret/i);
   });
+
+  it('covers Job items, partial finalization, and cancellation with stable paths', async () => {
+    const request = vi.fn(async (url: RequestInfo | URL, init?: RequestInit) => new Response(JSON.stringify({ url, method: init?.method ?? 'GET' }), { status: 200, headers: { 'content-type': 'application/json' } }));
+    const client = new OpenGEOClient({ baseUrl: 'https://api.opengeo.test/', apiKey: 'test-key', fetch: request });
+    await client.getJobItems('job_demo_partial');
+    await client.finalizePartial('job_demo_partial', { cancel_remaining: true });
+    await client.cancelJob('job_demo_partial');
+    expect(request.mock.calls.map(([url]) => String(url))).toEqual([
+      'https://api.opengeo.test/v1/jobs/job_demo_partial/items',
+      'https://api.opengeo.test/v1/jobs/job_demo_partial/finalize-partial',
+      'https://api.opengeo.test/v1/jobs/job_demo_partial/cancel',
+    ]);
+    expect(JSON.parse(String(request.mock.calls[1][1]?.body))).toEqual({ cancel_remaining: true });
+    expect(new Headers(request.mock.calls[2][1]?.headers).get('authorization')).toBe('Bearer test-key');
+  });
 });

@@ -1,6 +1,6 @@
 # OpenGEO CLI
 
-基础 CLI 复用公开 TypeScript 客户端和 OpenAPI 0.1.0 契约，当前提供能力查询、创建监测 Job 和查询 Job 三个命令。
+基础 CLI 复用公开 TypeScript 客户端和 OpenAPI 0.1.0 契约，当前提供能力查询、创建监测 Job、查询 Job/结果项、部分结果定稿和取消 Job 命令。
 
 ## 启动 Mock
 
@@ -32,6 +32,14 @@ pnpm cli -- monitor \
 
 ```bash
 pnpm cli -- job job_demo_queued
+```
+
+查询 Job 结果项、定稿当前部分结果或取消剩余执行：
+
+```bash
+pnpm cli -- items job_demo_partial
+pnpm cli -- finalize job_demo_partial --cancel-remaining
+pnpm cli -- cancel job_demo_partial
 ```
 
 ## 连接其他环境
