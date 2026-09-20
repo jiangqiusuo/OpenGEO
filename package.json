@@ -14,6 +14,7 @@
     "test:metrics": "vitest run tests/metrics",
     "build": "tsc -p tsconfig.build.json && pnpm --filter @opengeo/client build && pnpm --filter @opengeo/cli build",
     "release:check": "pnpm build && tsx scripts/release-check.ts",
+    "release:preflight": "tsx scripts/release-preflight.ts",
     "examples:generate": "tsx scripts/generate-examples.ts",
     "examples:check": "tsx scripts/generate-examples.ts --check",
     "mock": "tsx apps/mock-api/src/server.ts",
