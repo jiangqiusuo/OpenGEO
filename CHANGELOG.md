@@ -16,3 +16,7 @@
 ### Compatibility
 
 后续兼容策略见 [公共契约版本与兼容策略](docs/versioning.md)。本版本不承诺未出现在 OpenAPI、Schema 或文档中的内部实现细节。
+
+### Package release status
+
+`@opengeo/client` 和 `@opengeo/cli` 已完成本地 package metadata 与 `npm pack --dry-run` 验证；当前不自动发布到 npm。

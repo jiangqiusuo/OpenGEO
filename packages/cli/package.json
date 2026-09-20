@@ -1,0 +1,14 @@
+{
+  "name": "@opengeo/cli",
+  "version": "0.1.0",
+  "description": "OpenGEO Community command-line client",
+  "type": "module",
+  "license": "Apache-2.0",
+  "publishConfig": { "access": "public" },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": { "opengeo": "dist/bin.js" },
+  "files": ["dist", "README.md"],
+  "scripts": { "build": "tsc -p tsconfig.build.json" },
+  "dependencies": { "@opengeo/client": "workspace:^" }
+}
