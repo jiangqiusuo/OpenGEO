@@ -50,3 +50,23 @@ pnpm release:preflight
 - [ ] 发布后用干净环境安装两个包，运行 CLI help、Mock Quickstart 和 Client import smoke。
 
 建议的正式流程是：维护者确认以上清单 → 创建版本 tag → 在受保护的发布环境执行 `pnpm release:check` → 使用 npm 官方发布命令和 provenance → 记录包版本与回滚方式。当前仓库没有自动发布 workflow，也不会自动创建或读取 npm 凭据。
+
+## npm 凭据配置建议
+
+当前优先采用 npm Trusted Publishing，让 GitHub Actions 使用 OIDC 短期身份完成发布；这样不需要把长期写入 token 放进仓库或 CI Secret。配置 Trusted Publisher 时，仓库填写 `jiangqiusuo/OpenGEO`，工作流文件名必须与仓库中实际发布工作流的文件名完全一致，并只给该工作流 `id-token: write` 权限。首次建立包的维护者确认仍需要在 npm 页面完成，发布 workflow 在包和 scope 权限确认前不会启用。
+
+如果当前页面要求先创建 Granular Access Token，建议按以下值填写，且只为短期发布准备使用：
+
+| 字段 | 建议值 |
+|---|---|
+| Token name | `opengeo-community-staged-release` |
+| Description | `Short-lived staged release for OpenGEO Community packages` |
+| Allowed IP ranges | 留空，除非后续固定使用明确的 CI 出口 CIDR |
+| Packages and scopes permission | `Read and write (stage only)` |
+| Select packages | `Only select packages and scopes`；只选择 `@opengeo` scope 或两个目标包；若页面无法选择目标 scope，不要改为 `All packages` |
+| Organizations | `No access` |
+| Expiration | 30 天；最长不超过 90 天，发布后立即撤销 |
+
+`stage only` 只能把版本送入待审核阶段，不能直接让新版本上线；维护者需要使用 npm 的 staged publishing 流程审核和提升版本。不要启用绕过 2FA，也不要把 token 发到聊天、提交到仓库或写入本地文档。npm 官方说明见：[Granular access tokens](https://docs.npmjs.com/about-access-tokens/)、[创建和查看 token](https://docs.npmjs.com/creating-and-viewing-access-tokens/) 和 [Trusted Publishing](https://docs.npmjs.com/trusted-publishers/)。
+
+如果 `@opengeo` scope 或目标包尚未出现在可选列表中，先停止创建 token，由维护者通过交互式 2FA 完成首次包权限建立，再配置 stage-only token 或 Trusted Publishing；不要为了绕过列表限制选择全部包。
