@@ -13,6 +13,8 @@
     "test:contracts": "vitest run tests/contracts tests/api",
     "test:metrics": "vitest run tests/metrics",
     "build": "tsc -p tsconfig.build.json",
+    "examples:generate": "tsx scripts/generate-examples.ts",
+    "examples:check": "tsx scripts/generate-examples.ts --check",
     "mock": "tsx apps/mock-api/src/server.ts",
     "cli": "tsx packages/cli/src/bin.ts",
     "demo": "tsx packages/cli/src/bin.ts"
