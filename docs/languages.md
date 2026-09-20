@@ -25,6 +25,15 @@ console.log(job);
 
 同一客户端还提供 `getJobItems(jobId)`、`finalizePartial(jobId, { cancel_remaining })` 和 `cancelJob(jobId)`，分别对应 Job 结果项、部分结果定稿和取消接口。它们都沿用同一套认证和 HTTP 错误处理。
 
+### cURL 与 Python
+
+由 OpenAPI 生成并通过 `pnpm examples:check` 校验的完整示例位于：
+
+- [cURL 监测 Job](./examples/curl/monitor-run.sh)
+- [Python 监测 Job](./examples/python/monitor_run.py)
+
+示例只使用环境变量注入 Base URL、API Key 和幂等键，不把凭据写入文件。运行 `pnpm examples:generate` 可根据当前 OpenAPI 契约重新生成。
+
 ### cURL
 
 ```bash
