@@ -31,6 +31,8 @@ console.log(job);
 
 - [cURL 监测 Job](./examples/curl/monitor-run.sh)
 - [Python 监测 Job](./examples/python/monitor_run.py)
+- [Go 监测 Job](./examples/go/monitor_run.go)
+- [Java 监测 Job](./examples/java/MonitorRun.java)
 
 示例只使用环境变量注入 Base URL、API Key 和幂等键，不把凭据写入文件。运行 `pnpm examples:generate` 可根据当前 OpenAPI 契约重新生成。
 
@@ -49,9 +51,9 @@ curl -X POST "http://localhost:8787/v1/monitor-runs" \
   }'
 ```
 
-## 计划中的语言示例
+## 示例范围
 
-Python、Go 和 Java 示例将在对应客户端进入公开仓库后加入。它们必须覆盖同一组行为：Bearer 认证、`Idempotency-Key`、`Prefer`、Job 查询、partial result、取消和错误分类。只有复制运行并通过契约测试后，语言才会从计划状态变为可用状态。
+当前 Go 和 Java 文件是可复制运行的单请求示例，使用各自标准库提交监测 Job；它们与 cURL/Python 一样覆盖 Bearer 认证、`Idempotency-Key`、`Prefer` 和 HTTP 错误保留。Job 查询、partial result 和取消应继续使用同一 OpenAPI 契约中的 endpoint，待对应语言客户端进入仓库后再提供完整封装。
 
 ## 生成约束
 
@@ -59,3 +61,4 @@ Python、Go 和 Java 示例将在对应客户端进入公开仓库后加入。�
 - 示例不能包含真实凭据、供应商字段、采购成本或客户数据。
 - 生成客户端的错误类型必须保留 HTTP 状态和 Job 层状态的区别。
 - 客户端新增字段前，先更新契约和 Fixture，再更新生成产物和文档。
+- 运行 `pnpm examples:generate` 重新生成全部四种无依赖示例，`pnpm examples:check` 会在 CI 中阻止漂移。

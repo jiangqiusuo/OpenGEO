@@ -9,8 +9,12 @@ describe('generated language examples', () => {
     expect(bundle).toMatchObject({ endpoint: '/v1/monitor-runs', method: 'POST', requiredFields: ['capability_id', 'prompts'] });
     expect(bundle.curl).toContain('idempotency-key');
     expect(bundle.python).toContain('urllib.request');
-    expect(`${bundle.curl}\n${bundle.python}`).not.toMatch(/provider|upstream|purchase|dataforseo|secret/i);
+    expect(bundle.go).toContain('http.NewRequest');
+    expect(bundle.java).toContain('HttpClient.newHttpClient');
+    expect(`${bundle.curl}\n${bundle.python}\n${bundle.go}\n${bundle.java}`).not.toMatch(/provider|upstream|purchase|dataforseo|secret/i);
     expect((await readFile(new URL('../docs/examples/curl/monitor-run.sh', import.meta.url), 'utf8')).replace(/\r\n/g, '\n')).toBe(bundle.curl);
     expect((await readFile(new URL('../docs/examples/python/monitor_run.py', import.meta.url), 'utf8')).replace(/\r\n/g, '\n')).toBe(bundle.python);
+    expect((await readFile(new URL('../docs/examples/go/monitor_run.go', import.meta.url), 'utf8')).replace(/\r\n/g, '\n')).toBe(bundle.go);
+    expect((await readFile(new URL('../docs/examples/java/MonitorRun.java', import.meta.url), 'utf8')).replace(/\r\n/g, '\n')).toBe(bundle.java);
   });
 });
