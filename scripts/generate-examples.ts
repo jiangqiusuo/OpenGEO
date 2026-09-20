@@ -74,7 +74,8 @@ with urllib.request.urlopen(request) as response:
 
 export async function generateExamples(checkOnly = false): Promise<void> {
   const bundle = renderExamples(await loadSpec());
-  const existing = await Promise.all([readFile(curlPath, 'utf8').catch(() => ''), readFile(pythonPath, 'utf8').catch(() => '')]);
+  const readNormalized = (path: string) => readFile(path, 'utf8').then(value => value.replace(/\r\n/g, '\n')).catch(() => '');
+  const existing = await Promise.all([readNormalized(curlPath), readNormalized(pythonPath)]);
   if (checkOnly) {
     if (existing[0] !== bundle.curl || existing[1] !== bundle.python) throw new Error('generated examples are stale; run pnpm examples:generate');
     return;

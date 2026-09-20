@@ -10,7 +10,7 @@ describe('generated language examples', () => {
     expect(bundle.curl).toContain('idempotency-key');
     expect(bundle.python).toContain('urllib.request');
     expect(`${bundle.curl}\n${bundle.python}`).not.toMatch(/provider|upstream|purchase|dataforseo|secret/i);
-    expect(await readFile(new URL('../docs/examples/curl/monitor-run.sh', import.meta.url), 'utf8')).toBe(bundle.curl);
-    expect(await readFile(new URL('../docs/examples/python/monitor_run.py', import.meta.url), 'utf8')).toBe(bundle.python);
+    expect((await readFile(new URL('../docs/examples/curl/monitor-run.sh', import.meta.url), 'utf8')).replace(/\r\n/g, '\n')).toBe(bundle.curl);
+    expect((await readFile(new URL('../docs/examples/python/monitor_run.py', import.meta.url), 'utf8')).replace(/\r\n/g, '\n')).toBe(bundle.python);
   });
 });

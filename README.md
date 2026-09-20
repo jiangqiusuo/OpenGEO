@@ -56,6 +56,8 @@ tests/               跨包契约和安全边界测试
 
 更多说明见 [Quickstart](docs/quickstart.md)、[API 开发者入口](docs/api-reference.md)、[CLI](docs/cli.md)、[Job、轮询与 Webhook](docs/webhooks-and-polling.md)、[错误与限流](docs/errors-and-limits.md)、[多语言客户端](docs/languages.md)、[公共契约](docs/contracts.md)、[版本与兼容策略](docs/versioning.md)、[变更日志](CHANGELOG.md) 和 [OpenAPI 文档](openapi/openapi.json)。机器可读入口见仓库根目录的 [`llms.txt`](llms.txt)。
 
+包发布准备和不上传包的 dry-run 流程见 [Community 包发布准备](docs/releasing.md)。
+
 ## 参与贡献
 
 提交 Issue 或 Pull Request 前请阅读 [CONTRIBUTING.md](CONTRIBUTING.md)、[开发工作流](docs/development-workflow.md) 和 [公开仓库治理基线](docs/repository-governance.md)。安全问题请按照 [SECURITY.md](SECURITY.md) 私下报告。

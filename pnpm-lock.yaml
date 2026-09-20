@@ -39,6 +39,12 @@ importers:
         specifier: ^3.2.0
         version: 3.2.7(@types/node@24.13.3)(tsx@4.23.13)
 
+  packages/cli:
+    dependencies:
+      '@opengeo/client':
+        specifier: workspace:^
+        version: link:../client
+
   packages/client: {}
 
   packages/contracts:
