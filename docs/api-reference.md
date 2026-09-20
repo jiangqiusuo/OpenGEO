@@ -79,4 +79,4 @@ const job = await client.createMonitorRun(
 console.log(job);
 ```
 
-Python、Go 和 Java 示例将在对应客户端进入公开仓库后，直接从同一份 OpenAPI 契约生成或校验，避免手工维护不同版本的字段表。
+完整的 cURL、Python、Go 和 Java 单请求示例位于[多语言客户端说明](./languages.md)，均从同一份 OpenAPI 契约生成并由 `pnpm examples:check` 校验，避免手工维护不同版本的字段表。
