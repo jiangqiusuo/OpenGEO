@@ -1,0 +1,68 @@
+name: npm staged release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: npm-staged-release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Stage npm packages
+    runs-on: ubuntu-latest
+    environment: npm-release
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.1.2
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Verify release
+        run: |
+          pnpm lint
+          pnpm typecheck
+          pnpm test
+          pnpm test:contracts
+          pnpm examples:check
+          pnpm release:check
+      - name: Pack publishable artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/opengeo-packages/client" "$RUNNER_TEMP/opengeo-packages/cli"
+          pnpm --filter @opengeo/client pack --pack-destination "$RUNNER_TEMP/opengeo-packages/client"
+          pnpm --filter @opengeo/cli pack --pack-destination "$RUNNER_TEMP/opengeo-packages/cli"
+          find "$RUNNER_TEMP/opengeo-packages" -name '*.tgz' -print
+      - name: Stage client package with npm OIDC
+        shell: bash
+        run: |
+          set -euo pipefail
+          CLIENT_TGZ=$(find "$RUNNER_TEMP/opengeo-packages/client" -maxdepth 1 -name '*.tgz' -print -quit)
+          mkdir -p "$RUNNER_TEMP/opengeo-packages/client/extracted"
+          tar -xzf "$CLIENT_TGZ" -C "$RUNNER_TEMP/opengeo-packages/client/extracted"
+          npm stage publish "$RUNNER_TEMP/opengeo-packages/client/extracted/package" --access public
+      - name: Stage CLI package with npm OIDC
+        shell: bash
+        run: |
+          set -euo pipefail
+          CLI_TGZ=$(find "$RUNNER_TEMP/opengeo-packages/cli" -maxdepth 1 -name '*.tgz' -print -quit)
+          mkdir -p "$RUNNER_TEMP/opengeo-packages/cli/extracted"
+          tar -xzf "$CLI_TGZ" -C "$RUNNER_TEMP/opengeo-packages/cli/extracted"
+          npm stage publish "$RUNNER_TEMP/opengeo-packages/cli/extracted/package" --access public

@@ -70,3 +70,9 @@ pnpm release:preflight
 `stage only` 只能把版本送入待审核阶段，不能直接让新版本上线；维护者需要使用 npm 的 staged publishing 流程审核和提升版本。不要启用绕过 2FA，也不要把 token 发到聊天、提交到仓库或写入本地文档。npm 官方说明见：[Granular access tokens](https://docs.npmjs.com/about-access-tokens/)、[创建和查看 token](https://docs.npmjs.com/creating-and-viewing-access-tokens/) 和 [Trusted Publishing](https://docs.npmjs.com/trusted-publishers/)。
 
 如果 `@opengeo` scope 或目标包尚未出现在可选列表中，先停止创建 token，由维护者通过交互式 2FA 完成首次包权限建立，再配置 stage-only token 或 Trusted Publishing；不要为了绕过列表限制选择全部包。
+
+## Trusted Publishing 工作流
+
+仓库中的 `.github/workflows/npm-publish.yml` 只在手动触发或推送 `v*` 标签时运行，并使用 GitHub OIDC 将两个包提交到 npm 的 staged publishing 阶段。工作流没有 npm 写入 token；它要求 GitHub Environment `npm-release`，并只授予 `id-token: write` 与 `contents: read`。
+
+在 npm 的每个包设置中分别添加 Trusted Publisher：GitHub Actions、用户 `jiangqiusuo`、仓库 `OpenGEO`、工作流文件名 `npm-publish.yml`、环境名 `npm-release`，只允许 `npm stage publish`。工作流成功后，维护者仍需在 npm 中用 2FA 审核 staged 版本，才会公开发布。首次配置前不要手动运行发布工作流。

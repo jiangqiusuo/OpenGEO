@@ -4,6 +4,7 @@
   "description": "OpenGEO Community TypeScript client",
   "type": "module",
   "license": "Apache-2.0",
+  "repository": { "type": "git", "url": "https://github.com/jiangqiusuo/OpenGEO.git", "directory": "packages/client" },
   "publishConfig": { "access": "public" },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
