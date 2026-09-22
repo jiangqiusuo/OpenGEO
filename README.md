@@ -34,10 +34,24 @@ pnpm mock
 
 默认地址为 `http://localhost:8787`。Mock API 只返回虚构示例，不产生外部副作用。
 
+## Community 工作台预览
+
+OpenGEO Community 采用“工作台 + 内嵌工作流”的产品形态。Agent 作为后续辅助入口，用于解释指标、查找证据和建议下一步。
+
+在线预览：<https://app.open-geo.net/>（备用地址：<https://opengeo-workbench.pages.dev/>）
+
+```bash
+pnpm web:dev
+pnpm web:build
+```
+
+当前页面使用虚构样本；所有尚未接入的操作都显示“规划中”。详细说明见 [产品界面与交互形态](docs/product-experience.md)。
+
 ## 仓库结构
 
 ```text
 apps/mock-api/       本地公共 API Mock
+apps/web/            Community 工作台原型
 openapi/             OpenAPI 3.1 真源
 packages/contracts/  TypeScript 类型、JSON Schema、能力目录和 Fixture
 packages/metrics/    可复现的基础 GEO 指标

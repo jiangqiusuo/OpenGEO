@@ -4,6 +4,9 @@
 !.env.example
 node_modules/
 dist/
+.playwright-cli/
+output/
+*.tsbuildinfo
 coverage/
 *.log
 *.pem

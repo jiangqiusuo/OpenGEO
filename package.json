@@ -5,32 +5,36 @@
   "type": "module",
   "license": "Apache-2.0",
   "packageManager": "pnpm@11.1.2",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "lint": "eslint . --max-warnings 0",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && pnpm --filter @opengeo/web typecheck",
     "test": "vitest run",
     "test:contracts": "vitest run tests/contracts tests/api",
     "test:metrics": "vitest run tests/metrics",
-    "build": "tsc -p tsconfig.build.json && pnpm --filter @opengeo/client build && pnpm --filter @opengeo/cli build",
+    "build": "tsc -p tsconfig.build.json && pnpm --filter @opengeo/client build && pnpm --filter @opengeo/cli build && pnpm --filter @opengeo/web build",
     "release:check": "pnpm build && tsx scripts/release-check.ts",
     "release:preflight": "tsx scripts/release-preflight.ts",
     "examples:generate": "tsx scripts/generate-examples.ts",
     "examples:check": "tsx scripts/generate-examples.ts --check",
     "mock": "tsx apps/mock-api/src/server.ts",
     "cli": "tsx packages/cli/src/bin.ts",
-    "demo": "tsx packages/cli/src/bin.ts"
+    "demo": "tsx packages/cli/src/bin.ts",
+    "web:dev": "pnpm --filter @opengeo/web dev",
+    "web:build": "pnpm --filter @opengeo/web build"
   },
   "devDependencies": {
+    "@apidevtools/swagger-parser": "^12.0.0",
     "@eslint/js": "^9.39.0",
     "@types/node": "^24.0.0",
-    "@apidevtools/swagger-parser": "^12.0.0",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
     "eslint": "^9.39.0",
     "tsx": "^4.20.0",
     "typescript": "^5.9.0",
     "typescript-eslint": "^8.44.0",
-    "vitest": "^3.2.0"
+    "vitest": "^4.1.11"
   }
 }
