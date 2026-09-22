@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import { DEFAULT_WORKBENCH_VIEW, loadWorkbenchView } from './workbench-data';
 
 type IconName = 'overview'|'project'|'prompt'|'pulse'|'evidence'|'content'|'publish'|'compare'|'usage'|'settings'|'arrow'|'search'|'bell'|'chevron'|'spark'|'check'|'clock'|'external'|'close';
 
@@ -34,31 +35,10 @@ const navGroups = [
   {label:'管理',items:[['用量与钱包','usage'],['设置','settings']]},
 ] as const;
 
-const metrics = [
-  {label:'品牌提及率',value:'31.7%',delta:'+3.2%',tone:'blue',note:'29 / 90 条有效回答'},
-  {label:'绝对 Top 3',value:'18.9%',delta:'+1.1%',tone:'green',note:'17 / 90 条有效回答'},
-  {label:'自有域名引用率',value:'12.2%',delta:'-0.8%',tone:'amber',note:'11 / 90 条有效回答'},
-  {label:'有效样本',value:'90',delta:'97.8%',tone:'ink',note:'2 条等待补采'},
-] as const;
-
-const workflow = [
-  {title:'设置问题',detail:'30 个提示词',state:'done'},
-  {title:'执行监测',detail:'90 条有效回答',state:'done'},
-  {title:'理解表现',detail:'4 个关键机会',state:'current'},
-  {title:'生成内容',detail:'规划中',state:'planned'},
-  {title:'发布',detail:'规划中',state:'planned'},
-  {title:'复测',detail:'规划中',state:'planned'},
-] as const;
-
-const observations = [
-  {query:'适合成长团队的项目管理工具有哪些？',platform:'AI 搜索 · 桌面端',brand:'已提及',rank:'第 2 位',source:'3 条引用'},
-  {query:'如何选择支持跨部门协作的软件？',platform:'AI 搜索 · 移动端',brand:'未提及',rank:'—',source:'5 条引用'},
-  {query:'项目管理软件的核心评估指标',platform:'AI 搜索 · 桌面端',brand:'已提及',rank:'第 4 位',source:'2 条引用'},
-];
-
 export function App(){
   const [drawerOpen,setDrawerOpen]=useState(false);
   const [toast,setToast]=useState('');
+  const [workbench,setWorkbench]=useState(DEFAULT_WORKBENCH_VIEW);
   const drawerTitleId=useId();
   const closeButton=useRef<HTMLButtonElement>(null);
 
@@ -70,7 +50,11 @@ export function App(){
 
   useEffect(()=>{if(!toast)return;const timer=window.setTimeout(()=>setToast(''),2600);return()=>window.clearTimeout(timer);},[toast]);
 
+  useEffect(()=>{let active=true;void loadWorkbenchView({baseUrl:import.meta.env.VITE_OPEN_GEO_API_URL}).then(value=>{if(active)setWorkbench(value);});return()=>{active=false;};},[]);
+
   const planned=(label:string)=>setToast(`${label}尚未接入，已标记为规划中。`);
+  const {metrics,workflow,observations}=workbench;
+  const analyzableRun=workbench.runs.find(run=>run.status==='waiting'&&run.canAnalyze);
 
   return <div className="shell">
     <aside className="sidebar">
@@ -80,8 +64,8 @@ export function App(){
         <small>Community</small>
       </a>
       <button className="project-switch" onClick={()=>planned('项目切换')}>
-        <span className="project-monogram">L</span>
-        <span><strong>澜舟科技</strong><small>示例工作区</small></span>
+        <span className="project-monogram">{workbench.project.monogram}</span>
+        <span><strong>{workbench.project.name}</strong><small>示例工作区</small></span>
         <Icon name="chevron" size={15}/>
       </button>
       <nav aria-label="主导航">
@@ -93,15 +77,15 @@ export function App(){
           )}
         </div>)}
       </nav>
-      <div className="sidebar-note">
+      <div className={`sidebar-note ${workbench.source}`}>
         <span className="status-dot"/>
-        <div><strong>演示环境</strong><small>全部数据均为虚构样本</small></div>
+        <div><strong>{workbench.sourceLabel}</strong><small>{workbench.sourceNote}</small></div>
       </div>
     </aside>
 
     <main id="overview">
       <header className="topbar">
-        <div><span className="crumb">项目</span><span className="slash">/</span><strong>澜舟科技</strong></div>
+        <div><span className="crumb">项目</span><span className="slash">/</span><strong>{workbench.project.name}</strong></div>
         <div className="top-actions">
           <button className="icon-button planned-icon" onClick={()=>planned('全局搜索')} aria-label="全局搜索，规划中"><Icon name="search"/><span>规划中</span></button>
           <button className="icon-button planned-icon" onClick={()=>planned('通知')} aria-label="通知，规划中"><Icon name="bell"/><span>规划中</span></button>
@@ -112,7 +96,7 @@ export function App(){
       <div className="canvas">
         <section className="page-intro">
           <div>
-            <div className="eyebrow"><span>监测周期</span> 9月15日—9月21日 <button onClick={()=>planned('日期筛选')}>规划中 <Icon name="chevron" size={13}/></button></div>
+            <div className="eyebrow"><span>监测周期</span> {workbench.period.label} <button onClick={()=>planned('日期筛选')}>规划中 <Icon name="chevron" size={13}/></button></div>
             <h1>看清品牌在 AI 回答中的位置。</h1>
             <p>从一次监测出发，沿着证据、内容和复测完成一轮可验证的优化。</p>
           </div>
@@ -122,12 +106,12 @@ export function App(){
         <section className="signal-panel" aria-label="本周期监测摘要">
           <div className="signal-lead">
             <span className="signal-kicker">本周期可见度</span>
-            <strong>31.7<small>%</small></strong>
-            <span className="delta positive">↑ 3.2%</span>
-            <p>品牌在 90 条有效回答中被提及 29 次。</p>
+            <strong>{workbench.visibility.value.replace('%','')}<small>%</small></strong>
+            <span className="delta positive">{workbench.visibility.trend}</span>
+            <p>品牌在当前样本中的提及情况为 {workbench.visibility.count}。</p>
             <button className="text-button" onClick={()=>setDrawerOpen(true)}>查看指标依据 <Icon name="arrow" size={15}/></button>
           </div>
-          <div className="signal-chart" aria-label="七日提及率趋势，从 24.8% 上升到 31.7%">
+          <div className="signal-chart" aria-label="七次演示监测的提及率趋势">
             <div className="chart-head"><span>近 7 次监测</span><strong>稳定上升</strong></div>
             <svg viewBox="0 0 560 150" role="img" aria-label="提及率趋势折线图">
               <path className="grid" d="M0 30H560M0 75H560M0 120H560"/>
@@ -139,7 +123,7 @@ export function App(){
           </div>
           <div className="opportunity-note">
             <span className="note-icon"><Icon name="spark"/></span>
-            <div><small>本周机会</small><strong>“采购评估”类问题缺少自有内容引用</strong><p>7 个高意向问题提及了品牌，但没有引用自有域名。</p></div>
+            <div><small>本周机会</small><strong>{workbench.opportunity.title}</strong><p>{workbench.opportunity.detail}</p></div>
             <button onClick={()=>planned('查看机会')}><Icon name="arrow"/></button>
           </div>
         </section>
@@ -171,17 +155,12 @@ export function App(){
 
           <section className="runs-card" id="runs">
             <div className="section-heading compact"><div><h2>最近监测</h2><p>任务状态来自统一 Job 模型。</p></div><button className="text-button" onClick={()=>planned('查看全部任务')}>查看全部 <span>规划中</span></button></div>
-            <div className="run-row">
-              <span className="run-status success"><Icon name="check"/></span>
-              <div><strong>品牌基础监测 · 9月21日</strong><small>30 个问题 · 3 个 AI 目标</small></div>
-              <span className="run-progress">90 / 90</span><time>今天 09:42</time>
-            </div>
-            <div className="run-row">
-              <span className="run-status waiting"><Icon name="clock"/></span>
-              <div><strong>竞品补充监测 · 9月20日</strong><small>12 个问题 · 3 个 AI 目标</small></div>
-              <span className="run-progress">34 / 36</span><time>昨天 18:10</time>
-            </div>
-            <div className="partial-callout"><span>34 / 36 已完成，已达到可分析阈值。</span><button onClick={()=>planned('使用当前结果继续')}>使用当前结果继续 <em>规划中</em></button></div>
+            {workbench.runs.map(run=><div className="run-row" key={run.id}>
+              <span className={`run-status ${run.status}`}><Icon name={run.status==='success'?'check':'clock'}/></span>
+              <div><strong>{run.title}</strong><small>{run.detail}</small></div>
+              <span className="run-progress">{run.completed}</span><time>{run.time}</time>
+            </div>)}
+            {analyzableRun&&<div className="partial-callout"><span>{analyzableRun.completed} 已完成，已达到可分析阈值。</span><button onClick={()=>planned('使用当前结果继续')}>使用当前结果继续 <em>规划中</em></button></div>}
           </section>
         </div>
 
@@ -189,7 +168,7 @@ export function App(){
           <div className="section-heading"><div><h2>最近证据</h2><p>回答、引用和样本范围保持可追溯。</p></div><button className="text-button" onClick={()=>setDrawerOpen(true)}>打开证据库 <Icon name="external" size={15}/></button></div>
           <div className="evidence-table" role="table" aria-label="最近证据样本">
             <div className="table-row table-head" role="row"><span>问题</span><span>采集环境</span><span>品牌</span><span>位置</span><span>引用</span></div>
-            {observations.map(item=><button className="table-row" role="row" onClick={()=>setDrawerOpen(true)} key={item.query}>
+            {observations.map(item=><button className="table-row" role="row" onClick={()=>setDrawerOpen(true)} key={item.id}>
               <span><strong>{item.query}</strong><small>有效回答 · 完整证据</small></span><span>{item.platform}</span><span className={item.brand==='已提及'?'mention yes':'mention no'}>{item.brand}</span><span>{item.rank}</span><span>{item.source}<Icon name="arrow" size={14}/></span>
             </button>)}
           </div>
@@ -206,9 +185,9 @@ export function App(){
     {drawerOpen&&<div className="drawer-layer" role="presentation" onMouseDown={event=>{if(event.target===event.currentTarget)setDrawerOpen(false);}}>
       <aside className="evidence-drawer" role="dialog" aria-modal="true" aria-labelledby={drawerTitleId}>
         <div className="drawer-head"><div><span>指标依据</span><h2 id={drawerTitleId}>品牌提及率</h2></div><button ref={closeButton} onClick={()=>setDrawerOpen(false)} aria-label="关闭指标依据"><Icon name="close"/></button></div>
-        <div className="drawer-score"><strong>31.7%</strong><span>29 / 90 条有效回答</span></div>
-        <dl className="definition-list"><div><dt>指标含义</dt><dd>包含品牌名称或已确认别名的有效回答占比。</dd></div><div><dt>计算公式</dt><dd><code>提及品牌的有效回答 ÷ 全部有效回答</code></dd></div><div><dt>样本范围</dt><dd>30 个问题 × 3 个 AI 目标 · 桌面端与移动端</dd></div><div><dt>数据完整度</dt><dd><span className="completeness">97.8%</span> 2 条样本等待补采</dd></div></dl>
-        <div className="drawer-section"><div><h3>支持样本</h3><span>29 条</span></div>{observations.slice(0,2).map(item=><article key={item.query}><span className="sample-index">回答样本</span><strong>{item.query}</strong><p>“在成长型团队常见的选择中，澜舟可以帮助团队统一项目节奏，并保留跨部门协作记录……”</p><footer><span>{item.platform}</span><button onClick={()=>planned('完整回答')}>查看完整回答 <em>规划中</em></button></footer></article>)}</div>
+        <div className="drawer-score"><strong>{metrics[0]?.value??'—'}</strong><span>{metrics[0]?.note??'暂无有效样本'}</span></div>
+        <dl className="definition-list"><div><dt>指标含义</dt><dd>包含品牌名称或已确认别名的有效回答占比。</dd></div><div><dt>计算公式</dt><dd><code>提及品牌的有效回答 ÷ 全部有效回答</code></dd></div><div><dt>样本范围</dt><dd>{observations.length} 个问题 · 桌面端与移动端</dd></div><div><dt>数据完整度</dt><dd><span className="completeness">{metrics[3]?.delta??'—'}</span> {metrics[3]?.note??'暂无样本说明'}</dd></div></dl>
+        <div className="drawer-section"><div><h3>支持样本</h3><span>{observations.filter(item=>item.brand==='已提及').length} 条</span></div>{observations.filter(item=>item.brand==='已提及').slice(0,2).map(item=><article key={item.id}><span className="sample-index">回答样本</span><strong>{item.query}</strong><p>{item.answer}</p><footer><span>{item.platform}</span><button onClick={()=>planned('完整回答')}>查看完整回答 <em>规划中</em></button></footer></article>)}</div>
         <p className="drawer-footnote">原型使用虚构数据，只用于验证信息架构和交互。</p>
       </aside>
     </div>}

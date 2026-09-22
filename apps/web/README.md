@@ -20,6 +20,15 @@
 pnpm web:dev
 ```
 
+默认页面使用编译时类型检查的 `workbench.v1` 公开 Fixture，不需要 API 或密钥。若要读取本地 Mock API：
+
+```bash
+pnpm mock
+VITE_OPEN_GEO_API_URL=http://127.0.0.1:8787 pnpm web:dev
+```
+
+Windows PowerShell 可先设置 `$env:VITE_OPEN_GEO_API_URL='http://127.0.0.1:8787'`。工作台会读取 `/v1/capabilities`、演示 Job 和 Job items；请求或响应校验失败时自动回退到版本化 Fixture，并在左侧数据源状态中明确显示，不会把失败伪装成实时数据。
+
 生产构建：
 
 ```bash

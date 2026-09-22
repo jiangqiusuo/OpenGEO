@@ -2,9 +2,11 @@ import { createServer } from 'node:http';
 import { CAPABILITIES, jobFixtures, observationFixtures } from '@opengeo/contracts';
 
 const port = Number(process.env.OPEN_GEO_PORT ?? 8787);
-const json = (res: import('node:http').ServerResponse, status: number, body: unknown) => { res.writeHead(status, { 'content-type': 'application/json' }); res.end(JSON.stringify(body)); };
+const corsHeaders={'access-control-allow-origin':'*','access-control-allow-methods':'GET,POST,OPTIONS','access-control-allow-headers':'content-type,idempotency-key,prefer'};
+const json = (res: import('node:http').ServerResponse, status: number, body: unknown) => { res.writeHead(status, { 'content-type': 'application/json',...corsHeaders }); res.end(JSON.stringify(body)); };
 const server = createServer((req, res) => {
   const url = new URL(req.url ?? '/', `http://${req.headers.host ?? 'localhost'}`);
+  if(req.method==='OPTIONS'){res.writeHead(204,corsHeaders);return res.end();}
   if (req.method === 'GET' && url.pathname === '/v1/capabilities') return json(res, 200, { object: 'list', data: CAPABILITIES });
   if (req.method === 'GET' && url.pathname.match(/^\/v1\/jobs\/[^/]+\/items$/)) return json(res, 200, { object: 'list', data: observationFixtures });
   if (req.method === 'GET' && url.pathname.startsWith('/v1/jobs/')) {
