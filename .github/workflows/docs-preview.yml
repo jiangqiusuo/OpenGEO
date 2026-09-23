@@ -1,0 +1,47 @@
+name: docs-preview
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/portal/**"
+      - "openapi/openapi.json"
+      - ".github/workflows/docs-preview.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble static portal
+        run: |
+          set -euo pipefail
+          mkdir -p site/docs/portal site/openapi
+          cp docs/portal/index.html docs/portal/README.md site/docs/portal/
+          cp openapi/openapi.json site/openapi/openapi.json
+          test -s site/docs/portal/index.html
+          test -s site/openapi/openapi.json
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
