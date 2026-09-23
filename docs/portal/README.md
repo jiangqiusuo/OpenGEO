@@ -10,7 +10,11 @@
 pnpm dlx serve .
 ```
 
-然后打开 `/docs/portal/`。也可以在任意静态服务器上托管仓库目录。页面通过 Scalar 的浏览器组件渲染 OpenAPI 3.1 reference，开发者可以在左侧按资源浏览，在中间查看字段，在右侧复制请求示例。
+然后打开 `/docs/portal/`。也可以在任意静态服务器上托管仓库目录。页面通过固定版本 `@scalar/api-reference@1.71.0` 渲染 OpenAPI 3.1 reference，开发者可以在左侧按资源浏览，在中间查看字段，在右侧复制请求示例。
+
+## GitHub Pages 预览
+
+仓库工作流 [`docs-preview.yml`](../../.github/workflows/docs-preview.yml) 会把 `docs/portal/` 与 `openapi/openapi.json` 复制到 Pages artifact，保持页面中的相对路径。首次启用前，维护者需要在仓库 Settings → Pages → Build and deployment 中选择 GitHub Actions；之后每次 `main` 修改 Portal 或 OpenAPI 文件都会更新预览。
 
 ## 文档分层
 
