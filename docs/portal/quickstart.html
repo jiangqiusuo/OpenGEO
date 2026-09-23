@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OpenGEO Quickstart</title>
+    <meta name="description" content="使用 OpenGEO Community Mock API 完成第一次 Job 请求" />
+    <style>
+      :root { color-scheme: light; --ink: #171914; --muted: #62665b; --paper: #f5f3ed; --card: #fffdf8; --line: #deded4; --lime: #c7f36b; --violet: #6b5cff; }
+      * { box-sizing: border-box; }
+      body { margin: 0; color: var(--ink); background: var(--paper); font: 16px/1.65 Inter, ui-sans-serif, system-ui, -apple-system, sans-serif; }
+      header { background: var(--ink); color: #fff; padding: 22px max(24px, calc((100vw - 1100px) / 2)); display: flex; align-items: center; gap: 14px; }
+      .mark { width: 22px; height: 22px; background: linear-gradient(90deg, var(--lime) 0 28%, transparent 28% 36%, var(--lime) 36% 64%, transparent 64% 72%, var(--lime) 72%); }
+      header a { color: #dfe4d4; text-decoration: none; margin-left: auto; font-size: 13px; }
+      main { max-width: 1100px; margin: 0 auto; padding: 76px 24px 100px; }
+      .eyebrow { color: var(--violet); font: 700 12px ui-monospace, SFMono-Regular, monospace; letter-spacing: .12em; text-transform: uppercase; }
+      h1 { max-width: 720px; margin: 12px 0 18px; font-size: clamp(42px, 7vw, 74px); line-height: .98; letter-spacing: -.06em; }
+      .lede { max-width: 650px; color: var(--muted); font-size: 19px; }
+      .notice { margin: 34px 0; padding: 18px 20px; border: 1px solid #c8dba1; border-left: 5px solid var(--lime); background: #f0f7df; }
+      .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 32px; }
+      .card { padding: 22px; border: 1px solid var(--line); background: var(--card); }
+      .card h2 { margin: 0 0 8px; font-size: 19px; }
+      .card p { margin: 0 0 16px; color: var(--muted); }
+      .card a { color: var(--violet); font-weight: 700; }
+      pre { overflow: auto; padding: 20px; color: #eef5df; background: #20231d; border: 1px solid #363b31; font: 14px/1.6 ui-monospace, SFMono-Regular, monospace; }
+      code { font-family: ui-monospace, SFMono-Regular, monospace; }
+      .steps { max-width: 760px; margin-top: 54px; }
+      .step { display: grid; grid-template-columns: 42px 1fr; gap: 18px; padding: 18px 0; border-top: 1px solid var(--line); }
+      .number { display: grid; place-items: center; width: 32px; height: 32px; color: var(--ink); background: var(--lime); font-weight: 800; }
+      @media (max-width: 720px) { main { padding-top: 48px; } .grid { grid-template-columns: 1fr; } header a { font-size: 12px; } }
+    </style>
+  </head>
+  <body>
+    <header><span class="mark" aria-hidden="true"></span><strong>OpenGEO Community</strong><a href="./">打开 API Reference ↗</a></header>
+    <main>
+      <div class="eyebrow">Mock first · Contract driven</div>
+      <h1>先用一条虚构请求跑通 OpenGEO。</h1>
+      <p class="lede">这份 Quickstart 使用仓库内置 Mock API，帮助你验证 Job、幂等键和结果查询。它不会连接真实供应商，也不会产生费用。</p>
+      <div class="notice"><strong>当前范围：</strong>本页只演示本地 Mock。真实部署的 API key、供应商调用和计费流程不属于这份公开示例。</div>
+      <section class="grid" aria-label="入口">
+        <article class="card"><h2>API Reference</h2><p>查看由 OpenAPI 3.1 契约生成的参数、Schema 和响应。</p><a href="./">打开 Scalar Reference →</a></article>
+        <article class="card"><h2>公开契约</h2><p>机器可读的稳定契约，适合生成客户端和校验请求。</p><a href="../../openapi/openapi.json">打开 openapi.json →</a></article>
+        <article class="card"><h2>源码 Quickstart</h2><p>在仓库中启动 Mock API，并运行契约测试。</p><a href="https://github.com/jiangqiusuo/OpenGEO/blob/main/docs/quickstart.md">阅读完整指南 →</a></article>
+      </section>
+      <section class="steps">
+        <div class="step"><span class="number">1</span><div><strong>启动 Mock API</strong><p>在 Community 仓库根目录运行：</p><pre>pnpm install
+pnpm mock</pre></div></div>
+        <div class="step"><span class="number">2</span><div><strong>创建一个观察 Job</strong><p>每个请求都带上唯一的幂等键：</p><pre>curl -X POST http://localhost:8787/v1/monitor-runs \
+  -H 'content-type: application/json' \
+  -H 'idempotency-key: quickstart-001' \
+  -d '{"capability_id":"observe.ai_answer","prompts":["mock quickstart"],"turnaround_class":"best_effort","interaction_mode":"search"}'</pre></div></div>
+        <div class="step"><span class="number">3</span><div><strong>查询结果</strong><p>使用响应里的 Job ID 查询状态和 items。客户端应根据 <code>status</code> 与 <code>result_state</code> 判断生命周期。</p><pre>curl http://localhost:8787/v1/jobs/job_demo_queued
+curl http://localhost:8787/v1/jobs/job_demo_queued/items</pre></div></div>
+      </section>
+    </main>
+  </body>
+</html>

@@ -27,7 +27,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p site/docs/portal site/openapi
-          cp docs/portal/index.html docs/portal/README.md site/docs/portal/
+          cp docs/portal/index.html docs/portal/quickstart.html docs/portal/README.md site/docs/portal/
           cp openapi/openapi.json site/openapi/openapi.json
           test -s site/docs/portal/index.html
           test -s site/openapi/openapi.json

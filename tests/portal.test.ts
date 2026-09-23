@@ -15,5 +15,14 @@ describe('Developer Portal entrypoint', () => {
     expect(workflow).toContain('site/docs/portal');
     expect(workflow).toContain('site/openapi/openapi.json');
     expect(workflow).toContain('actions/deploy-pages@v4');
+    expect(workflow).toContain('docs/portal/quickstart.html');
+  });
+
+  it('provides a provider-neutral mock quickstart without credentials', async () => {
+    const html = await readFile(new URL('../docs/portal/quickstart.html', import.meta.url), 'utf8');
+    expect(html).toContain('pnpm mock');
+    expect(html).toContain('idempotency-key: quickstart-001');
+    expect(html).toContain('不会连接真实供应商');
+    expect(html).not.toMatch(/api[_-]?key|token|secret/i);
   });
 });
