@@ -1,6 +1,6 @@
 # 贡献指南
 
-感谢你帮助改进 OpenGEO Community。完整的分支、提交、PR、评审、合并和发布流程见 [`docs/development-workflow.md`](docs/development-workflow.md)。
+感谢你帮助改进 OpenGEO Community。完整的分支、提交、Issue 分诊、PR、评审、合并和发布流程见 [`docs/development-workflow.md`](docs/development-workflow.md)。公开 Issue 的范围和标签约定见 [`docs/issue-triage.md`](docs/issue-triage.md)。
 
 ## 开始之前
 
