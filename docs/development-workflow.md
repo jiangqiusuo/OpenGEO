@@ -38,6 +38,8 @@ ci(policy): validate pull request titles
 
 ## Issue 到 PR
 
+公开 Issue 的范围、标签和关闭规则见 [`docs/issue-triage.md`](./issue-triage.md)。跨仓库路线、供应商状态和内部凭据仍由私有 Goal 看板管理。
+
 1. 先搜索已有 Issue/PR。
 2. 公共契约、错误语义、状态机或兼容性变更先提交设计 Issue。
 3. Bug Issue 必须包含版本、环境和最小复现；功能 Issue 必须说明用户问题、边界和兼容性影响。
