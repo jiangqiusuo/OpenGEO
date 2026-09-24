@@ -1,0 +1,41 @@
+name: 文档问题
+description: 报告 API、Quickstart、示例或指南中的错误和缺口
+title: "[Docs] "
+labels:
+  - documentation
+  - area:docs
+body:
+  - type: textarea
+    id: page
+    attributes:
+      label: 页面或文件
+      description: 请提供文档 URL、仓库相对路径或章节标题。
+      placeholder: docs/portal/quickstart.html#mock-first
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: 发现的问题
+      description: 请说明当前内容为什么不准确、不完整或难以执行。
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: 建议改法
+      description: 如果已有修订建议，请描述预期的文字、示例或结构。
+  - type: input
+    id: version
+    attributes:
+      label: 版本或 commit
+      placeholder: v0.1.0 或 0123456
+    validations:
+      required: true
+  - type: checkboxes
+    id: safe
+    attributes:
+      label: 公开信息确认
+      options:
+        - label: 我已确认内容不包含凭据、客户数据、私有供应商信息或内部运行细节。
+          required: true
