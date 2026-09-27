@@ -41,7 +41,7 @@ importers:
 
   apps/web:
     dependencies:
-      '@opengeo/contracts':
+      '@sysiphus/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
       react:
@@ -66,7 +66,7 @@ importers:
 
   packages/cli:
     dependencies:
-      '@opengeo/client':
+      '@sysiphus/client':
         specifier: workspace:^
         version: link:../client
 
@@ -80,7 +80,7 @@ importers:
 
   packages/metrics:
     dependencies:
-      '@opengeo/contracts':
+      '@sysiphus/contracts':
         specifier: workspace:*
         version: link:../contracts
 

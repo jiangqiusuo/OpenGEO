@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import Ajv from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
-import { jobFixtures, observationFixtures } from '@opengeo/contracts';
+import { jobFixtures, observationFixtures } from '@sysiphus/contracts';
 import jobSchema from '../../packages/contracts/schemas/opengeo-job.v1.schema.json';
 import observationSchema from '../../packages/contracts/schemas/opengeo-observation.v1.schema.json';
 

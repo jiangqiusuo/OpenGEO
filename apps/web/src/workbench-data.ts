@@ -1,4 +1,4 @@
-import type { CapabilityDefinition, Job, Observation } from '@opengeo/contracts';
+import type { CapabilityDefinition, Job, Observation } from '@sysiphus/contracts';
 import { WORKBENCH_FIXTURE_V1, type WorkbenchFixture } from './workbench-fixture.v1';
 
 export type WorkbenchSource='fixture'|'mock-api'|'fixture-fallback';

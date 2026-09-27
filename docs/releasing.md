@@ -6,8 +6,8 @@
 
 | 包 | npm 名称 | 当前版本 | 入口 |
 |---|---|---|---|
-| TypeScript Client | `@opengeo/client` | `0.1.0` | `dist/index.js`、`dist/index.d.ts` |
-| CLI | `@opengeo/cli` | `0.1.0` | `opengeo` → `dist/bin.js` |
+| TypeScript Client | `@sysiphus/client` | `0.1.0` | `dist/index.js`、`dist/index.d.ts` |
+| CLI | `@sysiphus/cli` | `0.1.0` | `opengeo` → `dist/bin.js` |
 
 根目录的 `CHANGELOG.md` 是版本记录真源；包的版本必须与根目录版本一致。包内只包含构建产物、包 README 和自动包含的许可证文件，不包含源码目录、测试、环境文件或本地依赖。
 
@@ -20,7 +20,7 @@ pnpm release:check
 
 该命令会先构建根项目和两个包，然后使用 `pnpm pack --dry-run --json` 检查每个包的文件清单、版本、入口和 changelog。它不会创建可发布的长期文件，也不会连接 npm 或上传包。
 
-真正发布前还需要单独确认 npm 组织、维护者、双因素认证、包名占用、版本号和发布渠道。发布动作不属于当前 Goal。
+真正发布前还需要单独确认 npm 个人账号、维护者、双因素认证、包名占用、版本号和发布渠道。发布动作不属于当前 Goal。
 
 ## 正式发布前检查清单
 
@@ -29,7 +29,7 @@ pnpm release:check
 - [x] 根版本、包版本和 `CHANGELOG.md` 版本一致。
 - [x] Client 和 CLI 均可独立构建。
 - [x] `pnpm pack --dry-run --json` 文件清单不含源码、测试、环境文件或私有路径。
-- [x] 只读 registry 预检：2026-09-20 查询 `@opengeo/client` 与 `@opengeo/cli` 均返回 HTTP 404，当前没有发现已公开发布版本。
+- [x] 只读 registry 预检：2026-09-20 查询 `@sysiphus/client` 与 `@sysiphus/cli` 均返回 HTTP 404，当前没有发现已公开发布版本。
 
 运行：
 
@@ -37,12 +37,12 @@ pnpm release:check
 pnpm release:preflight
 ```
 
-404 只代表 registry 中没有公开版本，不能证明当前账户拥有 `opengeo` scope，也不能替代登录后的权限检查。
+404 只代表 registry 中没有公开版本，不能替代登录后的个人 scope 权限检查。
 
 ### 必须由维护者确认
 
-- [ ] npm 账户已加入并拥有 `opengeo` scope 的发布权限。
-- [ ] 包名没有被组织内部保留，组织设置和包访问级别已确认。
+- [ ] npm 账户 `sysiphus` 已启用 2FA，并确认个人 `@sysiphus` scope 的发布权限。
+- [ ] 两个包名没有被占用，包的访问级别和个人账号设置已确认。
 - [ ] 维护者账户启用 2FA；发布策略符合 npm 账户的 `auth-and-writes` 要求。
 - [ ] 发布使用短期、最小权限的 automation token 或受保护的 GitHub Actions Secret，不写入仓库和本地文档。
 - [ ] 版本 `0.1.0`、变更日志和 Git tag 已完成最终审核。
@@ -63,16 +63,24 @@ pnpm release:preflight
 | Description | `Short-lived staged release for OpenGEO Community packages` |
 | Allowed IP ranges | 留空，除非后续固定使用明确的 CI 出口 CIDR |
 | Packages and scopes permission | `Read and write (stage only)` |
-| Select packages | `Only select packages and scopes`；只选择 `@opengeo` scope 或两个目标包；若页面无法选择目标 scope，不要改为 `All packages` |
+| Select packages | `Only select packages and scopes`；只选择 `@sysiphus` scope 或两个目标包；若页面无法选择目标 scope，不要改为 `All packages` |
 | Organizations | `No access` |
 | Expiration | 30 天；最长不超过 90 天，发布后立即撤销 |
 
 `stage only` 只能把版本送入待审核阶段，不能直接让新版本上线；维护者需要使用 npm 的 staged publishing 流程审核和提升版本。不要启用绕过 2FA，也不要把 token 发到聊天、提交到仓库或写入本地文档。npm 官方说明见：[Granular access tokens](https://docs.npmjs.com/about-access-tokens/)、[创建和查看 token](https://docs.npmjs.com/creating-and-viewing-access-tokens/) 和 [Trusted Publishing](https://docs.npmjs.com/trusted-publishers/)。
 
-如果 `@opengeo` scope 或目标包尚未出现在可选列表中，先停止创建 token，由维护者通过交互式 2FA 完成首次包权限建立，再配置 stage-only token 或 Trusted Publishing；不要为了绕过列表限制选择全部包。
+如果 `@sysiphus` scope 或目标包尚未出现在可选列表中，先停止创建 token，由维护者通过交互式 2FA 完成首次包权限建立，再配置 stage-only token 或 Trusted Publishing；不要为了绕过列表限制选择全部包。
 
 ## Trusted Publishing 工作流
 
 仓库中的 `.github/workflows/npm-publish.yml` 只在手动触发或推送 `v*` 标签时运行，并使用 GitHub OIDC 将两个包提交到 npm 的 staged publishing 阶段。工作流没有 npm 写入 token；它要求 GitHub Environment `npm-release`，并只授予 `id-token: write` 与 `contents: read`。
 
 在 npm 的每个包设置中分别添加 Trusted Publisher：GitHub Actions、用户 `jiangqiusuo`、仓库 `OpenGEO`、工作流文件名 `npm-publish.yml`、环境名 `npm-release`，只允许 `npm stage publish`。工作流成功后，维护者仍需在 npm 中用 2FA 审核 staged 版本，才会公开发布。首次配置前不要手动运行发布工作流。
+
+## 2026-09 更新：首包 bootstrap 与 OIDC staged release
+
+当前仓库已经包含 `.github/workflows/npm-publish.yml`，但它不会绕过账号安全验证，也不会在包尚未存在时直接执行 `npm stage publish`。
+
+首次发布必须由维护者在受保护的 `npm-release` Environment 中手动选择 `bootstrap`，用 OIDC direct publish 创建两个 `0.1.0` 包。确认 registry 已出现包后，再在两个包页面绑定 `jiangqiusuo/OpenGEO`、`npm-publish.yml` 和 `npm-release` 的 Trusted Publisher；后续只选择默认的 `stage` 模式。`npm stage publish` 只能用于已经存在的包，staged 版本的最终 approve 仍需维护者完成 npm 2FA。
+
+工作流只接受 `main` 或 `v*` tag，并校验 tag 与根目录版本一致。发布前会运行 lint、typecheck、test、contract test、examples check、release check 和高危依赖审计。仓库不保存长期 npm 写入 token。

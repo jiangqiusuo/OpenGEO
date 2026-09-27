@@ -7,7 +7,7 @@ OpenGEO 以 OpenAPI 3.1 为契约源。语言客户端应由同一份契约生�
 ### TypeScript
 
 ```ts
-import { OpenGEOClient } from '@opengeo/client';
+import { OpenGEOClient } from '@sysiphus/client';
 
 const client = new OpenGEOClient({ baseUrl: 'http://localhost:8787' });
 const job = await client.createMonitorRun(

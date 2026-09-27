@@ -1,5 +1,5 @@
 import { createServer } from 'node:http';
-import { CAPABILITIES, jobFixtures, observationFixtures } from '@opengeo/contracts';
+import { CAPABILITIES, jobFixtures, observationFixtures } from '@sysiphus/contracts';
 
 const port = Number(process.env.OPEN_GEO_PORT ?? 8787);
 const corsHeaders={'access-control-allow-origin':'*','access-control-allow-methods':'GET,POST,OPTIONS','access-control-allow-headers':'content-type,idempotency-key,prefer'};

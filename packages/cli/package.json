@@ -1,5 +1,5 @@
 {
-  "name": "@opengeo/cli",
+  "name": "@sysiphus/cli",
   "version": "0.1.0",
   "description": "OpenGEO Community command-line client",
   "type": "module",
@@ -11,5 +11,5 @@
   "bin": { "opengeo": "dist/bin.js" },
   "files": ["dist", "README.md"],
   "scripts": { "build": "tsc -p tsconfig.build.json" },
-  "dependencies": { "@opengeo/client": "workspace:^" }
+  "dependencies": { "@sysiphus/client": "workspace:^" }
 }

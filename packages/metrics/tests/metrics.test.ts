@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { Observation } from '@opengeo/contracts';
+import type { Observation } from '@sysiphus/contracts';
 import { computeMetrics } from '../src/index.js';
 
 const now = '2026-09-09T00:00:00Z';

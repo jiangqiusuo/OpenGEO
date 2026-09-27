@@ -1,4 +1,4 @@
-import type { CapabilityDefinition, Job, Observation } from '@opengeo/contracts';
+import type { CapabilityDefinition, Job, Observation } from '@sysiphus/contracts';
 
 export interface WorkbenchFixture {
   version: 'workbench.v1';

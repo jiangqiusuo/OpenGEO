@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { observationFixtures } from '@opengeo/contracts';
-import { computeMetrics } from '@opengeo/metrics';
+import { observationFixtures } from '@sysiphus/contracts';
+import { computeMetrics } from '@sysiphus/metrics';
 
 describe('core metrics', () => {
   it('computes versioned mention and top3 rates', () => {

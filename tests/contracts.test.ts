@@ -3,7 +3,7 @@ import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
 import SwaggerParser from '@apidevtools/swagger-parser';
 import { fileURLToPath } from 'node:url';
-import { schemaRegistry, fixtureJobs, fixtureObservations, fixturePrompt, CAPABILITIES, PUBLIC_CONTRACT_VERSION } from '@opengeo/contracts';
+import { schemaRegistry, fixtureJobs, fixtureObservations, fixturePrompt, CAPABILITIES, PUBLIC_CONTRACT_VERSION } from '@sysiphus/contracts';
 
 const ajv = new Ajv2020({ strict: false, allErrors: true });
 addFormats(ajv);
