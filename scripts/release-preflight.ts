@@ -1,4 +1,4 @@
-const packageNames = ['@opengeo/client', '@opengeo/cli'] as const;
+const packageNames = ['@sysiphus/client', '@sysiphus/cli'] as const;
 
 export type RegistryCheck = { name: string; status: number; result: 'unpublished' | 'published' | 'unknown' };
 

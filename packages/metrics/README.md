@@ -1,6 +1,6 @@
-# @opengeo/metrics
+# @sysiphus/metrics
 
-OpenGEO 公共指标计算包，依赖 `@opengeo/contracts` 的 `Observation` 与 `MetricResult` 类型。
+OpenGEO 公共指标计算包，依赖 `@sysiphus/contracts` 的 `Observation` 与 `MetricResult` 类型。
 
 当前实现并固定版本 `1.0.0` 的基础指标：
 

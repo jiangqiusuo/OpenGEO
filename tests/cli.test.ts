@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { runCli } from '@opengeo/cli';
+import { runCli } from '@sysiphus/cli';
 
 const io = () => { let value = ''; return { stream: { write(chunk: string) { value += chunk; } }, value: () => value }; };
 

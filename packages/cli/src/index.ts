@@ -1,4 +1,4 @@
-import { OpenGEOClient, type MonitorRunRequest } from '@opengeo/client';
+import { OpenGEOClient, type MonitorRunRequest } from '@sysiphus/client';
 
 export interface CliIo { write(value: string): void }
 export interface CliDependencies { fetch?: typeof globalThis.fetch; stdout?: CliIo; stderr?: CliIo; env?: Record<string, string | undefined> }

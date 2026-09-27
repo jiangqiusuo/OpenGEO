@@ -13,7 +13,7 @@
     "moduleResolution": "Bundler",
     "baseUrl": "../..",
     "paths": {
-      "@opengeo/contracts": ["packages/contracts/src/index.ts"]
+      "@sysiphus/contracts": ["packages/contracts/src/index.ts"]
     },
     "resolveJsonModule": true,
     "isolatedModules": true,

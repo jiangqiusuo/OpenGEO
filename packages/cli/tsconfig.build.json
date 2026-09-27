@@ -5,7 +5,7 @@
     "outDir": "dist",
     "rootDir": "src",
     "baseUrl": "../..",
-    "paths": { "@opengeo/client": ["packages/client/dist/index.d.ts"] }
+    "paths": { "@sysiphus/client": ["packages/client/dist/index.d.ts"] }
   },
   "include": ["src/**/*.ts"]
 }

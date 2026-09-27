@@ -56,7 +56,7 @@ curl http://localhost:8787/v1/jobs/job_demo_queued/items
 ## 4. 使用 TypeScript 客户端
 
 ```ts
-import { OpenGEOClient } from '@opengeo/client';
+import { OpenGEOClient } from '@sysiphus/client';
 
 const client = new OpenGEOClient({ baseUrl: 'http://localhost:8787' });
 const job = await client.createMonitorRun(

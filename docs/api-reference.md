@@ -63,7 +63,7 @@ curl -X POST "http://localhost:8787/v1/monitor-runs" \
 当前仓库提供 TypeScript 客户端：
 
 ```ts
-import { OpenGEOClient } from '@opengeo/client';
+import { OpenGEOClient } from '@sysiphus/client';
 
 const client = new OpenGEOClient({ baseUrl: 'http://localhost:8787' });
 const job = await client.createMonitorRun(

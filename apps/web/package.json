@@ -1,5 +1,5 @@
 {
-  "name": "@opengeo/web",
+  "name": "@sysiphus/web",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -10,7 +10,7 @@
     "typecheck": "tsc -b --pretty false"
   },
   "dependencies": {
-    "@opengeo/contracts": "workspace:*",
+    "@sysiphus/contracts": "workspace:*",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },

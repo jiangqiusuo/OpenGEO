@@ -1,4 +1,4 @@
-import type { MetricResult, Observation } from '@opengeo/contracts';
+import type { MetricResult, Observation } from '@sysiphus/contracts';
 
 type MetricOptions = {
   entityId: string;

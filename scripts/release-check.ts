@@ -7,15 +7,23 @@ import { fileURLToPath } from 'node:url';
 const execFileAsync = promisify(execFile);
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const packages = [
-  { directory: 'packages/client', name: '@opengeo/client', required: ['dist/index.js', 'dist/index.d.ts', 'README.md'] },
-  { directory: 'packages/cli', name: '@opengeo/cli', required: ['dist/index.js', 'dist/index.d.ts', 'dist/bin.js', 'README.md'] },
+  { directory: 'packages/client', name: '@sysiphus/client', required: ['dist/index.js', 'dist/index.d.ts', 'README.md'] },
+  { directory: 'packages/cli', name: '@sysiphus/cli', required: ['dist/index.js', 'dist/index.d.ts', 'dist/bin.js', 'README.md'] },
 ] as const;
 
 type PackageManifest = { name?: string; version?: string; files?: string[]; main?: string; types?: string; bin?: Record<string, string>; publishConfig?: { access?: string } };
 type PackEntry = { files?: Array<{ path?: string }> };
 
+export function validateTagVersion(version: string, ref = process.env.GITHUB_REF): void {
+  if (!ref?.startsWith('refs/tags/')) return;
+  const tag = ref.slice('refs/tags/'.length);
+  if (!/^v\d+\.\d+\.\d+(?:[-+].+)?$/.test(tag) || tag.slice(1) !== version) throw new Error(`Git tag ${tag} does not match package version ${version}`);
+}
+
 export async function validateReleaseMetadata(): Promise<void> {
   const rootManifest = JSON.parse(await readFile(resolve(root, 'package.json'), 'utf8')) as { version?: string };
+  if (!rootManifest.version) throw new Error('root package version is missing');
+  validateTagVersion(rootManifest.version);
   const changelog = await readFile(resolve(root, 'CHANGELOG.md'), 'utf8');
   for (const packageInfo of packages) {
     const manifest = JSON.parse(await readFile(resolve(root, packageInfo.directory, 'package.json'), 'utf8')) as PackageManifest;

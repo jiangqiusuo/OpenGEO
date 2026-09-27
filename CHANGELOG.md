@@ -19,4 +19,4 @@
 
 ### Package release status
 
-`@opengeo/client` 和 `@opengeo/cli` 已完成本地 package metadata 与 `npm pack --dry-run` 验证；当前不自动发布到 npm。
+`@sysiphus/client` 和 `@sysiphus/cli` 已完成本地 package metadata 与 `npm pack --dry-run` 验证；当前不自动发布到 npm。

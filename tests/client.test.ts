@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { OpenGEOClient } from '@opengeo/client';
+import { OpenGEOClient } from '@sysiphus/client';
 
 describe('Community client',()=>{
   it('creates a neutral overseas monitoring Job request without provider fields',async()=>{

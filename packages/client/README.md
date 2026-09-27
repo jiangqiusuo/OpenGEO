@@ -1,9 +1,9 @@
-# @opengeo/client
+# @sysiphus/client
 
 OpenGEO Community 的 TypeScript 客户端。客户端只依赖公开 OpenGEO 契约，不包含供应商适配器或商业服务逻辑。
 
 ```ts
-import { OpenGEOClient } from '@opengeo/client';
+import { OpenGEOClient } from '@sysiphus/client';
 
 const client = new OpenGEOClient({ baseUrl: 'http://localhost:8787' });
 const job = await client.createMonitorRun(
