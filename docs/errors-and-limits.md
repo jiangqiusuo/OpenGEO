@@ -13,6 +13,10 @@ OpenGEO 的错误处理分成 HTTP 层、Job 层和结果项层。客户端应�
 
 具体错误 Schema、字段和示例以 [OpenAPI 3.1](../openapi/openapi.json) 为准。
 
+## 请求链路标识
+
+Core 的 HTTP 响应会返回 `X-Request-Id`。调用方可以记录这个值，在排查失败请求时提供给运维人员。服务端接受由调用方提供的安全字符集 ID；如果没有提供或格式不合规，服务端会生成新的 `req_<UUID>`。请求 ID 不代表 Job ID，也不应被当作凭据或资源权限证明。
+
 ## TypeScript 客户端的错误对象
 
 `@sysiphus/client` 收到非 2xx 响应时会抛出 `OpenGEORequestError`。对象保留 HTTP `status`、错误信封中的 `code` 与 `message`，以及可选的 `details`、`requestId` 和 `Retry-After` 响应头。调用方可以按状态和错误码分支处理，不应依赖完整错误文案。

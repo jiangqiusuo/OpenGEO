@@ -19,6 +19,8 @@ console.log(job);
 
 请求返回非 2xx 状态时，客户端会抛出 `OpenGEORequestError`。它保留 `status`、公共错误码 `code`、安全的 `details`、`requestId` 和 `Retry-After`，调用方可以据此区分鉴权失败、资源不存在、状态冲突、限流和暂不可用，而不必通过字符串解析错误消息。
 
+`requestId` 来自响应的 `X-Request-Id`。建议在日志中保存它，并在向服务维护者报告问题时一并提供；它只用于关联请求，不等同于 Job ID。
+
 ```ts
 import { OpenGEORequestError } from '@sysiphus/client';
 
