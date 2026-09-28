@@ -67,6 +67,11 @@
                   "additionalProperties": false
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           }
         }
@@ -100,6 +105,11 @@
                   "additionalProperties": false
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           }
         }
@@ -130,6 +140,21 @@
           }
         },
         "responses": {
+          "200": {
+            "description": "在 Prefer: wait 窗口内完成的同一 Job",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../packages/contracts/schemas/opengeo-job.v1.schema.json"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            }
+          },
           "202": {
             "description": "已创建异步 Job",
             "headers": {
@@ -137,18 +162,11 @@
                 "schema": {
                   "type": "string"
                 }
+              },
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
               }
             },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "../packages/contracts/schemas/opengeo-job.v1.schema.json"
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "在 Prefer: wait 窗口内完成的同一 Job",
             "content": {
               "application/json": {
                 "schema": {
@@ -182,6 +200,11 @@
                 "schema": {
                   "$ref": "../packages/contracts/schemas/opengeo-job.v1.schema.json"
                 }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
               }
             }
           },
@@ -235,6 +258,11 @@
                   "additionalProperties": false
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "404": {
@@ -272,10 +300,20 @@
                   "$ref": "../packages/contracts/schemas/opengeo-job.v1.schema.json"
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "409": {
-            "description": "当前状态不允许定稿"
+            "description": "当前状态不允许定稿",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            }
           }
         }
       }
@@ -300,10 +338,20 @@
                   "$ref": "../packages/contracts/schemas/opengeo-job.v1.schema.json"
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "409": {
-            "description": "当前状态不允许取消"
+            "description": "当前状态不允许取消",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            }
           }
         }
       }
@@ -316,7 +364,12 @@
         "operationId": "createGenerationJob",
         "responses": {
           "501": {
-            "description": "预留能力，当前不可用"
+            "description": "预留能力，当前不可用",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            }
           }
         }
       }
@@ -329,7 +382,12 @@
         "operationId": "createPublication",
         "responses": {
           "501": {
-            "description": "预留能力，当前不可用"
+            "description": "预留能力，当前不可用",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            }
           }
         }
       }
@@ -342,7 +400,12 @@
         "operationId": "createVerificationRun",
         "responses": {
           "501": {
-            "description": "预留能力，当前不可用"
+            "description": "预留能力，当前不可用",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            }
           }
         }
       }
@@ -391,10 +454,20 @@
     },
     "responses": {
       "BadRequest": {
-        "description": "请求参数无效"
+        "description": "请求参数无效",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        }
       },
       "NotFound": {
-        "description": "资源不存在"
+        "description": "资源不存在",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        }
       }
     },
     "schemas": {
@@ -482,6 +555,15 @@
             "type": "boolean",
             "default": false
           }
+        }
+      }
+    },
+    "headers": {
+      "RequestId": {
+        "description": "Safe request correlation ID. Generated when omitted or invalid. It is not a Job ID.",
+        "schema": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
         }
       }
     }
