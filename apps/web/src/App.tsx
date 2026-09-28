@@ -94,6 +94,10 @@ export function App(){
       </header>
 
       <div className="canvas">
+        {workbench.loadError&&<div className="data-notice" role="status">
+          <div><strong>API 数据暂时不可用</strong><span>{workbench.loadError.status??'网络错误'} {workbench.loadError.code?`· ${workbench.loadError.code}`:''}</span></div>
+          <small>{workbench.loadError.requestId?`请求 ID：${workbench.loadError.requestId}`:'已回退到本地 Fixture'}{workbench.loadError.retryAfter?` · Retry-After ${workbench.loadError.retryAfter}`:''}</small>
+        </div>}
         <section className="page-intro">
           <div>
             <div className="eyebrow"><span>监测周期</span> {workbench.period.label} <button onClick={()=>planned('日期筛选')}>规划中 <Icon name="chevron" size={13}/></button></div>

@@ -13,7 +13,8 @@
     "moduleResolution": "Bundler",
     "baseUrl": "../..",
     "paths": {
-      "@sysiphus/contracts": ["packages/contracts/src/index.ts"]
+      "@sysiphus/contracts": ["packages/contracts/src/index.ts"],
+      "@sysiphus/client": ["packages/client/src/index.ts"]
     },
     "resolveJsonModule": true,
     "isolatedModules": true,

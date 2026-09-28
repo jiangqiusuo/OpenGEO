@@ -41,6 +41,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@sysiphus/client':
+        specifier: workspace:*
+        version: link:../../packages/client
       '@sysiphus/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
