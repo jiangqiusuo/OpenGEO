@@ -32,4 +32,11 @@ describe('Community workbench read model',()=>{
     expect(view.sourceNote).toContain('已安全回退');
     expect(view.observations).toHaveLength(5);
   });
+
+  it('preserves structured API error context when falling back to the fixture',async()=>{
+    const fetchImpl:typeof fetch=async()=>Response.json({error:{code:'rate_limited',message:'Try again later.'}},{status:429,headers:{'retry-after':'30','x-request-id':'req_workbench_1'}});
+    const view=await loadWorkbenchView({baseUrl:'http://127.0.0.1:8787',fetchImpl});
+    expect(view.source).toBe('fixture-fallback');
+    expect(view.loadError).toEqual({status:429,code:'rate_limited',message:'Try again later.',requestId:'req_workbench_1',retryAfter:'30'});
+  });
 });

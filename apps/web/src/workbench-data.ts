@@ -1,4 +1,5 @@
 import type { CapabilityDefinition, Job, Observation } from '@sysiphus/contracts';
+import { OpenGEOClient, OpenGEORequestError } from '@sysiphus/client';
 import { WORKBENCH_FIXTURE_V1, type WorkbenchFixture } from './workbench-fixture.v1';
 
 export type WorkbenchSource='fixture'|'mock-api'|'fixture-fallback';
@@ -10,7 +11,9 @@ export interface WorkbenchView {
   project:WorkbenchFixture['project'];period:WorkbenchFixture['period'];opportunity:WorkbenchFixture['opportunity'];
   capabilities:number;visibility:{value:string;count:string;trend:string};metrics:WorkbenchMetric[];
   workflow:Array<{title:string;detail:string;state:'done'|'current'|'planned'}>;observations:WorkbenchEvidence[];runs:WorkbenchRun[];
+  loadError?: WorkbenchLoadError;
 }
+export interface WorkbenchLoadError { status?:number; code?:string; message?:string; requestId?:string; retryAfter?:string }
 
 const percent=(value:number,total:number)=>total===0?'—':`${(value/total*100).toFixed(1)}%`;
 const observationMention=(item:Observation)=>item.brand_mentions?.some(mention=>mention.mentioned)??false;
@@ -51,27 +54,27 @@ const listData=(value:unknown):unknown[]=>record(value)&&Array.isArray(value.dat
 const isCapability=(value:unknown):value is CapabilityDefinition=>record(value)&&typeof value.capability_id==='string'&&typeof value.version==='string';
 const isJob=(value:unknown):value is Job=>record(value)&&value.object==='opengeo.job'&&typeof value.id==='string'&&typeof value.status==='string'&&record(value.timestamps);
 const isObservation=(value:unknown):value is Observation=>record(value)&&value.object==='opengeo.observation'&&typeof value.id==='string'&&record(value.prompt)&&record(value.quality);
-const endpoint=(base:string,path:string)=>new URL(path,base.endsWith('/')?base:`${base}/`).toString();
-
 export interface LoadWorkbenchOptions { baseUrl?:string;jobIds?:string[];fetchImpl?:typeof fetch }
 export const loadWorkbenchView=async(options:LoadWorkbenchOptions={}):Promise<WorkbenchView>=>{
   if(!options.baseUrl)return deriveWorkbenchView(WORKBENCH_FIXTURE_V1);
   try{
     const base=new URL(options.baseUrl);if(!['http:','https:'].includes(base.protocol))throw new Error('invalid_mock_url');
     const request=options.fetchImpl??fetch;const jobIds=options.jobIds??['job_demo_succeeded','job_demo_partial'];
-    const [capabilityResponse,itemResponse,...jobResponses]=await Promise.all([
-      request(endpoint(base.toString(),'v1/capabilities')),
-      request(endpoint(base.toString(),`v1/jobs/${encodeURIComponent(jobIds[0]??'job_demo_succeeded')}/items`)),
-      ...jobIds.map(id=>request(endpoint(base.toString(),`v1/jobs/${encodeURIComponent(id)}`))),
+    const client=new OpenGEOClient({baseUrl:base.toString(),apiKey:import.meta.env.VITE_OPEN_GEO_API_KEY,fetch:request});
+    const [capabilityPayload,itemPayload,...jobPayloads]=await Promise.all([
+      client.capabilities(),
+      client.getJobItems(jobIds[0]??'job_demo_succeeded'),
+      ...jobIds.map(id=>client.getJob(id)),
     ]);
-    if(!capabilityResponse.ok||!itemResponse.ok||jobResponses.some(response=>!response.ok))throw new Error('mock_request_failed');
-    const capabilities=listData(await capabilityResponse.json()).filter(isCapability);
-    const observations=listData(await itemResponse.json()).filter(isObservation);
-    const jobs=(await Promise.all(jobResponses.map(response=>response.json()))).filter(isJob);
+    const capabilities=listData(capabilityPayload).filter(isCapability);
+    const observations=listData(itemPayload).filter(isObservation);
+    const jobs=jobPayloads.filter(isJob);
     if(capabilities.length===0||observations.length===0||jobs.length===0)throw new Error('mock_payload_invalid');
     return deriveWorkbenchView({...WORKBENCH_FIXTURE_V1,capabilities,observations,jobs},'mock-api',`读取 ${capabilities.length} 项能力、${jobs.length} 个 Job 和 ${observations.length} 条 Observation`);
-  }catch{
-    return deriveWorkbenchView(WORKBENCH_FIXTURE_V1,'fixture-fallback','Mock API 不可用，已安全回退到版本化公开 Fixture');
+  }catch(error){
+    const loadError=error instanceof OpenGEORequestError?{status:error.status,code:error.code,message:error.message,requestId:error.requestId,retryAfter:error.retryAfter}:undefined;
+    const fallback=deriveWorkbenchView(WORKBENCH_FIXTURE_V1,'fixture-fallback','Mock API 不可用，已安全回退到版本化公开 Fixture');
+    return loadError?{...fallback,loadError}:fallback;
   }
 };
 
