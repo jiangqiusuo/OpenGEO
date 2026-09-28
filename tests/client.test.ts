@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { OpenGEOClient } from '@sysiphus/client';
+import { OpenGEOClient, OpenGEORequestError } from '@sysiphus/client';
 
 describe('Community client',()=>{
   it('creates a neutral overseas monitoring Job request without provider fields',async()=>{
@@ -26,5 +26,39 @@ describe('Community client',()=>{
     ]);
     expect(JSON.parse(String(request.mock.calls[1][1]?.body))).toEqual({ cancel_remaining: true });
     expect(new Headers(request.mock.calls[2][1]?.headers).get('authorization')).toBe('Bearer test-key');
+  });
+
+  it('preserves structured API errors and recovery headers', async () => {
+    const request = vi.fn(async () => new Response(JSON.stringify({ error: { code: 'rate_limited', message: 'Try again later.', details: { scope: 'workspace' } } }), {
+      status: 429,
+      headers: { 'content-type': 'application/json', 'retry-after': '12', 'x-request-id': 'req_demo_1' },
+    }));
+    const client = new OpenGEOClient({ baseUrl: 'https://api.opengeo.test', fetch: request });
+
+    try {
+      await client.capabilities();
+      throw new Error('expected capabilities to fail');
+    } catch (error) {
+      expect(error).toBeInstanceOf(OpenGEORequestError);
+      expect(error).toMatchObject({
+        status: 429,
+        code: 'rate_limited',
+        message: 'Try again later.',
+        details: { scope: 'workspace' },
+        requestId: 'req_demo_1',
+        retryAfter: '12',
+      });
+    }
+  });
+
+  it('falls back to the status when an error body is not JSON', async () => {
+    const request = vi.fn(async () => new Response('upstream unavailable', { status: 503 }));
+    const client = new OpenGEOClient({ baseUrl: 'https://api.opengeo.test', fetch: request });
+
+    await expect(client.getJob('job_demo')).rejects.toMatchObject({
+      name: 'OpenGEORequestError',
+      status: 503,
+      message: 'OpenGEO request failed: 503',
+    });
   });
 });
