@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- 在 OpenAPI 3.1 的所有公开响应中声明 `X-Request-Id`，与 Core 的实际响应行为保持一致。
+
 ## 0.1.0 — 2026-09-19
 
 首个公开契约版本，适用于本地 Mock、契约集成和 Community 工具开发。

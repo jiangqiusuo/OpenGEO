@@ -72,6 +72,20 @@ describe('G0 公共契约', () => {
     expect(api.components?.schemas?.Job).toBeTruthy();
     expect(api.components?.schemas?.Observation).toBeTruthy();
   });
+
+  it('每个公开 response 都声明 X-Request-Id', async () => {
+    const document = await SwaggerParser.dereference(fileURLToPath(new URL('../openapi/openapi.json', import.meta.url)));
+    const paths = (document as { paths?: Record<string, Record<string, unknown>> }).paths ?? {};
+    for (const [path, item] of Object.entries(paths)) {
+      for (const [method, operation] of Object.entries(item)) {
+        if (!['get', 'post', 'put', 'patch', 'delete', 'head', 'options', 'trace'].includes(method)) continue;
+        const responses = (operation as { responses?: Record<string, { headers?: Record<string, unknown> }> }).responses ?? {};
+        for (const [status, response] of Object.entries(responses)) {
+          expect(response.headers?.['X-Request-Id'], `${method.toUpperCase()} ${path} ${status}`).toBeTruthy();
+        }
+      }
+    }
+  });
 });
 
 
