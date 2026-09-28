@@ -13,6 +13,12 @@ OpenGEO 的错误处理分成 HTTP 层、Job 层和结果项层。客户端应�
 
 具体错误 Schema、字段和示例以 [OpenAPI 3.1](../openapi/openapi.json) 为准。
 
+## TypeScript 客户端的错误对象
+
+`@sysiphus/client` 收到非 2xx 响应时会抛出 `OpenGEORequestError`。对象保留 HTTP `status`、错误信封中的 `code` 与 `message`，以及可选的 `details`、`requestId` 和 `Retry-After` 响应头。调用方可以按状态和错误码分支处理，不应依赖完整错误文案。
+
+客户端不会自动重试创建、定稿或取消请求。对于 `429`，优先使用 `retryAfter`；对于网络超时，使用有上限的指数退避，并复用原来的 `Idempotency-Key`。对于 `409`、`501` 或 `submission_unknown`，先读取当前 Job 状态，不要盲目提交新请求。
+
 ## Job 层和结果项层
 
 HTTP `202` 只表示请求已被接受，不表示所有结果已经成功。客户端还要处理 Job 的 `queued`、`running`、`partial`、`succeeded`、`failed`、`cancelled` 和 `finalized_partial`，以及结果项的 `not_requested`、`not_supported`、`not_available`、`failed_to_extract` 和 `redacted` 等状态。
