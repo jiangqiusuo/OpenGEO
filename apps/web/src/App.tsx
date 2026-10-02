@@ -59,7 +59,7 @@ export function App(){
   return <div className="shell">
     <aside className="sidebar">
       <a className="brand" href="#overview" aria-label="OpenGEO 总览">
-        <span className="brand-mark"><span/><span/><span/></span>
+        <img className="brand-mark" src="/logo-mark.svg" alt="" aria-hidden="true" />
         <span>OpenGEO</span>
         <small>Community</small>
       </a>

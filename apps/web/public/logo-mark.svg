@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">OpenGEO</title>
+  <desc id="desc">An open orbital arc around a globe and observation lens.</desc>
+  <defs>
+    <clipPath id="globe-clip"><circle cx="29" cy="32" r="17"/></clipPath>
+  </defs>
+  <path d="M14.5 43.5A23 23 0 0 1 43.2 14.8" fill="none" stroke="#0071E3" stroke-linecap="round" stroke-width="7"/>
+  <path d="M20.8 50.2A23 23 0 0 0 49.2 21.8" fill="none" stroke="#38BDF8" stroke-linecap="round" stroke-width="7"/>
+  <circle cx="29" cy="32" r="17" fill="#111827"/>
+  <g clip-path="url(#globe-clip)" fill="none" stroke="#F5F5F7" stroke-linecap="round" stroke-width="1.8" opacity=".42">
+    <path d="M12 32h34M15 23.5h28M15 40.5h28"/>
+    <path d="M29 14c-6 5-8.5 11-8.5 18S23 45 29 50M29 14c6 5 8.5 11 8.5 18S35 45 29 50"/>
+  </g>
+  <circle cx="40" cy="30" r="8.5" fill="#F5F5F7"/>
+  <circle cx="40" cy="30" r="5.5" fill="#0071E3"/>
+  <path d="m46 36 8 8" fill="none" stroke="#0071E3" stroke-linecap="round" stroke-width="4.5"/>
+</svg>
