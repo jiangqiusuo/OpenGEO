@@ -5,6 +5,7 @@ export interface WorkbenchFixture {
   project: { name:string; monogram:string; owned_domains:string[] };
   period: { label:string; start:string; end:string };
   opportunity: { title:string; detail:string };
+  audit: { version:'opengeo-audit-summary.v1'; items:Array<{id:string;action:string;operationKey:string;createdAt:string}>; nextCursor:string|null; hasMore:boolean };
   capabilities: CapabilityDefinition[];
   jobs: Job[];
   observations: Observation[];
@@ -51,6 +52,11 @@ export const WORKBENCH_FIXTURE_V1:WorkbenchFixture={
   project:{name:'澜舟科技',monogram:'L',owned_domains:['lanzhou.example']},
   period:{label:'9月15日—9月21日',start:'2026-09-15',end:'2026-09-21'},
   opportunity:{title:'“采购评估”类问题缺少自有内容引用',detail:'3 个高意向问题提及了品牌，但没有引用自有域名。'},
+  audit:{version:'opengeo-audit-summary.v1',items:[
+    {id:'audit_fixture_003',action:'workspace.api_key_revoked',operationKey:'fixture:workspace.api_key_revoked:003',createdAt:'2026-09-21T09:44:00.000Z'},
+    {id:'audit_fixture_002',action:'workspace.member_added',operationKey:'fixture:workspace.member_added:002',createdAt:'2026-09-21T09:43:00.000Z'},
+    {id:'audit_fixture_001',action:'workspace.created',operationKey:'fixture:workspace.created:001',createdAt:'2026-09-21T09:40:00.000Z'},
+  ],nextCursor:null,hasMore:false},
   capabilities:[{
     capability_id:'observe.ai_answer',family:'observation',version:'1.0.0',request_schema_ref:'opengeo-job.v1.schema.json',result_schema_ref:'opengeo-observation.v1.schema.json',
     execution:{public_model:'job',turnaround_classes:['best_effort','expedited','interactive'],supports_partial_results:true,supports_cancel:true,supports_prefer_wait:true},
