@@ -3,14 +3,17 @@ import { OpenGEOClient, OpenGEORequestError } from '@sysiphus/client';
 import { WORKBENCH_FIXTURE_V1, type WorkbenchFixture } from './workbench-fixture.v1';
 
 export type WorkbenchSource='fixture'|'mock-api'|'fixture-fallback';
+export type WorkbenchAuditSource='fixture'|'mock-api'|'fixture-fallback';
 export interface WorkbenchMetric { label:string;value:string;delta:string;tone:'blue'|'green'|'amber'|'ink';note:string }
 export interface WorkbenchEvidence { id:string;query:string;platform:string;brand:'已提及'|'未提及';rank:string;source:string;answer:string }
 export interface WorkbenchRun { id:string;title:string;detail:string;completed:string;time:string;status:'success'|'waiting';canAnalyze:boolean }
+export interface WorkbenchAuditItem { id:string; action:string; operationKey:string; createdAt:string }
+export interface WorkbenchAuditSummary { version:'opengeo-audit-summary.v1'; source:WorkbenchAuditSource; status:'observed'|'fixture'|'fallback'|'not_available'; items:WorkbenchAuditItem[]; nextCursor:string|null; hasMore:boolean; note:string }
 export interface WorkbenchView {
   fixtureVersion:string;source:WorkbenchSource;sourceLabel:string;sourceNote:string;
   project:WorkbenchFixture['project'];period:WorkbenchFixture['period'];opportunity:WorkbenchFixture['opportunity'];
   capabilities:number;visibility:{value:string;count:string;trend:string};metrics:WorkbenchMetric[];
-  workflow:Array<{title:string;detail:string;state:'done'|'current'|'planned'}>;observations:WorkbenchEvidence[];runs:WorkbenchRun[];
+  workflow:Array<{title:string;detail:string;state:'done'|'current'|'planned'}>;observations:WorkbenchEvidence[];runs:WorkbenchRun[];audit:WorkbenchAuditSummary;
   loadError?: WorkbenchLoadError;
 }
 export interface WorkbenchLoadError { status?:number; code?:string; message?:string; requestId?:string; retryAfter?:string }
@@ -18,8 +21,13 @@ export interface WorkbenchLoadError { status?:number; code?:string; message?:str
 const percent=(value:number,total:number)=>total===0?'—':`${(value/total*100).toFixed(1)}%`;
 const observationMention=(item:Observation)=>item.brand_mentions?.some(mention=>mention.mentioned)??false;
 const observationRank=(item:Observation)=>item.rankings?.map(ranking=>ranking.rank).sort((a,b)=>a-b)[0]??null;
+const auditFromFixture=(fixture:WorkbenchFixture,source:WorkbenchAuditSource,note:string):WorkbenchAuditSummary=>({
+  version:'opengeo-audit-summary.v1',source,status:source==='mock-api'?'observed':source==='fixture'?'fixture':'fallback',
+  items:(fixture.audit?.items??[]).slice(0,10).map(item=>({id:item.id,action:item.action,operationKey:item.operationKey,createdAt:item.createdAt})),
+  nextCursor:fixture.audit?.nextCursor??null,hasMore:fixture.audit?.hasMore??false,note,
+});
 
-export const deriveWorkbenchView=(fixture:WorkbenchFixture,source:WorkbenchSource='fixture',sourceNote='版本化公开 Fixture'):WorkbenchView=>{
+export const deriveWorkbenchView=(fixture:WorkbenchFixture,source:WorkbenchSource='fixture',sourceNote='版本化公开 Fixture',audit?:WorkbenchAuditSummary):WorkbenchView=>{
   const valid=fixture.observations.filter(item=>item.quality.is_valid);
   const mentioned=valid.filter(observationMention);
   const top3=valid.filter(item=>{const rank=observationRank(item);return rank!==null&&rank<=3;});
@@ -45,7 +53,7 @@ export const deriveWorkbenchView=(fixture:WorkbenchFixture,source:WorkbenchSourc
       {title:'发布',detail:'规划中',state:'planned'},
       {title:'复测',detail:'规划中',state:'planned'},
     ],
-    observations,runs,
+    observations,runs,audit:audit??auditFromFixture(fixture,source,source==='fixture'?'版本化公开 Fixture 提供只读活动摘要':source==='mock-api'?'读取 Mock API 的只读活动摘要':'活动摘要已回退到版本化公开 Fixture'),
   };
 };
 
@@ -54,7 +62,14 @@ const listData=(value:unknown):unknown[]=>record(value)&&Array.isArray(value.dat
 const isCapability=(value:unknown):value is CapabilityDefinition=>record(value)&&typeof value.capability_id==='string'&&typeof value.version==='string';
 const isJob=(value:unknown):value is Job=>record(value)&&value.object==='opengeo.job'&&typeof value.id==='string'&&typeof value.status==='string'&&record(value.timestamps);
 const isObservation=(value:unknown):value is Observation=>record(value)&&value.object==='opengeo.observation'&&typeof value.id==='string'&&record(value.prompt)&&record(value.quality);
-export interface LoadWorkbenchOptions { baseUrl?:string;jobIds?:string[];fetchImpl?:typeof fetch }
+const isAuditItem=(value:unknown):value is Record<string,unknown>=>record(value)&&typeof value.id==='string'&&typeof value.action==='string'&&(typeof value.operation_key==='string'||typeof value.operationKey==='string')&&(typeof value.created_at==='string'||typeof value.createdAt==='string');
+export const parseAuditProjection=(value:unknown):Omit<WorkbenchAuditSummary,'source'|'status'|'note'>|null=>{
+  const root=record(value)&&record(value.audit)?value.audit:value;
+  if(!record(root)||!Array.isArray(root.items))return null;
+  const items=root.items.filter(isAuditItem).slice(0,10).map(item=>({id:item.id as string,action:item.action as string,operationKey:(typeof item.operation_key==='string'?item.operation_key:item.operationKey) as string,createdAt:(typeof item.created_at==='string'?item.created_at:item.createdAt) as string}));
+  return {version:'opengeo-audit-summary.v1',items,nextCursor:typeof root.next_cursor==='string'?root.next_cursor:typeof root.nextCursor==='string'?root.nextCursor:null,hasMore:root.has_more===true||root.hasMore===true};
+};
+export interface LoadWorkbenchOptions { baseUrl?:string;jobIds?:string[];fetchImpl?:typeof fetch;activityOverviewUrl?:string }
 export const loadWorkbenchView=async(options:LoadWorkbenchOptions={}):Promise<WorkbenchView>=>{
   if(!options.baseUrl)return deriveWorkbenchView(WORKBENCH_FIXTURE_V1);
   try{
@@ -70,7 +85,17 @@ export const loadWorkbenchView=async(options:LoadWorkbenchOptions={}):Promise<Wo
     const observations=listData(itemPayload).filter(isObservation);
     const jobs=jobPayloads.filter(isJob);
     if(capabilities.length===0||observations.length===0||jobs.length===0)throw new Error('mock_payload_invalid');
-    return deriveWorkbenchView({...WORKBENCH_FIXTURE_V1,capabilities,observations,jobs},'mock-api',`读取 ${capabilities.length} 项能力、${jobs.length} 个 Job 和 ${observations.length} 条 Observation`);
+    const view=deriveWorkbenchView({...WORKBENCH_FIXTURE_V1,capabilities,observations,jobs},'mock-api',`读取 ${capabilities.length} 项能力、${jobs.length} 个 Job 和 ${observations.length} 条 Observation`);
+    if(options.activityOverviewUrl){
+      try{
+        const auditResponse=await request(options.activityOverviewUrl);
+        if(!auditResponse.ok)throw new Error('audit_projection_unavailable');
+        const parsed=parseAuditProjection(await auditResponse.json());
+        if(parsed)view.audit={...parsed,source:'mock-api',status:'observed',note:'读取 Mock API 的只读活动摘要（不包含内部字段）'};
+        else view.audit={...auditFromFixture(WORKBENCH_FIXTURE_V1,'fixture-fallback','Mock API 未提供符合契约的活动摘要，已回退到版本化公开 Fixture'),status:'not_available'};
+      }catch{view.audit={...auditFromFixture(WORKBENCH_FIXTURE_V1,'fixture-fallback','活动摘要不可用，已回退到版本化公开 Fixture'),status:'fallback'};}
+    }
+    return view;
   }catch(error){
     const loadError=error instanceof OpenGEORequestError?{status:error.status,code:error.code,message:error.message,requestId:error.requestId,retryAfter:error.retryAfter}:undefined;
     const fallback=deriveWorkbenchView(WORKBENCH_FIXTURE_V1,'fixture-fallback','Mock API 不可用，已安全回退到版本化公开 Fixture');

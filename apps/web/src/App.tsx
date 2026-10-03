@@ -35,6 +35,14 @@ const navGroups = [
   {label:'管理',items:[['用量与钱包','usage'],['设置','settings']]},
 ] as const;
 
+const auditActionLabel=(action:string)=>({
+  'workspace.created':'创建 Workspace',
+  'workspace.member_added':'添加成员',
+  'workspace.api_key_created':'创建 API Key',
+  'workspace.api_key_revoked':'撤销 API Key',
+}[action]??action);
+const auditTime=(value:string)=>new Date(value).toLocaleString('zh-CN',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+
 export function App(){
   const [drawerOpen,setDrawerOpen]=useState(false);
   const [toast,setToast]=useState('');
@@ -50,7 +58,7 @@ export function App(){
 
   useEffect(()=>{if(!toast)return;const timer=window.setTimeout(()=>setToast(''),2600);return()=>window.clearTimeout(timer);},[toast]);
 
-  useEffect(()=>{let active=true;void loadWorkbenchView({baseUrl:import.meta.env.VITE_OPEN_GEO_API_URL}).then(value=>{if(active)setWorkbench(value);});return()=>{active=false;};},[]);
+  useEffect(()=>{let active=true;void loadWorkbenchView({baseUrl:import.meta.env.VITE_OPEN_GEO_API_URL,activityOverviewUrl:import.meta.env.VITE_OPEN_GEO_ACTIVITY_URL}).then(value=>{if(active)setWorkbench(value);});return()=>{active=false;};},[]);
 
   const planned=(label:string)=>setToast(`${label}尚未接入，已标记为规划中。`);
   const {metrics,workflow,observations}=workbench;
@@ -167,6 +175,17 @@ export function App(){
             {analyzableRun&&<div className="partial-callout"><span>{analyzableRun.completed} 已完成，已达到可分析阈值。</span><button onClick={()=>planned('使用当前结果继续')}>使用当前结果继续 <em>规划中</em></button></div>}
           </section>
         </div>
+
+        <section className="audit-summary-card" aria-labelledby="audit-summary-heading">
+          <div className="section-heading compact audit-summary-head">
+            <div><span className="audit-kicker">只读活动摘要</span><h2 id="audit-summary-heading">最近活动</h2><p>{workbench.audit.note}</p></div>
+            <span className={`audit-state ${workbench.audit.status}`}><span className="status-dot" />{workbench.audit.status==='observed'?'已同步':workbench.audit.status==='fixture'?'示例数据':workbench.audit.status==='not_available'?'暂不可用':'Fixture 回退'}</span>
+          </div>
+          {workbench.audit.items.length>0?<div className="audit-list" role="list">
+            {workbench.audit.items.slice(0,4).map(item=><div className="audit-row" role="listitem" key={item.id}><span className="audit-event-dot" /><div><strong>{auditActionLabel(item.action)}</strong><small>{item.id} · {item.operationKey}</small></div><time dateTime={item.createdAt}>{auditTime(item.createdAt)}</time></div>)}
+          </div>:<div className="audit-empty">当前没有可展示的审计事件。工作台继续使用版本化公开 Fixture。</div>}
+          <small className="audit-footnote">只读摘要仅包含事件 ID、动作、operation key 和时间，不展示内部字段。</small>
+        </section>
 
         <section className="evidence-preview">
           <div className="section-heading"><div><h2>最近证据</h2><p>回答、引用和样本范围保持可追溯。</p></div><button className="text-button" onClick={()=>setDrawerOpen(true)}>打开证据库 <Icon name="external" size={15}/></button></div>
