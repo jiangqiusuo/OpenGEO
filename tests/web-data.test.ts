@@ -29,6 +29,9 @@ describe('Community workbench read model',()=>{
     expect(view.observations).toHaveLength(3);
     expect(view.runs).toHaveLength(2);
     expect(view.sourceNote).toContain('3 条 Observation');
+    expect(view.audit.source).toBe('fixture');
+    expect(view.audit.status).toBe('fixture');
+    expect(view.audit.note).toContain('未配置');
   });
 
   it('falls back explicitly when the configured Mock API is unavailable',async()=>{
@@ -36,6 +39,8 @@ describe('Community workbench read model',()=>{
     expect(view.source).toBe('fixture-fallback');
     expect(view.sourceNote).toContain('已安全回退');
     expect(view.observations).toHaveLength(5);
+    expect(view.audit.source).toBe('fixture-fallback');
+    expect(view.audit.status).toBe('fallback');
   });
 
   it('preserves structured API error context when falling back to the fixture',async()=>{
