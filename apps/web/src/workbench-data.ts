@@ -85,7 +85,7 @@ export const loadWorkbenchView=async(options:LoadWorkbenchOptions={}):Promise<Wo
     const observations=listData(itemPayload).filter(isObservation);
     const jobs=jobPayloads.filter(isJob);
     if(capabilities.length===0||observations.length===0||jobs.length===0)throw new Error('mock_payload_invalid');
-    const view=deriveWorkbenchView({...WORKBENCH_FIXTURE_V1,capabilities,observations,jobs},'mock-api',`读取 ${capabilities.length} 项能力、${jobs.length} 个 Job 和 ${observations.length} 条 Observation`);
+    const view=deriveWorkbenchView({...WORKBENCH_FIXTURE_V1,capabilities,observations,jobs},'mock-api',`读取 ${capabilities.length} 项能力、${jobs.length} 个 Job 和 ${observations.length} 条 Observation`,auditFromFixture(WORKBENCH_FIXTURE_V1,'fixture','活动数据源未配置，展示版本化公开 Fixture 示例'));
     if(options.activityOverviewUrl){
       try{
         const auditResponse=await request(options.activityOverviewUrl);
