@@ -3,3 +3,6 @@ packages:
   - apps/*
 allowBuilds:
   esbuild: true
+overrides:
+  # GHSA-68fv-2mgg-jv7q: keep source-map consumers on the patched release.
+  'source-map-js@>=1.0.0 <1.2.2': 1.2.2
