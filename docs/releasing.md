@@ -1,6 +1,6 @@
 # Community 包发布准备
 
-当前 Community 包只完成发布元数据和本地 dry-run，不会自动上传到 npm。
+当前 Community 包已完成发布元数据、本地 dry-run 和 CLI 登录预检；在维护者最后确认前不会自动上传到 npm。
 
 ## 包边界
 
@@ -20,7 +20,7 @@ pnpm release:check
 
 该命令会先构建根项目和两个包，然后使用 `pnpm pack --dry-run --json` 检查每个包的文件清单、版本、入口和 changelog。它不会创建可发布的长期文件，也不会连接 npm 或上传包。
 
-真正发布前还需要单独确认 npm 个人账号、维护者、双因素认证、包名占用、版本号和发布渠道。发布动作不属于当前 Goal。
+真正发布前还需要单独确认 npm 个人账号、维护者、双因素认证、包名占用、版本号和发布渠道。公开首包是当前 MVP 发布项，属于一次需要维护者最后确认的外部动作。
 
 ## 正式发布前检查清单
 
@@ -41,15 +41,15 @@ pnpm release:preflight
 
 ### 必须由维护者确认
 
-- [ ] npm 账户 `sysiphus` 已启用 2FA，并确认个人 `@sysiphus` scope 的发布权限。
+- [x] npm 账户 `sysiphus` 已启用 2FA，并已通过 Windows Hello 完成 `npm login --auth-type=web`；本机 `npm whoami` 返回 `sysiphus`。
 - [ ] 两个包名没有被占用，包的访问级别和个人账号设置已确认。
 - [ ] 维护者账户启用 2FA；发布策略符合 npm 账户的 `auth-and-writes` 要求。
-- [ ] 发布使用短期、最小权限的 automation token 或受保护的 GitHub Actions Secret，不写入仓库和本地文档。
+- [x] 工作流使用 GitHub OIDC；不把长期 npm 写入 Token 写入仓库、GitHub Secret 或本地文档。
 - [ ] 版本 `0.1.0`、变更日志和 Git tag 已完成最终审核。
-- [ ] 先发布到受控的 `next`/预发布通道或确认直接发布 stable 的范围，再执行正式发布。
+- [ ] 维护者确认直接创建两个公开 `0.1.0` stable 首包的范围，再执行 bootstrap。
 - [ ] 发布后用干净环境安装两个包，运行 CLI help、Mock Quickstart 和 Client import smoke。
 
-建议的正式流程是：维护者确认以上清单 → 创建版本 tag → 在受保护的发布环境执行 `pnpm release:check` → 使用 npm 官方发布命令和 provenance → 记录包版本与回滚方式。当前仓库没有自动发布 workflow，也不会自动创建或读取 npm 凭据。
+建议的正式流程是：维护者确认以上清单 → 在受保护的 `npm-release` Environment 手动选择 `bootstrap` → 确认 registry 出现两个包 → 在 npm 包设置中绑定 Trusted Publisher → 后续仅使用 `stage`。仓库工作流不会自动创建或读取长期 npm 凭据。
 
 ## npm 凭据配置建议
 
