@@ -46,10 +46,10 @@ pnpm release:preflight
 - [ ] 维护者账户启用 2FA；发布策略符合 npm 账户的 `auth-and-writes` 要求。
 - [x] 工作流使用 GitHub OIDC；不把长期 npm 写入 Token 写入仓库、GitHub Secret 或本地文档。
 - [ ] 版本 `0.1.0`、变更日志和 Git tag 已完成最终审核。
-- [ ] 维护者确认直接创建两个公开 `0.1.0` stable 首包的范围，再执行 bootstrap。
+- [ ] 维护者确认先创建两个公开 `0.0.0-stage` 占位版本，再配置 Trusted Publisher。
 - [ ] 发布后用干净环境安装两个包，运行 CLI help、Mock Quickstart 和 Client import smoke。
 
-建议的正式流程是：维护者确认以上清单 → 在受保护的 `npm-release` Environment 手动选择 `bootstrap` → 确认 registry 出现两个包 → 在 npm 包设置中绑定 Trusted Publisher → 后续仅使用 `stage`。仓库工作流不会自动创建或读取长期 npm 凭据。
+建议的正式流程是：维护者确认以上清单 → 在本机使用 npm 11.15+ 的已认证会话对两个包执行一次 `npm stage publish`，创建公开 `0.0.0-stage` 占位版本 → 在 npm 包设置中绑定 Trusted Publisher → 由 GitHub Actions 运行 stage-only OIDC 发布 `0.1.0` → 维护者在 npm 中完成 staged approve。仓库工作流不会自动创建或读取长期 npm 凭据。
 
 ## npm 凭据配置建议
 
@@ -77,10 +77,10 @@ pnpm release:preflight
 
 在 npm 的每个包设置中分别添加 Trusted Publisher：GitHub Actions、用户 `jiangqiusuo`、仓库 `OpenGEO`、工作流文件名 `npm-publish.yml`、环境名 `npm-release`，只允许 `npm stage publish`。工作流成功后，维护者仍需在 npm 中用 2FA 审核 staged 版本，才会公开发布。首次配置前不要手动运行发布工作流。
 
-## 2026-09 更新：首包 bootstrap 与 OIDC staged release
+## 首包占位版本与 OIDC staged release
 
-当前仓库已经包含 `.github/workflows/npm-publish.yml`，但它不会绕过账号安全验证，也不会在包尚未存在时直接执行 `npm stage publish`。
+当前仓库包含 `.github/workflows/npm-publish.yml`，只执行 `npm stage publish`，不会执行 direct `npm publish`，也不会绕过账号安全验证。
 
-首次发布必须由维护者在受保护的 `npm-release` Environment 中手动选择 `bootstrap`，用 OIDC direct publish 创建两个 `0.1.0` 包。确认 registry 已出现包后，再在两个包页面绑定 `jiangqiusuo/OpenGEO`、`npm-publish.yml` 和 `npm-release` 的 Trusted Publisher；后续只选择默认的 `stage` 模式。`npm stage publish` 只能用于已经存在的包，staged 版本的最终 approve 仍需维护者完成 npm 2FA。
+首次建立包时，维护者使用 npm 11.15+ 的已认证本机会话，对每个包执行一次 `npm stage publish`；对于尚不存在的包，npm 会创建公开的 `0.0.0-stage` 占位版本。确认 registry 已出现包后，再在两个包页面绑定 `jiangqiusuo/OpenGEO`、`npm-publish.yml` 和 `npm-release` 的 Trusted Publisher；后续由 GitHub Actions 只运行 `npm stage publish`。正式版本的 staged 结果仍需维护者完成 npm 2FA 审核。
 
 工作流只接受 `main` 或 `v*` tag，并校验 tag 与根目录版本一致。发布前会运行 lint、typecheck、test、contract test、examples check、release check 和高危依赖审计。仓库不保存长期 npm 写入 token。
