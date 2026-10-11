@@ -46,10 +46,10 @@ pnpm release:preflight
 - [ ] 维护者账户启用 2FA；发布策略符合 npm 账户的 `auth-and-writes` 要求。
 - [x] 工作流使用 GitHub OIDC；不把长期 npm 写入 Token 写入仓库、GitHub Secret 或本地文档。
 - [ ] 版本 `0.1.0`、变更日志和 Git tag 已完成最终审核。
-- [x] 两个包已通过 npm 11.15.0 `npm stage publish` 进入 staged queue；实际使用包内版本 `0.1.0`，未生成 `0.0.0-stage`。
+- [x] 两个公开 `0.0.0-stage` 占位包已通过 npm 11.15.0 `npm stage publish` 创建；每个包的操作版本 `0.1.0` 同时进入 staged queue，尚未 staged approve。
 - [ ] 发布后用干净环境安装两个包，运行 CLI help、Mock Quickstart 和 Client import smoke。
 
-当前正式流程状态：两个包已进入 staged queue，但尚未正式上线。下一步在 npm 两个包的 Settings 中分别绑定 Trusted Publisher（`jiangqiusuo/OpenGEO`、`npm-publish.yml`、`npm-release`），再单独确认 staged approve/公开发布；后续正式版本继续由 GitHub Actions 运行 stage-only OIDC。仓库工作流不会读取长期 npm 凭据。
+当前正式流程状态：两个公开 `0.0.0-stage` 占位包已经存在，操作版本 `0.1.0` 已进入 staged queue但尚未正式上线。下一步在 npm 两个包的 Settings 中分别绑定 Trusted Publisher（`jiangqiusuo/OpenGEO`、`npm-publish.yml`、`npm-release`），再单独确认 staged approve/公开发布；后续正式版本继续由 GitHub Actions 运行 stage-only OIDC。仓库工作流不会读取长期 npm 凭据。
 
 ## npm 凭据配置建议
 
@@ -81,6 +81,6 @@ pnpm release:preflight
 
 当前仓库包含 `.github/workflows/npm-publish.yml`，只执行 `npm stage publish`，不会执行 direct `npm publish`，也不会绕过账号安全验证。
 
-首次建立包的实际结果：维护者使用 npm 11.15+ 的已认证本机会话对每个包执行 `npm stage publish`，npm 按包内版本创建了公开 staged 条目 `0.1.0`，没有生成 `0.0.0-stage`。普通 registry 查询在 staged approve 前仍返回 404。
+首次建立包的实际结果：维护者使用 npm 11.15+ 的已认证本机会话对每个包执行 `npm stage publish`；npm 先创建公开的 `0.0.0-stage` 占位版本，同时把包内 `0.1.0` 送入 staged queue。公开占位包可在 registry 中读取，操作版本仍需维护者完成 Trusted Publisher 配置和 staged approve。
 
 工作流只接受 `main` 或 `v*` tag，并校验 tag 与根目录版本一致。发布前会运行 lint、typecheck、test、contract test、examples check、release check 和高危依赖审计。仓库不保存长期 npm 写入 token。
