@@ -71,6 +71,7 @@ jobs:
           CLIENT_TGZ=$(find "$RUNNER_TEMP/opengeo-packages/client" -maxdepth 1 -name '*.tgz' -print -quit)
           mkdir -p "$RUNNER_TEMP/opengeo-packages/client/extracted"
           tar -xzf "$CLIENT_TGZ" -C "$RUNNER_TEMP/opengeo-packages/client/extracted"
+          pnpm tsx scripts/verify-packaged-manifests.ts "$RUNNER_TEMP/opengeo-packages/client/extracted/package/package.json"
           npm stage publish "$RUNNER_TEMP/opengeo-packages/client/extracted/package" --access public
       - name: Stage CLI package with npm OIDC
         shell: bash
@@ -79,4 +80,5 @@ jobs:
           CLI_TGZ=$(find "$RUNNER_TEMP/opengeo-packages/cli" -maxdepth 1 -name '*.tgz' -print -quit)
           mkdir -p "$RUNNER_TEMP/opengeo-packages/cli/extracted"
           tar -xzf "$CLI_TGZ" -C "$RUNNER_TEMP/opengeo-packages/cli/extracted"
+          pnpm tsx scripts/verify-packaged-manifests.ts "$RUNNER_TEMP/opengeo-packages/cli/extracted/package/package.json"
           npm stage publish "$RUNNER_TEMP/opengeo-packages/cli/extracted/package" --access public
