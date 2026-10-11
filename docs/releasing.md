@@ -6,8 +6,8 @@
 
 | 包 | npm 名称 | 当前版本 | 入口 |
 |---|---|---|---|
-| TypeScript Client | `@sysiphus/client` | `0.1.0` | `dist/index.js`、`dist/index.d.ts` |
-| CLI | `@sysiphus/cli` | `0.1.0` | `opengeo` → `dist/bin.js` |
+| TypeScript Client | `@sysiphus/client` | `0.1.1` | `dist/index.js`、`dist/index.d.ts` |
+| CLI | `@sysiphus/cli` | `0.1.1` | `opengeo` → `dist/bin.js` |
 
 根目录的 `CHANGELOG.md` 是版本记录真源；包的版本必须与根目录版本一致。包内只包含构建产物、包 README 和自动包含的许可证文件，不包含源码目录、测试、环境文件或本地依赖。
 
@@ -49,7 +49,7 @@ registry 状态只能证明版本可见，不能替代 Trusted Publisher 的 OID
 - [x] 两个包的 `0.1.0` staged 条目已完成 staged approve 并公开发布。
 - [ ] 发布后用干净环境安装两个包，运行 CLI help、Mock Quickstart 和 Client import smoke。
 
-当前正式流程状态：两个包的 `0.1.0` 已公开发布；每个包的 Settings 都已绑定 Trusted Publisher（`jiangqiusuo/OpenGEO`、`npm-publish.yml`、`npm-release`、stage-only）。npm 页面显示 `Pending validation`，需后续版本由 GitHub Actions 成功运行一次 OIDC stage publish 后完成首次验证。仓库工作流不会读取长期 npm 凭据。
+当前正式流程状态：两个包的 `0.1.0` 已公开发布；本次 `0.1.1` 修复版本用于修正 CLI 的独立安装依赖。每个包的 Settings 都已绑定 Trusted Publisher（`jiangqiusuo/OpenGEO`、`npm-publish.yml`、`npm-release`、stage-only）。npm 页面显示 `Pending validation`，本次 `0.1.1` 由 GitHub Actions 成功运行一次 OIDC stage publish 后可完成首次验证。仓库工作流不会读取长期 npm 凭据。
 
 ## npm 凭据配置建议
 
