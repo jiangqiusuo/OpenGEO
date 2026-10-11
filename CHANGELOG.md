@@ -23,4 +23,4 @@
 
 ### Package release status
 
-`@sysiphus/client` 和 `@sysiphus/cli` 已完成本地 package metadata 与 `npm pack --dry-run` 验证；当前不自动发布到 npm。
+`@sysiphus/client@0.1.0` 和 `@sysiphus/cli@0.1.0` 已通过 staged approve 并公开发布。后续版本使用 GitHub Actions npm Trusted Publishing，以 stage-only OIDC 方式提交 staged release。
