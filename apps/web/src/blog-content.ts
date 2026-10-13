@@ -14,6 +14,31 @@ export type BlogPost = {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: 'partial-results-and-retries',
+    title: '任务还没完成时，怎样使用已有结果',
+    titleEn: 'Using available results before a Job is complete',
+    excerpt: '区分请求成功、任务完成和结果可用，再决定等待、定稿或取消。避免重复创建，也不把失败当成零提及。',
+    excerptEn: 'Separate HTTP success, Job completion and result availability before waiting, finalizing or cancelling.',
+    publishedAt: '2026-10-13', updatedAt: '2026-10-13', category: '工程', status: 'published', reviewedBy: 'OpenGEO maintainers',
+    body: [
+      '一批监测中的回答可能不会同时完成。已经读到结果时，可以先复查这些回答；还有任务在运行时，不要把当前数据当成整个观察窗口。OpenGEO 用 Job 状态和 result_state 分别表达执行进度和结果可用程度。',
+      { kind: 'heading', text: '202 只表示请求已被接受' },
+      '创建后保存返回的 Job ID，之后查询同一个任务和它的 items。一次 HTTP 请求成功不等于监测完成；一次查询超时也不等于 Job 失败。查询应有退避间隔、请求超时和总等待上限，不能因为等待太久就创建另一批。',
+      'Prefer: wait=N 只表达本次请求的等待偏好。CLI 的 --wait 不会自动循环轮询；需要继续查询时仍使用返回的 ID。',
+      { kind: 'heading', text: '部分结果有三种选择' },
+      'partial 表示已有部分可用结果。先读取 items，再决定是否继续等剩余工作。如果当前覆盖范围已经足够，可以请求 finalize-partial，并用 cancel_remaining=true 表达停止剩余工作；最终根据返回状态确认定稿。',
+      '如果只想停止剩余执行，使用 cancel。取消不等于删除已经完成的回答，也不等于完整成功。定稿后的 finalized_partial 需要保留“部分结果”标识；取消后的状态和已保存结果也要重新读取确认。收到状态冲突时，先查询原 Job，不重复提交。',
+      { kind: 'heading', text: '显示结果时把范围一起交代' },
+      '展示 Job 状态、已完成与总样本数、实际加载的观察数量，再展示指标。只加载一页结果时，页面条数不是任务总进度；有效样本比例也不是完成率。检索来源与回答明确引用应分别表达，避免给出超出证据的判断。',
+      { kind: 'heading', text: '失败不能换成零提及' },
+      'HTTP 错误、Job 失败和结果字段不可用需要分别保留。没有请求、能力不支持、暂不可用、解析失败和公开内容被隐藏，都不能统一转换成“品牌未被提及”。排查时保留 Job ID、安全的请求 ID 与错误码，不把凭据或完整私有响应放入反馈。',
+      '网络中断后，如果需要重放创建请求，保持请求内容和原 Idempotency-Key 相同。限流时遵守 Retry-After；请求有误或没有权限时先修正，不自动换平台或降低能力。提交结果未知时先核对原任务，再决定下一步。',
+      { kind: 'heading', text: '先本地练习，再接真实环境' },
+      'Mock 的动态 job_mock_* 只按确定规则推进到成功，不模拟真实 partial。job_demo_* 是固定 Fixture，其写操作只是示例响应，不代表持久化状态机。工作台仍为只读模拟预览；本文解释契约和客户端决策，不表示这些写操作已在页面开放。',
+      '开发者文档中的“部分结果、失败与重试”指南提供状态与动作对照表，接口字段继续以 OpenAPI 为准。先完成本地 CLI 教程，再在自己的受控测试环境里验证取消、定稿及结果关联。'
+    ]
+  },
+  {
     slug: 'cli-local-quickstart',
     title: '用已发布的 CLI 创建、查询和取消本地任务',
     titleEn: 'Create, inspect and cancel local Jobs with the published CLI',

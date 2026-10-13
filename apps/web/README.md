@@ -15,6 +15,8 @@
 
 在线预览：<https://app.open-geo.net/>（备用地址：<https://opengeo-workbench.pages.dev/>）
 
+工作台与公开介绍、博客、隐私页共用 `design-tokens.css` 的颜色、CJK 字体、代码字体、焦点和圆角。公共静态页面引用带内容指纹的同一份样式，工作台由 Vite 打包；阅读页面保留独立的正文尺寸与行宽。接口的部分结果处理见 [操作指南](../../docs/job-results.md)。
+
 公开博客：<https://app.open-geo.net/blog/>；RSS：<https://app.open-geo.net/rss.xml>。博客文章只使用公开方法和脱敏示例，不包含任务、客户或供应商数据。
 
 公开页面的测量默认关闭。部署环境可以通过运行时配置接入 GA4 或 Clarity，但页面只在访客明确同意后发出脱敏事件；分析 ID 不写入 Community 源码。
