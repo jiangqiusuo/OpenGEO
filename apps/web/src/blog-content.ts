@@ -7,7 +7,8 @@ export type BlogPost = {
   publishedAt: string;
   updatedAt: string;
   category: string;
-  readingMinutes: number;
+  status: 'draft' | 'published';
+  reviewedBy?: string;
   body: string[];
 };
 
@@ -21,7 +22,8 @@ export const BLOG_POSTS: BlogPost[] = [
     publishedAt: '2026-10-13',
     updatedAt: '2026-10-13',
     category: '方法',
-    readingMinutes: 4,
+    status: 'published',
+    reviewedBy: 'OpenGEO maintainers',
     body: [
       'GEO 的难点不在于得到一条看起来不错的回答，而在于知道这条回答是否可以复查。相同的问题在不同时间、平台和上下文中可能产生不同结果。',
       'OpenGEO 把每次监测建模为 Job，并保存问题、回答、引用和样本范围。这样一次“被提及”才有机会变成可以对比的观察，而不是一张孤立的截图。',
@@ -30,5 +32,3 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
   },
 ];
-
-export const findPost = (slug: string) => BLOG_POSTS.find((post) => post.slug === slug);

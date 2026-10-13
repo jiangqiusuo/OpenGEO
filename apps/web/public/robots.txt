@@ -2,4 +2,3 @@ User-agent: *
 Allow: /
 
 Sitemap: https://app.open-geo.net/sitemap.xml
-Sitemap: https://app.open-geo.net/rss.xml
