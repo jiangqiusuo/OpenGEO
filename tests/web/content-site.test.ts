@@ -7,6 +7,15 @@ import { MOCK_TO_JOB_SOURCE } from '../../apps/web/example-source';
 const post = BLOG_POSTS[0];
 const today = '2026-10-13';
 describe('public content publishing boundaries', () => {
+  it('emits an optional plain ownership proof without adding it to sitemap or analytics', () => {
+    const key = '0123456789abcdef0123456789abcdef';
+    const assets = generateContentSite([], today, { indexNowKey: key });
+    expect(assets.get('indexnow-verification.txt')).toBe(key);
+    expect(assets.get('home-sitemap.xml')).not.toContain('indexnow');
+    expect(assets.get('homepage/index.html')).not.toContain(key);
+    expect(generateContentSite([], today).has('indexnow-verification.txt')).toBe(false);
+    expect(() => generateContentSite([], today, { indexNowKey: '../unsafe' })).toThrow(/ownership key/);
+  });
   it('keeps the root homepage crawlable, linked and distinct from the app measurement surface', () => {
     const assets = generateContentSite(BLOG_POSTS, today, { ga4Id: 'G-TEST123456', clarityId: 'test123456', clarityUpload: 'https://test.clarity.ms/collect' });
     const html = assets.get('homepage/index.html')!;

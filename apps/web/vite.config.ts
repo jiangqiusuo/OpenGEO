@@ -5,6 +5,7 @@ import { generatePortalAssets } from '../../scripts/portal-assets.mjs';
 
 function contentSite(enableDeploymentConfig: boolean): Plugin {
   const assets = () => generateContentSite(BLOG_POSTS, new Date().toISOString().slice(0, 10), enableDeploymentConfig ? {
+    ...(process.env.OPENGEO_PUBLIC_INDEXNOW_KEY ? { indexNowKey: process.env.OPENGEO_PUBLIC_INDEXNOW_KEY } : {}),
     ...(process.env.OPENGEO_PUBLIC_GA4_ID ? { ga4Id: process.env.OPENGEO_PUBLIC_GA4_ID } : {}),
     ...(process.env.OPENGEO_PUBLIC_CLARITY_ID ? { clarityId: process.env.OPENGEO_PUBLIC_CLARITY_ID, clarityUpload: process.env.OPENGEO_PUBLIC_CLARITY_UPLOAD } : {})
   } : {});
@@ -23,7 +24,7 @@ function contentSite(enableDeploymentConfig: boolean): Plugin {
         const portal = path.startsWith('/docs/portal/') || path === '/openapi/openapi.json';
         const html = (portal ? generatePortalAssets() : assets()).get(key);
         if (html !== undefined) {
-          response.setHeader('Content-Type', path.endsWith('.json') ? 'application/json; charset=utf-8' : path.endsWith('.svg') ? 'image/svg+xml' : path.endsWith('.xml') ? 'application/xml; charset=utf-8' : /\.(?:mjs|js)$/.test(path) ? 'text/javascript; charset=utf-8' : path.endsWith('.css') ? 'text/css; charset=utf-8' : 'text/html; charset=utf-8');
+          response.setHeader('Content-Type', path.endsWith('.txt') ? 'text/plain; charset=utf-8' : path.endsWith('.json') ? 'application/json; charset=utf-8' : path.endsWith('.svg') ? 'image/svg+xml' : path.endsWith('.xml') ? 'application/xml; charset=utf-8' : /\.(?:mjs|js)$/.test(path) ? 'text/javascript; charset=utf-8' : path.endsWith('.css') ? 'text/css; charset=utf-8' : 'text/html; charset=utf-8');
           response.end(html);
         } else if (path.startsWith('/blog/') || path.startsWith('/privacy/') || path.startsWith('/about/') || path.startsWith('/en/')) {
           response.statusCode = 404;
