@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
 import { generateContentSite, publishedPosts, SITE } from '../../apps/web/content-site';
 import { BLOG_POSTS } from '../../apps/web/src/blog-content';
 import { MOCK_TO_JOB_SOURCE } from '../../apps/web/example-source';
@@ -19,6 +20,11 @@ describe('public content publishing boundaries', () => {
     expect(schema['@graph'].map((node: { '@type': string }) => node['@type'])).toEqual(['Organization', 'WebSite', 'WebPage', 'SoftwareSourceCode']);
     expect(JSON.stringify(schema)).not.toMatch(/aggregateRating|reviewCount|offers/);
     expect(assets.get('home-sitemap.xml')).toContain('<loc>https://open-geo.net/</loc>');
+    expect(html).not.toContain('name="robots" content="noindex');
+    expect(assets.get('sitemap.xml')).not.toContain(`<loc>${SITE}/</loc>`);
+    const workbench = readFileSync(new URL('../../apps/web/index.html', import.meta.url), 'utf8');
+    expect(workbench).toContain('name="robots" content="noindex,follow"');
+    expect(workbench).not.toContain('"offers"');
   });
   it('preserves version-pinned CLI code for static readers through the CDN email exclusion', () => {
     const assets = generateContentSite(BLOG_POSTS, today);
