@@ -6,6 +6,21 @@ import { MOCK_TO_JOB_SOURCE } from '../../apps/web/example-source';
 const post = BLOG_POSTS[0];
 const today = '2026-10-13';
 describe('public content publishing boundaries', () => {
+  it('keeps replay separately configured, masked and out of the 404 deployment', () => {
+    const disabled = generateContentSite(BLOG_POSTS, today);
+    expect(disabled.get('privacy/index.html')).toContain('data-replay-consent="granted" disabled');
+    expect(disabled.get('about/index.html')).not.toContain('opengeo-clarity-id');
+    const enabled = generateContentSite(BLOG_POSTS, today, { clarityId: 'test123456', clarityUpload: 'https://test.clarity.ms/collect' });
+    const article = enabled.get('blog/mock-to-job-quickstart/index.html')!;
+    expect(article).toContain('data-clarity-mask="true"');
+    expect(article).toContain('name="referrer" content="no-referrer"');
+    expect(article).toContain('name="opengeo-clarity-id" content="test123456"');
+    expect(enabled.get('404.html')).not.toContain('opengeo-clarity-id');
+    expect(enabled.get('privacy/index.html')).toContain('公开页录屏选择');
+    expect(() => generateContentSite([], today, { clarityId: 'test123456' })).toThrow(/together/);
+    expect(() => generateContentSite([], today, { clarityId: '<script>', clarityUpload: 'https://test.clarity.ms/collect' })).toThrow(/project ID/);
+    expect(() => generateContentSite([], today, { clarityId: 'test123456', clarityUpload: 'https://private.example/collect' })).toThrow(/upload URL/);
+  });
   it('references emitted content-versioned styles and scripts in every static page', () => {
     const assets = generateContentSite(BLOG_POSTS, today);
     for (const [name, html] of assets) {

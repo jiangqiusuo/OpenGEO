@@ -3,7 +3,10 @@ import { BLOG_POSTS } from './src/blog-content';
 import { generateContentSite } from './content-site';
 
 function contentSite(enableDeploymentConfig: boolean): Plugin {
-  const assets = () => generateContentSite(BLOG_POSTS, new Date().toISOString().slice(0, 10), enableDeploymentConfig && process.env.OPENGEO_PUBLIC_GA4_ID ? { ga4Id: process.env.OPENGEO_PUBLIC_GA4_ID } : {});
+  const assets = () => generateContentSite(BLOG_POSTS, new Date().toISOString().slice(0, 10), enableDeploymentConfig ? {
+    ...(process.env.OPENGEO_PUBLIC_GA4_ID ? { ga4Id: process.env.OPENGEO_PUBLIC_GA4_ID } : {}),
+    ...(process.env.OPENGEO_PUBLIC_CLARITY_ID ? { clarityId: process.env.OPENGEO_PUBLIC_CLARITY_ID, clarityUpload: process.env.OPENGEO_PUBLIC_CLARITY_UPLOAD } : {})
+  } : {});
   return {
     name: 'opengeo-static-content',
     configureServer(server) {
