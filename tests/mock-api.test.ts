@@ -14,6 +14,25 @@ afterEach(async () => { await Promise.all(servers.splice(0).map((s) => new Promi
 const input = { capability_id: 'observe.ai_answer', prompts: ['虚构品牌的演示问题'], interaction_mode: 'search', turnaround_class: 'best_effort' };
 const create = (origin: string, key = 'test-one', body = JSON.stringify(input)) => fetch(`${origin}/v1/monitor-runs`, { method: 'POST', headers: { 'content-type': 'application/json', 'idempotency-key': key }, body });
 describe('local monitoring Mock and runnable tutorial', () => {
+  it('serves the health probe advertised by the public API reference', async () => {
+    const origin = await start();
+    const response = await fetch(`${origin}/health`);
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ status: 'ok', contract_version: '0.1.0' });
+  });
+  it('associates every named fixture observation with the requested Job and keeps IDs stable', async () => {
+    const origin = await start();
+    const load = async (id: string) => (await (await fetch(`${origin}/v1/jobs/${id}/items`)).json()).data;
+    const succeeded = await load('job_demo_succeeded');
+    const partial = await load('job_demo_partial');
+    expect(succeeded.length).toBeGreaterThan(0);
+    expect(partial.length).toBeGreaterThan(0);
+    expect(succeeded.every((item: { job_id: string }) => item.job_id === 'job_demo_succeeded')).toBe(true);
+    expect(partial.every((item: { job_id: string }) => item.job_id === 'job_demo_partial')).toBe(true);
+    expect(new Set([...succeeded, ...partial].map((item: { id: string }) => item.id)).size).toBe(succeeded.length + partial.length);
+    expect(await load('job_demo_succeeded')).toEqual(succeeded);
+    expect(await load('job_demo_queued')).toEqual([]);
+  });
   it('uses one Job ID from queued to running to complete and returns matching observations', async () => {
     const origin = await start(); const response = await create(origin); const queued = await response.json();
     expect(response.status).toBe(202); expect(response.headers.get('location')).toBe(`/v1/jobs/${queued.id}`);

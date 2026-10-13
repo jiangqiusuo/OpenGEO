@@ -9,6 +9,8 @@ pnpm install
 pnpm mock
 ```
 
+Mock 的 `GET http://127.0.0.1:8787/health` 返回运行状态和公共契约版本。固定状态示例的结果包含对应的 `job_id`，重复读取保持相同的结果 ID；这不代表真实监测或持久化存储。
+
 另开一个终端执行 CLI：
 
 ```bash

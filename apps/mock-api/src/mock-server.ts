@@ -1,5 +1,5 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
-import { CAPABILITIES, jobFixtures, observationFixtures, type Job, type Observation } from '@sysiphus/contracts';
+import { CAPABILITIES, PUBLIC_CONTRACT_VERSION, jobFixtures, observationFixtures, type Job, type Observation } from '@sysiphus/contracts';
 
 const cors = { 'access-control-allow-origin': '*', 'access-control-allow-methods': 'GET,POST,OPTIONS', 'access-control-allow-headers': 'content-type,idempotency-key,prefer' };
 const json = (res: ServerResponse, status: number, body: unknown) => { res.writeHead(status, { 'content-type': 'application/json', ...cors }); res.end(JSON.stringify(body)); };
@@ -47,6 +47,7 @@ export function createMockServer(maxJobs = 100) {
   async function handle(req: IncomingMessage, res: ServerResponse) {
     const url = new URL(req.url ?? '/', 'http://127.0.0.1');
     if (req.method === 'OPTIONS') { res.writeHead(204, cors); return res.end(); }
+    if (req.method === 'GET' && url.pathname === '/health') return json(res, 200, { status: 'ok', contract_version: PUBLIC_CONTRACT_VERSION });
     if (req.method === 'GET' && url.pathname === '/v1/capabilities') return json(res, 200, { object: 'list', data: CAPABILITIES });
     if (req.method === 'POST' && url.pathname === '/v1/monitor-runs') return create(req, res);
     if (req.method === 'POST' && ['/v1/generation-jobs', '/v1/publications', '/v1/verification-runs'].includes(url.pathname)) return fail(res, 501, 'capability_unavailable');
@@ -81,7 +82,7 @@ export function createMockServer(maxJobs = 100) {
     const fixture = id.startsWith('job_demo_') && Object.hasOwn(jobFixtures, fixtureKey) ? jobFixtures[fixtureKey] : undefined;
     if (!fixture) return fail(res, 404, 'not_found');
     if (req.method === 'GET' && !match[2]) return json(res, 200, fixture);
-    if (req.method === 'GET' && match[2] === 'items') return json(res, 200, { object: 'list', data: fixture.result_state === 'none' ? [] : observationFixtures });
+    if (req.method === 'GET' && match[2] === 'items') return json(res, 200, { object: 'list', data: fixture.result_state === 'none' ? [] : observationFixtures.map((item) => ({ ...item, id: fixtureKey === 'succeeded' ? item.id : `${item.id}_${fixtureKey}`, job_id: id })) });
     if (req.method === 'POST' && match[2] === 'finalize-partial') return json(res, 200, jobFixtures.finalized_partial);
     if (req.method === 'POST' && match[2] === 'cancel') return json(res, 200, { ...fixture, status: 'cancelled', result_state: 'none' });
     return fail(res, 404, 'not_found');
