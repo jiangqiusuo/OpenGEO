@@ -30,6 +30,8 @@ queued → failed
 
 `partial` 表示部分结果已经可以读取，不等于整个 Job 成功。客户端可以先读取已完成的 items，再根据业务决定继续等待、取消剩余任务或调用 `finalize-partial`。
 
+具体动作、展示范围及错误分层见 [部分结果、失败与重试指南](./job-results.md)。
+
 ## Prefer: wait
 
 `Prefer: wait=N` 的单位是秒，只改变本次 HTTP 请求最多等待多久，不改变 Job 的生命周期，也不改变执行能力。服务端在窗口内完成时返回同一个 Job；窗口结束时仍应使用返回的 Job ID 继续查询。

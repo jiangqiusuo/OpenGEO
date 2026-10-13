@@ -23,6 +23,8 @@ describe('Developer Portal entrypoint', () => {
     expect(html).toContain('pnpm mock');
     expect(html).toContain('idempotency-key: quickstart-001');
     expect(html).toContain('不会连接真实供应商');
+    expect(html).toContain('/docs/job-results.md');
+    expect(html).not.toContain('/v1/jobs/job_demo_queued');
     expect(html).not.toMatch(/api[_-]?key|token|secret/i);
   });
 });

@@ -1,0 +1,21 @@
+/* Shared by the workbench and the generated public pages. */
+:root {
+  color-scheme: light;
+  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-code: ui-monospace, SFMono-Regular, Consolas, monospace;
+  --ink: #202329;
+  --muted: #606974;
+  --line: #e4e7ec;
+  --blue: #1665d8;
+  --green: #248a3d;
+  --amber: #8a5800;
+  --canvas: #f6f7f9;
+  --surface: #ffffff;
+  --hover: #eef3fc;
+  --focus: #7fb4ff;
+  --radius-control: 8px;
+  --radius-panel: 12px;
+  font-family: var(--font-ui);
+  font-synthesis: none;
+  color: var(--ink);
+}

@@ -83,6 +83,7 @@ console.log(job);
 
 ## 5. 下一步
 
+- 按 [部分结果、失败与重试指南](./job-results.md) 处理未完成和不可用结果。
 - 阅读 [公共契约](./contracts.md)。
 - 查看 [OpenAPI 3.1 定义](../openapi/openapi.json)。
 - 运行 `pnpm test:contracts` 验证 Schema、Fixture 和 OpenAPI 引用。

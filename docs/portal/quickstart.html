@@ -49,8 +49,10 @@ pnpm mock</pre></div></div>
   -H 'content-type: application/json' \
   -H 'idempotency-key: quickstart-001' \
   -d '{"capability_id":"observe.ai_answer","prompts":["mock quickstart"],"turnaround_class":"best_effort","interaction_mode":"search"}'</pre></div></div>
-        <div class="step"><span class="number">3</span><div><strong>查询结果</strong><p>使用响应里的 Job ID 查询状态和 items。客户端应根据 <code>status</code> 与 <code>result_state</code> 判断生命周期。</p><pre>curl http://localhost:8787/v1/jobs/job_demo_queued
-curl http://localhost:8787/v1/jobs/job_demo_queued/items</pre></div></div>
+        <div class="step"><span class="number">3</span><div><strong>查询同一个任务</strong><p>把创建响应中的实际 id 填入 JOB_ID；下面的 job_mock_1 只是示意。第一次查询为 running，第二次为 succeeded，再读取 items。这是本地模拟规则，真实客户端必须根据 <code>status</code> 与 <code>result_state</code> 判断生命周期。</p><pre>JOB_ID='job_mock_1'
+curl "http://localhost:8787/v1/jobs/$JOB_ID"
+curl "http://localhost:8787/v1/jobs/$JOB_ID"
+curl "http://localhost:8787/v1/jobs/$JOB_ID/items"</pre><p>job_demo_* 是固定 Fixture，不会随查询推进。遇到部分结果、失败或超时，阅读 <a href="https://github.com/jiangqiusuo/OpenGEO/blob/main/docs/job-results.md">结果处理指南</a>。Windows 用户可使用 <a href="https://app.open-geo.net/blog/cli-local-quickstart/">PowerShell CLI 教程</a>。</p></div></div>
       </section>
     </main>
   </body>

@@ -39,6 +39,7 @@ describe('public content publishing boundaries', () => {
       if (!name.endsWith('.html')) continue;
       const resources = [...html.matchAll(/(?:src|href)="\/([^"\s]+\.(?:css|js))"/g)].map((m) => m[1]);
       expect(resources.length).toBeGreaterThanOrEqual(2);
+      expect(resources.filter((resource) => /^design-tokens\.[a-f0-9]{12}\.css$/.test(resource))).toHaveLength(1);
       for (const resource of resources) {
         expect(resource).toMatch(/\.[a-f0-9]{12}\.(?:css|js)$/);
         expect(assets.get(resource)?.length).toBeGreaterThan(0);

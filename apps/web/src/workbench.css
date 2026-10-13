@@ -1,14 +1,5 @@
 :root {
-  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
-  color: #202329;
-  background: #f6f7f9;
-  font-synthesis: none;
-  --ink: #202329;
-  --muted: #606974;
-  --line: #e4e7ec;
-  --blue: #1665d8;
-  --green: #248a3d;
-  --amber: #8a5800;
+  background: var(--canvas);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -33,7 +24,7 @@ a:hover {
   text-decoration: underline;
 }
 button:focus-visible,a:focus-visible,summary:focus-visible {
-  outline: 3px solid #7fb4ff;
+  outline: 3px solid var(--focus);
   outline-offset: 3px;
 }
 .drawer-open {
@@ -46,7 +37,7 @@ section[id] {
   scroll-margin-top: 80px;
 }
 button:active {
-  background-color: #eef3fc;
+  background-color: var(--hover);
 }
 .sidebar {
   position: fixed;
@@ -56,7 +47,7 @@ button:active {
   flex-direction: column;
   padding: 24px 16px;
   border-right: 1px solid var(--line);
-  background: #fff;
+  background: var(--surface);
   overflow-y: auto;
 }
 .brand {
@@ -94,7 +85,7 @@ button:active {
   height: 32px;
   background: var(--blue);
   color: white;
-  border-radius: 8px;
+  border-radius: var(--radius-control);
 }
 .project-switch>span:last-child {
   min-width: 0;
@@ -120,7 +111,7 @@ button:active {
   display: flex;
   align-items: center;
   gap: 10px;
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   color: var(--ink);
   background: transparent;
   text-align: left;
@@ -184,7 +175,7 @@ main {
   z-index: 10;
   height: 60px;
   padding: 0 28px;
-  background: #fff;
+  background: var(--surface);
   border-bottom: 1px solid var(--line);
   display: flex;
   justify-content: space-between;
@@ -223,7 +214,7 @@ main {
   height: 40px;
   flex-shrink: 0;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   background: white;
   color: var(--ink);
 }
@@ -298,7 +289,7 @@ main {
   justify-content: center;
   gap: 8px;
   white-space: nowrap;
-  border-radius: 8px;
+  border-radius: var(--radius-control);
 }
 .primary {
   background: var(--blue);
@@ -343,7 +334,7 @@ main {
   grid-template-columns: repeat(4,minmax(0,1fr));
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--radius-panel);
   background: white;
 }
 .metric-card {
@@ -389,7 +380,7 @@ main {
 .runs-card {
   padding: 20px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--radius-panel);
   background: white;
   margin-bottom: 28px;
 }
@@ -437,7 +428,7 @@ main {
   padding: 12px;
   border: 1px solid #eadbb8;
   background: #fff8ea;
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   font-size: 13px;
 }
 .partial-callout button {
@@ -455,7 +446,7 @@ main {
 }
 .evidence-table {
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--radius-panel);
   overflow: hidden;
   background: white;
 }
@@ -707,7 +698,7 @@ main {
   width: 40px;
   height: 40px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   background: white;
 }
 .drawer-head button span {
@@ -844,7 +835,7 @@ main {
     background: #f2f6fd;
   }
   .quiet:hover {
-    background: #f6f7f9;
+    background: var(--canvas);
   }
 }
 @media(max-width:1100px) {
