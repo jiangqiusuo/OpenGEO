@@ -8,7 +8,10 @@
     try { await window.navigator.clipboard.writeText(text); button.textContent = '已复制'; }
     catch { button.textContent = '无法复制，请手动选择'; }
   }));
-  const key = 'opengeo:public-consent:v2';
+  // Homepage opt-in is separate from previous app/blog consent.
+  const homepageScope = window.location.hostname === 'open-geo.net' && ['/', '/en/', '/privacy/'].includes(window.location.pathname);
+  const key = homepageScope ? 'opengeo:homepage-consent:v1' : 'opengeo:public-consent:v2';
+  const english = document.documentElement?.lang === 'en';
   const id = document.querySelector('meta[name="opengeo-ga4-id"]')?.getAttribute('content') || '';
   const ga4Id = /^G-[A-Z0-9]{6,15}$/.test(id) ? id : '';
   const pageKind = document.body.dataset.publicPage;
@@ -21,10 +24,12 @@
   const publicPath = /^\/(?:about\/|blog\/(?:[a-z0-9-]+\/)?)$/;
   const events = new Set(['landing_view', 'blog_index_view', 'blog_article_view', 'docs_click', 'github_click', 'workbench_click']);
   const privacySignal = () => window.navigator?.globalPrivacyControl === true || window.navigator?.doNotTrack === '1';
-  const publicPage = () => ['landing', 'blog_index', 'blog_article'].includes(pageKind) && publicPath.test(window.location.pathname);
+  const publicPage = () => ['landing', 'blog_index', 'blog_article'].includes(pageKind) && (
+    publicPath.test(window.location.pathname) || (pageKind === 'landing' && ['/', '/en/'].includes(window.location.pathname) && homepageScope)
+  );
   const safeContext = () => publicPage() && !window.location.search && !window.location.hash && !privacySignal() && storageAvailable;
-  const collectorContext = () => safeContext() && ['app.open-geo.net', 'open-geo.net'].includes(window.location.hostname);
-  const pageParams = () => ({ page_location: `https://app.open-geo.net${window.location.pathname}`, page_referrer: '', page_title: document.title, ignore_referrer: true });
+  const collectorContext = () => safeContext() && (homepageScope || window.location.hostname === 'app.open-geo.net');
+  const pageParams = () => ({ page_location: `https://${homepageScope ? 'open-geo.net' : 'app.open-geo.net'}${window.location.pathname}`, page_referrer: '', page_title: document.title, ignore_referrer: true });
   const read = () => {
     consent = 'unknown'; storageAvailable = true;
     try { const stored = window.localStorage.getItem(key); if (stored === 'granted' || stored === 'denied') consent = stored; }
@@ -51,10 +56,12 @@
     }
   };
   const render = () => {
-    const message = !storageAvailable ? '浏览器禁止保存选择，测量保持关闭。' : privacySignal() ? '浏览器已要求不跟踪，测量保持关闭。' : consent === 'granted' ? '已允许公开页面测量。' : consent === 'denied' ? '已拒绝测量。' : '未选择，默认不测量。';
+    const message = english
+      ? !storageAvailable ? 'Storage is unavailable. Analytics stays off.' : privacySignal() ? 'Your browser requests no tracking. Analytics stays off.' : consent === 'granted' ? 'Public-page analytics allowed.' : consent === 'denied' ? 'Analytics declined.' : 'No choice saved. Analytics is off by default.'
+      : !storageAvailable ? '浏览器禁止保存选择，测量保持关闭。' : privacySignal() ? '浏览器已要求不跟踪，测量保持关闭。' : consent === 'granted' ? '已允许公开页面测量。' : consent === 'denied' ? '已拒绝测量。' : '未选择，默认不测量。';
     for (const name of ['consent-status', 'consent-notice']) {
       const status = document.getElementById(name);
-      if (status) status.textContent = message + (loadFailed ? ' 分析脚本加载失败，页面仍可正常使用。' : '');
+      if (status) status.textContent = message + (loadFailed ? english ? ' Analytics could not load. The page still works.' : ' 分析脚本加载失败，页面仍可正常使用。' : '');
     }
     const panel = document.getElementById('consent-panel');
     if (panel) panel.hidden = !(ga4Id && collectorContext() && consent === 'unknown');

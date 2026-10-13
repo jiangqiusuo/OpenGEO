@@ -5,12 +5,12 @@ import { describe, expect, it, vi } from 'vitest';
 const script = readFileSync(new URL('../../apps/web/public/public-site.js', import.meta.url), 'utf8');
 const key = 'opengeo:public-consent:v2';
 const id = 'G-TEST123456';
-function browser(stored: string | null, options: { path?: string; kind?: string; blocked?: boolean; search?: string; hash?: string; host?: string; id?: string; dnt?: string; gpc?: boolean; legacy?: boolean } = {}) {
+function browser(stored: string | null, options: { path?: string; kind?: string; blocked?: boolean; search?: string; hash?: string; host?: string; id?: string; dnt?: string; gpc?: boolean; legacy?: boolean; home?: boolean; english?: boolean } = {}) {
   const events: unknown[] = [];
   const handlers: Record<string, () => void> = {};
   const status = { textContent: '' };
   const panel = { hidden: true };
-  const storage = new Map<string, string>(stored ? [[options.legacy ? 'opengeo:public-consent:v1' : key, stored]] : []);
+  const storage = new Map<string, string>(stored ? [[options.home ? 'opengeo:homepage-consent:v1' : options.legacy ? 'opengeo:public-consent:v1' : key, stored]] : []);
   const listeners: Record<string, (e: { key: string | null }) => void> = {};
   const appended: Array<{ src: string; onerror: () => void; remove: () => void; referrerPolicy: string }> = [];
   const deletedCookies: string[] = [];
@@ -26,7 +26,7 @@ function browser(stored: string | null, options: { path?: string; kind?: string;
     [`ga-disable-${id}`]: false
   };
   const document = {
-    title: 'Public article', body: { dataset: { publicPage: options.kind ?? 'blog_index' } },
+    title: 'Public article', documentElement: { lang: options.english ? 'en' : 'zh-CN' }, body: { dataset: { publicPage: options.kind ?? 'blog_index' } },
     getElementById: (name: string) => name === 'consent-panel' ? panel : status,
     querySelector: () => ({ getAttribute: () => options.id ?? id }),
     querySelectorAll: (selector: string) => selector === 'button[data-copy-code]' ? [] : selector === '[data-consent]' ? controls(['granted', 'denied'], 'consent') : controls(['github_click', 'arbitrary_secret_event'], 'link'),
@@ -38,6 +38,39 @@ function browser(stored: string | null, options: { path?: string; kind?: string;
   return { events, handlers, storage, listeners, status, panel, appended, window, deletedCookies, reload };
 }
 describe('consent-gated public analytics', () => {
+  it.each(['/', '/en/'])('requires a separate homepage opt-in at %s and sends the actual canonical origin', (path) => {
+    const options = { host: 'open-geo.net', path, kind: 'landing', english: path === '/en/' };
+    const prior = browser('granted', options);
+    expect(prior.appended).toHaveLength(0);
+    expect(prior.panel.hidden).toBe(false);
+    prior.handlers['consent:granted']();
+    expect(prior.storage.get('opengeo:homepage-consent:v1')).toBe('granted');
+    expect(prior.appended).toHaveLength(1);
+    const config = prior.window.dataLayer.find(entry => entry[0] === 'config')![2];
+    expect(config).toMatchObject({ page_location: `https://open-geo.net${path}`, cookie_domain: 'open-geo.net' });
+    prior.handlers['consent:denied']();
+    expect(prior.reload).toHaveBeenCalledOnce();
+    if (options.english) expect(prior.status.textContent).toContain('declined');
+  });
+  it.each(['/homepage/', '/en/', '/'])('does not measure the app fixture or the helper route at %s', (path) => {
+    const host = path === '/homepage/' ? 'open-geo.net' : 'app.open-geo.net';
+    expect(browser('granted', { host, path, kind: 'landing', home: true }).appended).toHaveLength(0);
+  });
+  it.each([{ search: '?utm_source=private' }, { hash: '#product' }, { gpc: true }, { dnt: '1' }, { blocked: true }])('keeps homepage measurement off for unsafe context %j', (options) => {
+    const b = browser('granted', { host: 'open-geo.net', path: '/', kind: 'landing', home: true, ...options });
+    expect(b.appended).toHaveLength(0);
+    expect(b.events).toHaveLength(0);
+  });
+  it('withdraws the homepage choice from root privacy settings and propagates across tabs', () => {
+    const settings = browser('granted', { host: 'open-geo.net', path: '/privacy/', kind: 'other', home: true });
+    settings.handlers['consent:denied']();
+    expect(settings.storage.get('opengeo:homepage-consent:v1')).toBe('denied');
+    expect(settings.appended).toHaveLength(0);
+    const home = browser('granted', { host: 'open-geo.net', path: '/', kind: 'landing', home: true });
+    home.storage.set('opengeo:homepage-consent:v1', 'denied');
+    home.listeners.storage({ key: 'opengeo:homepage-consent:v1' });
+    expect(home.reload).toHaveBeenCalledOnce();
+  });
   it('does not load or send before consent, on denial, or with old v1 authorization', () => {
     for (const stored of [null, 'denied', 'invalid']) {
       const b = browser(stored); b.handlers['link:github_click']();
