@@ -978,6 +978,17 @@ section[id] {
   }
 }
 
+.home-privacy { max-width: 1000px; margin: 0 auto; padding: 24px; color: #475569; border-top: 1px solid #e2e8f0; font-size: 13px; line-height: 1.65; }
+.home-privacy h2 { font-size: 16px; color: #20242b; }
+.home-choices { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.home-choices button { font: inherit; min-height: 44px; padding: 8px 14px; background: white; color: #20242b; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer; }
+.home-choices button:disabled { cursor: default; opacity: .5; }
+.home-consent { position: fixed; z-index: 20; bottom: 16px; left: 16px; right: 16px; max-width: 840px; margin: 0 auto; padding: 20px; border: 1px solid #cbd5e1; border-radius: 12px; background: white; box-shadow: 0 4px 24px #0f172a18; font-size: 13px; line-height: 1.6; }
+.home-consent[hidden] { display: none; }
+.home-consent p { margin: 8px 0; }
+@media(max-width:700px) { .home-header nav { gap: 6px; justify-content: space-between; } .home-header nav a { min-height: 36px; display: inline-flex; align-items: center; } .home-consent { padding: 16px; } html[lang="en"] .home-hero h1 { font-size: clamp(27px,7vw,36px); } }
+@media(max-width:380px) { html[lang="en"] .home-header nav { font-size: 12px; } }
+
 @media(prefers-reduced-motion:reduce) {
   html {
     scroll-behavior: auto;

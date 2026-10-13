@@ -15,7 +15,11 @@ describe('public content publishing boundaries', () => {
     expect(html).toContain('模拟数据 · 非真实监测');
     expect(html).toContain('https://app.open-geo.net/');
     expect(html).toContain('https://app.open-geo.net/blog/');
-    expect(html).not.toMatch(/opengeo-ga4-id|opengeo-clarity-id|gtag|<script[^>]+src=/);
+    expect(html).toContain('name="opengeo-ga4-id" content="G-TEST123456"');
+    expect(html).toMatch(/<script src="\/public-site\.[a-f0-9]{12}\.js" defer>/);
+    expect(html).not.toMatch(/opengeo-clarity-id|public-replay\.|googletagmanager/);
+    expect(html).toContain('data-consent="denied"');
+    expect(html).toContain('id="analytics-settings"');
     const schema = JSON.parse(html.match(/<script type="application\/ld\+json">(.*?)<\/script>/)![1]);
     expect(schema['@graph'].map((node: { '@type': string }) => node['@type'])).toEqual(['Organization', 'WebSite', 'WebPage', 'SoftwareSourceCode']);
     expect(JSON.stringify(schema)).not.toMatch(/aggregateRating|reviewCount|offers/);
@@ -25,6 +29,28 @@ describe('public content publishing boundaries', () => {
     const workbench = readFileSync(new URL('../../apps/web/index.html', import.meta.url), 'utf8');
     expect(workbench).toContain('name="robots" content="noindex,follow"');
     expect(workbench).not.toContain('"offers"');
+  });
+  it('publishes equivalent language pages with reciprocal alternates and self canonicals', () => {
+    const assets = generateContentSite(BLOG_POSTS, today);
+    for (const [path, lang, url] of [['homepage/index.html', 'zh-CN', 'https://open-geo.net/'], ['en/index.html', 'en', 'https://open-geo.net/en/']]) {
+      const html = assets.get(path)!;
+      expect(html).toContain(`<html lang="${lang}">`);
+      expect(html).toContain(`rel="canonical" href="${url}"`);
+      expect(html).toContain('hreflang="zh-CN" href="https://open-geo.net/"');
+      expect(html).toContain('hreflang="en" href="https://open-geo.net/en/"');
+      expect(html).toContain('hreflang="x-default" href="https://open-geo.net/"');
+      expect(html.match(/<h1[\s>]/g)).toHaveLength(1);
+      expect(html).not.toContain('opengeo-ga4-id');
+      expect(html).toContain('data-consent="granted" disabled');
+    }
+    expect(assets.get('home-sitemap.xml')?.match(/<loc>/g)).toHaveLength(2);
+    const english = assets.get('en/index.html')!;
+    expect(english).toContain('Simulated data · Not live monitoring');
+    expect(english).toContain('Blog (中文)');
+    expect(english).not.toContain('第 ');
+    expect(english).toContain('data-event="github_click"');
+    expect(english).toContain('data-event="workbench_click"');
+    expect(english.match(/<h2>/g)?.length).toEqual(assets.get('homepage/index.html')!.match(/<h2>/g)?.length);
   });
   it('preserves version-pinned CLI code for static readers through the CDN email exclusion', () => {
     const assets = generateContentSite(BLOG_POSTS, today);
