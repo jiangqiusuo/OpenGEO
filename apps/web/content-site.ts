@@ -1,4 +1,5 @@
-import type { BlogPost } from './src/blog-content';
+import type { BlogBlock, BlogPost } from './src/blog-content';
+import { MOCK_TO_JOB_SOURCE } from './example-source';
 import { landingBody } from './landing-content';
 
 export const SITE = 'https://app.open-geo.net';
@@ -7,6 +8,18 @@ const REPO = 'https://github.com/jiangqiusuo/OpenGEO';
 const escape = (value: string) => value.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 const json = (value: unknown) => JSON.stringify(value).replace(/</g, '\\u003c');
 const dateValid = (value: string) => /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;
+
+function blockText(block: BlogBlock): string {
+  if (typeof block === 'string') return block;
+  if (!block || typeof block.text !== 'string' || !['heading', 'code'].includes(block.kind) || (block.kind === 'code' && !['bash', 'javascript', 'json'].includes(block.language))) throw new Error('Invalid blog block');
+  return block.text;
+}
+function renderBlock(block: BlogBlock, index: number): string {
+  const text = escape(blockText(block));
+  if (typeof block === 'string') return `<p>${text}</p>`;
+  if (block.kind === 'heading') return `<h2 id="section-${index}">${text}</h2>`;
+  return `<div class="code-example"><div class="code-toolbar"><span>${block.language}</span><button type="button" data-copy-code="code-${index}" aria-label="复制 ${block.language} 代码">复制</button></div><pre><code id="code-${index}">${text}</code></pre></div>`;
+}
 
 export interface MeasurementConfig { ga4Id?: string; }
 export function validateMeasurementConfig(config: MeasurementConfig): MeasurementConfig {
@@ -22,7 +35,7 @@ export function publishedPosts(posts: BlogPost[], today: string): BlogPost[] {
     slugs.add(post.slug);
     if (post.status !== 'published' && post.status !== 'draft') throw new Error('Invalid publication status');
     if (post.status === 'draft') continue;
-    if (!post.reviewedBy?.trim() || !post.title.trim() || !post.excerpt.trim() || !post.body.length || post.body.some((p) => !p.trim())) throw new Error('Published content must be reviewed and complete');
+    if (!post.reviewedBy?.trim() || !post.title.trim() || !post.excerpt.trim() || !post.body.length || post.body.some((p) => !blockText(p).trim())) throw new Error('Published content must be reviewed and complete');
     if (!dateValid(post.publishedAt) || !dateValid(post.updatedAt) || post.updatedAt < post.publishedAt || (post.publishedAt <= today && post.updatedAt > today)) throw new Error('Invalid publication dates');
   }
   return posts.filter((p) => p.status === 'published' && p.publishedAt <= today).sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || a.slug.localeCompare(b.slug));
@@ -39,13 +52,14 @@ export function generateContentSite(posts: BlogPost[], today: string, measuremen
   const config = validateMeasurementConfig(measurement);
   const published = publishedPosts(posts, today);
   const assets = new Map<string, string>();
+  assets.set('examples/mock-to-job.mjs', MOCK_TO_JOB_SOURCE);
   assets.set('about/index.html', layout('让 AI 可见度可以复查', 'OpenGEO 开源 GEO 工具：用公共契约、Client、CLI、Mock 和示例工作台，从问题到回答与证据建立可复查的观察流程。', '/about/', landingBody, { '@context': 'https://schema.org', '@type': 'WebPage', name: 'OpenGEO 产品介绍', url: `${SITE}/about/`, inLanguage: 'zh-CN' }, false, config));
   const blogSchema = { '@context': 'https://schema.org', '@type': 'Blog', name: 'OpenGEO 博客', url: `${SITE}/blog/`, inLanguage: 'zh-CN' };
   assets.set('blog/index.html', layout('GEO 方法与工程', '用可复查的证据理解 AI 可见度，阅读 OpenGEO 的方法与工程实践。', '/blog/', `<section class="intro"><p class="eyebrow">OPENGEO JOURNAL</p><h1>每一次观察，<br>都值得被复查。</h1><p>关于 AI 可见度、证据和工程实践的笔记。从固定问题开始，把结果放回完整的样本中理解。</p></section><section class="posts" aria-label="文章列表">${published.map((p) => `<article><p class="eyebrow">${escape(p.category)} · ${escape(p.publishedAt)}</p><h2><a href="/blog/${p.slug}/">${escape(p.title)}</a></h2><p>${escape(p.excerpt)}</p><a href="/blog/${p.slug}/">阅读文章 →</a></article>`).join('') || '<p>文章正在准备中。</p>'}</section><aside><h2>先在本地跑通一次监测。</h2><p>使用公开契约、Mock 与客户端，了解从请求到 Job 和 Evidence 的完整路径。</p><a href="${DOCS}" data-event="docs_click">查看快速开始 →</a></aside>`, blogSchema, false, config));
   for (const p of published) {
-    const minutes = Math.max(1, Math.ceil(p.body.join('').length / 400));
+    const minutes = Math.max(1, Math.ceil(p.body.map(blockText).join('').length / 400));
     const schema = { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: p.title, description: p.excerpt, datePublished: p.publishedAt, dateModified: p.updatedAt, inLanguage: 'zh-CN', author: { '@type': 'Organization', name: 'OpenGEO' }, mainEntityOfPage: `${SITE}/blog/${p.slug}/` };
-    assets.set(`blog/${p.slug}/index.html`, layout(p.title, p.excerpt, `/blog/${p.slug}/`, `<article class="article"><a href="/blog/">← 返回博客</a><p class="eyebrow">${escape(p.category)} · ${minutes} 分钟阅读</p><h1>${escape(p.title)}</h1><p class="subtitle">${escape(p.titleEn)}</p><p class="meta">发布 ${escape(p.publishedAt)} · 更新 ${escape(p.updatedAt)} · OpenGEO</p>${p.body.map((paragraph) => `<p>${escape(paragraph)}</p>`).join('')}<aside><h2>让结果可以复查</h2><p>记录问题、样本范围与证据，再比较变化。工作台目前为示例预览。</p><a href="/" data-event="workbench_click">查看工作台 →</a></aside></article>`, schema, false, config));
+    assets.set(`blog/${p.slug}/index.html`, layout(p.title, p.excerpt, `/blog/${p.slug}/`, `<article class="article"><a href="/blog/">← 返回博客</a><p class="eyebrow">${escape(p.category)} · ${minutes} 分钟阅读</p><h1>${escape(p.title)}</h1><p class="subtitle">${escape(p.titleEn)}</p><p class="meta">发布 ${escape(p.publishedAt)} · 更新 ${escape(p.updatedAt)} · OpenGEO</p>${p.body.map(renderBlock).join('')}${p.slug === 'mock-to-job-quickstart' ? '<p><a href="/examples/mock-to-job.mjs" download="mock-to-job.mjs">下载同一份示例脚本</a></p>' : ''}<aside><h2>让结果可以复查</h2><p>记录问题、样本范围与证据，再比较变化。工作台目前为示例预览。</p><a href="/" data-event="workbench_click">查看工作台 →</a></aside></article>`, schema, false, config));
   }
   assets.set('privacy/index.html', layout('隐私与测量设置', '了解公开页面的测量范围，保存或撤回你的测量偏好。', '/privacy/', `<section class="article"><h1>隐私与测量设置</h1><p>${config.ga4Id ? '本部署已配置 Google Analytics 4。只有你明确允许访问测量后，才在产品介绍页和博客加载 Google 的分析脚本；拒绝或尚未选择时不会请求分析服务。' : '本部署未配置第三方分析服务。允许后只在浏览器内发出固定名称的公开页面事件，不发送分析网络请求。'}</p><p>测量包括公开页面地址与标题、页面访问，以及文档/GitHub/示例工作台入口的点击。Google 可能处理浏览器与设备信息、IP 地址，并在允许后设置分析 Cookie；这不等于完全匿名。广告用途、Google Signals 与广告个性化关闭。</p><p>工作台、任务详情、API、隐私设置和不存在的页面不接入分析。带查询参数或片段的访问不加载收集器，也不发送输入内容、API Key、客户或任务数据、来源地址。Microsoft Clarity 录屏目前未启用。</p><h2>你的选择</h2><p id="consent-status" role="status">未选择，默认不测量。</p><div class="choices"><button type="button" data-consent="granted">允许公开页面测量</button><button type="button" data-consent="denied">不允许 / 撤回同意</button></div><noscript><p>JavaScript 已关闭，不会进行测量，也无法保存偏好。</p></noscript><p>选择保存在当前浏览器和站点的本地存储中。禁止存储时不启用第三方测量。撤回会停止新的应用事件、清理本部署的分析 Cookie，并重新加载页面停止已加载的脚本；已经发送的数据不能由本页面撤回。浏览器的 Do Not Track 或 Global Privacy Control 信号也会阻止分析加载。</p><p>同意版本更新为 v2，旧版浏览器内事件的授权不会自动升级为第三方分析授权。清理站点数据后恢复默认关闭。</p><p>了解服务方处理方式：<a href="https://policies.google.com/privacy">Google 隐私政策</a>。</p></section>`, undefined, false, config));
   assets.set('404.html', layout('页面不存在', '这个页面不存在，返回博客或工作台继续浏览。', '/404.html', '<section class="intro"><p class="eyebrow">404</p><h1>没有找到这个页面。</h1><p><a href="/blog/">返回博客</a> · <a href="/">打开工作台</a></p></section>', undefined, true));

@@ -18,7 +18,7 @@ function contentSite(enableDeploymentConfig: boolean): Plugin {
         const key = path.slice(1).replace(/\/$/, '/index.html');
         const html = assets().get(key);
         if (html !== undefined) {
-          response.setHeader('Content-Type', path.endsWith('.xml') ? 'application/xml; charset=utf-8' : 'text/html; charset=utf-8');
+          response.setHeader('Content-Type', path.endsWith('.xml') ? 'application/xml; charset=utf-8' : path.endsWith('.mjs') ? 'text/javascript; charset=utf-8' : 'text/html; charset=utf-8');
           response.end(html);
         } else if (path.startsWith('/blog/') || path.startsWith('/privacy/') || path.startsWith('/about/')) {
           response.statusCode = 404;

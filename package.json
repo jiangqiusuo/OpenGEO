@@ -20,6 +20,7 @@
     "examples:generate": "tsx scripts/generate-examples.ts",
     "examples:check": "tsx scripts/generate-examples.ts --check",
     "mock": "tsx apps/mock-api/src/server.ts",
+    "tutorial:mock": "node examples/mock-to-job.mjs",
     "cli": "tsx packages/cli/src/bin.ts",
     "demo": "tsx packages/cli/src/bin.ts",
     "web:dev": "pnpm --filter @sysiphus/web dev",

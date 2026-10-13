@@ -11,13 +11,15 @@ pnpm install
 pnpm mock
 ```
 
-默认地址是 `http://localhost:8787`。另开一个终端验证健康检查：
+Mock 只监听本机 `127.0.0.1:8787`。另开一个终端读取能力目录：
 
 ```bash
 curl http://localhost:8787/v1/capabilities
 ```
 
 ## 2. 创建一个监测 Job
+
+也可以直接在第二个终端执行 `node examples/mock-to-job.mjs`（或 `pnpm tutorial:mock`），自动完成下面的创建、轮询和结果校验。完整图文教程见 <https://app.open-geo.net/blog/mock-to-job-quickstart/>。
 
 所有长时间操作都返回 Job。请求必须带有每次调用唯一的 `Idempotency-Key`；短暂等待可以通过 `Prefer: wait=N` 表达，`N` 的单位是秒。
 
@@ -47,11 +49,15 @@ Authorization: Bearer <your-api-key>
 从创建响应中取得 `id`，然后查询：
 
 ```bash
-curl http://localhost:8787/v1/jobs/job_demo_queued
-curl http://localhost:8787/v1/jobs/job_demo_queued/items
+curl http://localhost:8787/v1/jobs/job_mock_1
+curl http://localhost:8787/v1/jobs/job_mock_1/items
 ```
 
-客户端应根据 `status` 和 `result_state` 判断生命周期与结果可用性。`partial` 结果可以先读取当前已完成项目，再根据业务需要调用 `finalize-partial` 或继续等待。
+用创建响应中的实际 `id` 替换 `job_mock_1`。新建模拟任务首次查询为 `running`，再次查询为 `succeeded/complete`；完成前 items 为空，完成后结果的 `job_id` 与任务一致。该行为按查询次数模拟，不代表真实平台的延迟。
+
+Mock 支持 1–10 个字符串问题、`search` 和 `best_effort`，其他配置明确拒绝，生成/发布/验证创建入口返回 501。最多保存 100 个任务，达到上限需要重启清空虚构数据。相同幂等键与相同输入复用任务，冲突输入返回 409；`Prefer: wait` 在本模拟器中不延迟响应。
+
+`job_demo_*` 为工作台静态 Fixture，不随查询推进。真实 API 的客户端应根据 `status` 与 `result_state` 判断生命周期；`partial` 结果的定稿或继续等待按 API 文档处理，不由本教程两次查询的模拟规则决定。
 
 ## 4. 使用 TypeScript 客户端
 
