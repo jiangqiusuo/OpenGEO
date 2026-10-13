@@ -13,6 +13,10 @@
 
 在线预览：<https://app.open-geo.net/>（备用地址：<https://opengeo-workbench.pages.dev/>）
 
+公开博客：<https://app.open-geo.net/blog/>；RSS：<https://app.open-geo.net/rss.xml>。博客文章只使用公开方法和脱敏示例，不包含任务、客户或供应商数据。
+
+公开页面的测量默认关闭。部署环境可以通过运行时配置接入 GA4 或 Clarity，但页面只在访客明确同意后发出脱敏事件；分析 ID 不写入 Community 源码。
+
 ## 本地运行
 
 从仓库根目录执行：
