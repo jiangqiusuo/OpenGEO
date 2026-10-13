@@ -22,4 +22,4 @@
 
 存储不可用、Do Not Track 或 Global Privacy Control 时不启用分析。撤回先禁用事件、清理本部署分析 Cookie，再重载文档以卸载 SDK。第三方脚本被屏蔽时页面仍可使用。GA4 会处理设备、网络信息与分析 Cookie，不能描述为“完全匿名”；Microsoft Clarity 录屏仍未启用。
 
-接线依据：[Google 同意模式](https://developers.google.com/tag-platform/security/guides/consent)、[手动 page_view 与关闭默认 page_view](https://developers.google.com/analytics/devguides/collection/ga4/views)。浏览器请求成功不等同后台報表已出现，后台验收需另记录。
+接线依据：[Google 同意模式](https://developers.google.com/tag-platform/security/guides/consent)、[手动 page_view 与关闭默认 page_view](https://developers.google.com/analytics/devguides/collection/ga4/views)。浏览器请求成功不等同后台报表已出现，后台验收需另记录。
