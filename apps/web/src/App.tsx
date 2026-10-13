@@ -1,6 +1,5 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { DEFAULT_WORKBENCH_VIEW, loadWorkbenchView } from './workbench-data';
-import { BlogApp } from './BlogApp';
 
 type IconName = 'overview'|'project'|'prompt'|'pulse'|'evidence'|'content'|'publish'|'compare'|'usage'|'settings'|'arrow'|'search'|'bell'|'chevron'|'spark'|'check'|'clock'|'external'|'close';
 
@@ -221,5 +220,5 @@ function WorkbenchApp(){
 }
 
 export function App(){
-  return window.location.pathname.startsWith('/blog') ? <BlogApp /> : <WorkbenchApp />;
+  return <WorkbenchApp />;
 }
