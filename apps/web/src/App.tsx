@@ -95,6 +95,7 @@ function WorkbenchApp(){
       <header className="topbar">
         <div><span className="crumb">项目</span><span className="slash">/</span><strong>{workbench.project.name}</strong></div>
         <div className="top-actions">
+          <a className="public-blog-link" href="/about/">产品介绍</a>
           <a className="public-blog-link" href="/blog/">博客</a>
           <button className="icon-button planned-icon" onClick={()=>planned('全局搜索')} aria-label="全局搜索，规划中"><Icon name="search"/><span>规划中</span></button>
           <button className="icon-button planned-icon" onClick={()=>planned('通知')} aria-label="通知，规划中"><Icon name="bell"/><span>规划中</span></button>
