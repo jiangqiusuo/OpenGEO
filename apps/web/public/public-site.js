@@ -1,6 +1,13 @@
 /* global window, document, CustomEvent */
 (() => {
   'use strict';
+  // Code copying is independent of measurement consent.
+  document.querySelectorAll('button[data-copy-code]').forEach((button) => button.addEventListener('click', async () => {
+    const text = document.getElementById(button.getAttribute('data-copy-code'))?.textContent;
+    if (!text) return;
+    try { await window.navigator.clipboard.writeText(text); button.textContent = '已复制'; }
+    catch { button.textContent = '无法复制，请手动选择'; }
+  }));
   const key = 'opengeo:public-consent:v2';
   const id = document.querySelector('meta[name="opengeo-ga4-id"]')?.getAttribute('content') || '';
   const ga4Id = /^G-[A-Z0-9]{6,15}$/.test(id) ? id : '';

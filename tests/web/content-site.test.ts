@@ -1,10 +1,22 @@
 import { describe, expect, it } from 'vitest';
 import { generateContentSite, publishedPosts, SITE } from '../../apps/web/content-site';
 import { BLOG_POSTS } from '../../apps/web/src/blog-content';
+import { MOCK_TO_JOB_SOURCE } from '../../apps/web/example-source';
 
 const post = BLOG_POSTS[0];
 const today = '2026-10-13';
 describe('public content publishing boundaries', () => {
+  it('renders tutorial headings and escaped code from the exact downloadable executable', () => {
+    const assets = generateContentSite(BLOG_POSTS, today);
+    const html = assets.get('blog/mock-to-job-quickstart/index.html')!;
+    expect(assets.get('examples/mock-to-job.mjs')).toBe(MOCK_TO_JOB_SOURCE);
+    expect(html).toContain('data-copy-code=');
+    expect(html).toContain('准备环境并启动 Mock</h2>');
+    expect(html).toContain('download="mock-to-job.mjs"');
+    expect(assets.get('rss.xml')).toContain(`${SITE}/blog/mock-to-job-quickstart/`);
+    const unsafe = { ...post, body: [{ kind: 'code' as const, language: 'javascript' as const, text: '</code><script>bad()</script>' }] };
+    expect(generateContentSite([unsafe], today).get(`blog/${post.slug}/index.html`)).toContain('&lt;/code&gt;&lt;script&gt;bad()&lt;/script&gt;');
+  });
   it('renders a truthful static product introduction and keeps deployment IDs optional', () => {
     const assets = generateContentSite([post], today);
     expect(assets.get('about/index.html')).toContain('本地 Mock 无需 API Key');

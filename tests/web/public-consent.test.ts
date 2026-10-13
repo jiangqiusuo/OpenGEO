@@ -29,7 +29,7 @@ function browser(stored: string | null, options: { path?: string; kind?: string;
     title: 'Public article', body: { dataset: { publicPage: options.kind ?? 'blog_index' } },
     getElementById: (name: string) => name === 'consent-panel' ? panel : status,
     querySelector: () => ({ getAttribute: () => options.id ?? id }),
-    querySelectorAll: (selector: string) => selector === '[data-consent]' ? controls(['granted', 'denied'], 'consent') : controls(['github_click', 'arbitrary_secret_event'], 'link'),
+    querySelectorAll: (selector: string) => selector === 'button[data-copy-code]' ? [] : selector === '[data-consent]' ? controls(['granted', 'denied'], 'consent') : controls(['github_click', 'arbitrary_secret_event'], 'link'),
     createElement: () => ({ src: '', onerror: () => {}, remove: vi.fn(), referrerPolicy: '' }),
     head: { appendChild: (node: typeof appended[number]) => appended.push(node) }
   };
