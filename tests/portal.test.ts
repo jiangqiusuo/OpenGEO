@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
+import { generatePortalAssets } from '../scripts/portal-assets.mjs';
 
 describe('Developer Portal entrypoint', () => {
   it('points the Scalar reference at the repository OpenAPI source', async () => {
@@ -15,7 +16,18 @@ describe('Developer Portal entrypoint', () => {
     expect(workflow).toContain('site/docs/portal');
     expect(workflow).toContain('site/openapi/openapi.json');
     expect(workflow).toContain('actions/deploy-pages@v4');
-    expect(workflow).toContain('docs/portal/quickstart.html');
+    expect(workflow).toContain('node scripts/portal-assets.mjs site');
+    expect(workflow).toContain('apps/web/design-tokens.css');
+    const assets = generatePortalAssets();
+    expect(assets.get('docs/portal/quickstart.html')).toContain('pnpm mock');
+    expect(JSON.parse(assets.get('openapi/openapi.json')!).openapi).toBe('3.1.0');
+    for (const page of ['index.html', 'quickstart.html']) {
+      const html = assets.get(`docs/portal/${page}`)!;
+      expect(html).not.toContain('{{');
+      const localAssets = [...html.matchAll(/(?:href|src)="\.\/([^"\s]+\.(?:css|svg))"/g)].map(match => match[1]);
+      expect(localAssets.length).toBeGreaterThanOrEqual(3);
+      for (const name of localAssets) expect(assets.has(`docs/portal/${name}`)).toBe(true);
+    }
   });
 
   it('provides a provider-neutral mock quickstart without credentials', async () => {

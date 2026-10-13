@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - "docs/portal/**"
+      - "scripts/portal-assets.mjs"
+      - "apps/web/design-tokens.css"
+      - "apps/web/public/logo-mark.svg"
       - "openapi/openapi.json"
       - ".github/workflows/docs-preview.yml"
   workflow_dispatch:
@@ -26,9 +29,7 @@ jobs:
       - name: Assemble static portal
         run: |
           set -euo pipefail
-          mkdir -p site/docs/portal site/openapi
-          cp docs/portal/index.html docs/portal/quickstart.html docs/portal/README.md site/docs/portal/
-          cp openapi/openapi.json site/openapi/openapi.json
+          node scripts/portal-assets.mjs site
           test -s site/docs/portal/index.html
           test -s site/openapi/openapi.json
       - uses: actions/configure-pages@v5
