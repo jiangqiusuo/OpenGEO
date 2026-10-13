@@ -6,6 +6,18 @@ import { MOCK_TO_JOB_SOURCE } from '../../apps/web/example-source';
 const post = BLOG_POSTS[0];
 const today = '2026-10-13';
 describe('public content publishing boundaries', () => {
+  it('references emitted content-versioned styles and scripts in every static page', () => {
+    const assets = generateContentSite(BLOG_POSTS, today);
+    for (const [name, html] of assets) {
+      if (!name.endsWith('.html')) continue;
+      const resources = [...html.matchAll(/(?:src|href)="\/([^"\s]+\.(?:css|js))"/g)].map((m) => m[1]);
+      expect(resources.length).toBeGreaterThanOrEqual(2);
+      for (const resource of resources) {
+        expect(resource).toMatch(/\.[a-f0-9]{12}\.(?:css|js)$/);
+        expect(assets.get(resource)?.length).toBeGreaterThan(0);
+      }
+    }
+  });
   it('renders tutorial headings and escaped code from the exact downloadable executable', () => {
     const assets = generateContentSite(BLOG_POSTS, today);
     const html = assets.get('blog/mock-to-job-quickstart/index.html')!;

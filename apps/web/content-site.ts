@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import type { BlogBlock, BlogPost } from './src/blog-content';
 import { MOCK_TO_JOB_SOURCE } from './example-source';
 import { landingBody } from './landing-content';
@@ -5,6 +7,13 @@ import { landingBody } from './landing-content';
 export const SITE = 'https://app.open-geo.net';
 const DOCS = 'https://jiangqiusuo.github.io/OpenGEO/docs/portal/';
 const REPO = 'https://github.com/jiangqiusuo/OpenGEO';
+// A new HTML deployment must never reuse stale styles or consent/copy code.
+const publicAssets = Object.fromEntries(['content.css', 'landing.css', 'public-site.js'].map((name) => {
+  const source = readFileSync(new URL(`./public/${name}`, import.meta.url), 'utf8');
+  const hash = createHash('sha256').update(source).digest('hex').slice(0, 12);
+  const extension = name.lastIndexOf('.');
+  return [name, { path: `${name.slice(0, extension)}.${hash}${name.slice(extension)}`, source }];
+}));
 const escape = (value: string) => value.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 const json = (value: unknown) => JSON.stringify(value).replace(/</g, '\\u003c');
 const dateValid = (value: string) => /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;
@@ -45,13 +54,14 @@ function layout(title: string, description: string, path: string, body: string, 
   const measurementMeta = config.ga4Id ? `<meta name="opengeo-ga4-id" content="${config.ga4Id}">` : '';
   const pageKind = path === '/about/' ? 'landing' : path === '/blog/' ? 'blog_index' : path.startsWith('/blog/') && !noindex ? 'blog_article' : 'other';
   const consentPanel = `<aside id="consent-panel" class="consent-panel" aria-label="公开页面测量设置" hidden><div><strong>公开页面访问测量</strong><p>允许后使用 Google Analytics 记录页面访问和入口点击。你可以拒绝，并随时在隐私设置撤回。</p><a href="/privacy/">查看隐私说明</a></div><div class="choices"><button type="button" data-consent="denied">不允许</button><button type="button" data-consent="granted">允许访问测量</button></div><p id="consent-notice" role="status"></p></aside>`;
-  return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escape(title)} · OpenGEO</title><meta name="description" content="${escape(description)}">${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${SITE}${path}">`}<meta property="og:type" content="${path.startsWith('/blog/') && path !== '/blog/' ? 'article' : 'website'}"><meta property="og:title" content="${escape(title)}"><meta property="og:description" content="${escape(description)}"><meta property="og:url" content="${SITE}${path}"><meta name="twitter:card" content="summary"><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/content.css">${path === '/about/' ? '<link rel="stylesheet" href="/landing.css">' : ''}<link rel="alternate" type="application/rss+xml" title="OpenGEO 博客" href="/rss.xml">${schema ? `<script type="application/ld+json">${json(schema)}</script>` : ''}${measurementMeta}<script src="/public-site.js" defer></script></head><body data-public-page="${pageKind}"><header><a class="brand" href="/"><img src="/logo-mark.svg" width="24" height="24" alt="">OpenGEO</a><nav aria-label="公开导航"><a href="/about/">产品介绍</a><a href="/blog/">博客</a><a href="${DOCS}" data-event="docs_click">文档</a><a class="button" href="/" data-event="workbench_click">工作台预览</a></nav></header><main>${body}</main><footer><span>OpenGEO · 方法与工程</span><a href="/rss.xml">RSS</a><a href="/privacy/">隐私与测量设置</a><a href="${REPO}" data-event="github_click">GitHub ↗</a></footer>${consentPanel}</body></html>`;
+  return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escape(title)} · OpenGEO</title><meta name="description" content="${escape(description)}">${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${SITE}${path}">`}<meta property="og:type" content="${path.startsWith('/blog/') && path !== '/blog/' ? 'article' : 'website'}"><meta property="og:title" content="${escape(title)}"><meta property="og:description" content="${escape(description)}"><meta property="og:url" content="${SITE}${path}"><meta name="twitter:card" content="summary"><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/${publicAssets['content.css'].path}">${path === '/about/' ? `<link rel="stylesheet" href="/${publicAssets['landing.css'].path}">` : ''}<link rel="alternate" type="application/rss+xml" title="OpenGEO 博客" href="/rss.xml">${schema ? `<script type="application/ld+json">${json(schema)}</script>` : ''}${measurementMeta}<script src="/${publicAssets['public-site.js'].path}" defer></script></head><body data-public-page="${pageKind}"><header><a class="brand" href="/"><img src="/logo-mark.svg" width="24" height="24" alt="">OpenGEO</a><nav aria-label="公开导航"><a href="/about/">产品介绍</a><a href="/blog/">博客</a><a href="${DOCS}" data-event="docs_click">文档</a><a class="button" href="/" data-event="workbench_click">工作台预览</a></nav></header><main>${body}</main><footer><span>OpenGEO · 方法与工程</span><a href="/rss.xml">RSS</a><a href="/privacy/">隐私与测量设置</a><a href="${REPO}" data-event="github_click">GitHub ↗</a></footer>${consentPanel}</body></html>`;
 }
 
 export function generateContentSite(posts: BlogPost[], today: string, measurement: MeasurementConfig = {}): Map<string, string> {
   const config = validateMeasurementConfig(measurement);
   const published = publishedPosts(posts, today);
   const assets = new Map<string, string>();
+  for (const asset of Object.values(publicAssets)) assets.set(asset.path, asset.source);
   assets.set('examples/mock-to-job.mjs', MOCK_TO_JOB_SOURCE);
   assets.set('about/index.html', layout('让 AI 可见度可以复查', 'OpenGEO 开源 GEO 工具：用公共契约、Client、CLI、Mock 和示例工作台，从问题到回答与证据建立可复查的观察流程。', '/about/', landingBody, { '@context': 'https://schema.org', '@type': 'WebPage', name: 'OpenGEO 产品介绍', url: `${SITE}/about/`, inLanguage: 'zh-CN' }, false, config));
   const blogSchema = { '@context': 'https://schema.org', '@type': 'Blog', name: 'OpenGEO 博客', url: `${SITE}/blog/`, inLanguage: 'zh-CN' };
