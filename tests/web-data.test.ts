@@ -11,6 +11,7 @@ describe('Community workbench read model',()=>{
     expect(top3.formula).toContain('排名不大于 3');
     expect(view.metrics.find(item=>item.id==='owned')!.definition).toContain('不等同回答明确引用');
     expect(new Set(view.metrics.map(item=>item.formula)).size).toBe(4);
+    expect(view.metrics.every(item=>item.definitionVersion==='workbench-metrics.v1')).toBe(true);
   });
   it('does not truncate metric evidence to the five-row overview preview',()=>{
     const fixture=structuredClone(WORKBENCH_FIXTURE_V1);

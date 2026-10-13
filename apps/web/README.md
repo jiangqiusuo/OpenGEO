@@ -36,7 +36,7 @@ VITE_OPEN_GEO_API_URL=http://127.0.0.1:8787 pnpm web:dev
 
 Windows PowerShell 可先设置 `$env:VITE_OPEN_GEO_API_URL='http://127.0.0.1:8787'`。工作台会读取 `/v1/capabilities`、演示 Job 和 Job items；请求或响应校验失败时自动回退到版本化 Fixture，并在左侧数据源状态中明确显示，不会把失败伪装成实时数据。
 
-总览预览前5条有效观察，指标详情展示前20条支持样本；计算范围为全部已加载观察，不代表服务端分页后的全部数据。指标口径以 `workbench.v1` 视图定义为准。来源仅将合法 HTTP/HTTPS 且不含 URL 用户名/密码的地址渲染为链接，检索来源不等同回答明确引用。
+总览预览前5条有效观察，指标详情展示前20条支持样本；计算范围为全部已加载观察，不代表服务端分页后的全部数据。指标口径以 [`workbench-metrics.v1`](../../docs/workbench-metrics.md) 为准。来源仅将合法 HTTP/HTTPS 且不含 URL 用户名/密码的地址渲染为链接，检索来源不等同回答明确引用。
 
 活动摘要使用独立数据源。默认 Mock 不提供活动接口，因此即使监测数据成功读取，活动卡片仍标记为“示例数据”。需要测试活动摘要时，可将 `VITE_OPEN_GEO_ACTIVITY_URL` 设置为你控制的 Mock JSON 地址，并同时配置 `VITE_OPEN_GEO_API_URL`。这项配置不会向该地址附加 API Key。
 

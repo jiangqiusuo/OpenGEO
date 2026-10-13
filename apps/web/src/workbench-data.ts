@@ -4,8 +4,9 @@ import { WORKBENCH_FIXTURE_V1, type WorkbenchFixture } from './workbench-fixture
 
 export type WorkbenchSource='fixture'|'mock-api'|'fixture-fallback';
 export type WorkbenchAuditSource='fixture'|'mock-api'|'fixture-fallback';
+export const WORKBENCH_METRIC_VERSION='workbench-metrics.v1' as const;
 export type WorkbenchMetricId='mention'|'top3'|'owned'|'valid';
-export interface WorkbenchMetric { id:WorkbenchMetricId;label:string;value:string;delta:string;tone:'blue'|'green'|'amber'|'ink';note:string;definition:string;formula:string;supportIds:string[];scope:string }
+export interface WorkbenchMetric { id:WorkbenchMetricId;definitionVersion:typeof WORKBENCH_METRIC_VERSION;label:string;value:string;delta:string;tone:'blue'|'green'|'amber'|'ink';note:string;definition:string;formula:string;supportIds:string[];scope:string }
 export interface WorkbenchEvidence { id:string;query:string;platform:string;brand:'已提及'|'未提及';rank:string;source:string;answer:string;references:Array<{label:string;url:string|null}> }
 export interface WorkbenchRun { id:string;title:string;detail:string;completed:string;time:string;status:'success'|'waiting';canAnalyze:boolean }
 export interface WorkbenchAuditItem { id:string; action:string; operationKey:string; createdAt:string }
@@ -45,10 +46,10 @@ export const deriveWorkbenchView=(fixture:WorkbenchFixture,source:WorkbenchSourc
     project:fixture.project,period:fixture.period,opportunity:fixture.opportunity,capabilities:fixture.capabilities.length,
     visibility:{value:percent(mentioned.length,validCount),count:`${mentioned.length} / ${validCount} 条有效回答`,trend:'演示基线'},
     metrics:[
-      {id:'mention',label:'品牌提及率',value:percent(mentioned.length,validCount),delta:'模拟数据',tone:'blue',note:`${mentioned.length} / ${validCount} 条有效回答`,definition:'已加载的有效回答中，存在品牌提及的回答占比。',formula:'含品牌提及的有效回答 ÷ 已加载有效回答',supportIds:mentioned.map(item=>item.id),scope:`${validCount} 条已加载有效回答`},
-      {id:'top3',label:'绝对 Top 3',value:percent(top3.length,validCount),delta:'模拟数据',tone:'green',note:`${top3.length} / ${validCount} 条有效回答`,definition:'已加载的有效回答中，最佳记录排名不大于 3 的回答占比。',formula:'排名不大于 3 的有效回答 ÷ 已加载有效回答',supportIds:top3.map(item=>item.id),scope:`${validCount} 条已加载有效回答`},
-      {id:'owned',label:'自有域名引用率',value:percent(owned.length,validCount),delta:'模拟数据',tone:'amber',note:`${owned.length} / ${validCount} 条有效回答`,definition:'检索来源中包含本项目自有域名的有效回答占比；检索来源不等同回答明确引用。',formula:'检索来源包含自有域名的有效回答 ÷ 已加载有效回答',supportIds:owned.map(item=>item.id),scope:`${validCount} 条已加载有效回答`},
-      {id:'valid',label:'有效样本',value:String(validCount),delta:percent(validCount,fixture.observations.length),tone:'ink',note:`${fixture.observations.length-validCount} 条无效样本`,definition:'已加载观察中 quality.is_valid 为 true 的数量。比例为有效观察占已加载观察的比重，不是任务完成度。',formula:'有效观察数量；有效比例 = 有效观察 ÷ 已加载观察',supportIds:valid.map(item=>item.id),scope:`${fixture.observations.length} 条已加载观察`},
+      {definitionVersion:WORKBENCH_METRIC_VERSION,id:'mention',label:'品牌提及率',value:percent(mentioned.length,validCount),delta:'模拟数据',tone:'blue',note:`${mentioned.length} / ${validCount} 条有效回答`,definition:'已加载的有效回答中，存在品牌提及的回答占比。',formula:'含品牌提及的有效回答 ÷ 已加载有效回答',supportIds:mentioned.map(item=>item.id),scope:`${validCount} 条已加载有效回答`},
+      {definitionVersion:WORKBENCH_METRIC_VERSION,id:'top3',label:'绝对 Top 3',value:percent(top3.length,validCount),delta:'模拟数据',tone:'green',note:`${top3.length} / ${validCount} 条有效回答`,definition:'已加载的有效回答中，最佳记录排名不大于 3 的回答占比。',formula:'排名不大于 3 的有效回答 ÷ 已加载有效回答',supportIds:top3.map(item=>item.id),scope:`${validCount} 条已加载有效回答`},
+      {definitionVersion:WORKBENCH_METRIC_VERSION,id:'owned',label:'自有域名引用率',value:percent(owned.length,validCount),delta:'模拟数据',tone:'amber',note:`${owned.length} / ${validCount} 条有效回答`,definition:'检索来源中包含本项目自有域名的有效回答占比；检索来源不等同回答明确引用。',formula:'检索来源包含自有域名的有效回答 ÷ 已加载有效回答',supportIds:owned.map(item=>item.id),scope:`${validCount} 条已加载有效回答`},
+      {definitionVersion:WORKBENCH_METRIC_VERSION,id:'valid',label:'有效样本',value:String(validCount),delta:percent(validCount,fixture.observations.length),tone:'ink',note:`${fixture.observations.length-validCount} 条无效样本`,definition:'已加载观察中 quality.is_valid 为 true 的数量。比例为有效观察占已加载观察的比重，不是任务完成度。',formula:'有效观察数量；有效比例 = 有效观察 ÷ 已加载观察',supportIds:valid.map(item=>item.id),scope:`${fixture.observations.length} 条已加载观察`},
     ],
     workflow:[
       {title:'设置问题',detail:`${new Set(valid.map(item=>item.prompt.text)).size} 个演示问题`,state:'done'},
