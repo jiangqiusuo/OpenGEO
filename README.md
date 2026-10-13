@@ -63,6 +63,8 @@ pnpm web:dev
 
 [产品介绍](https://app.open-geo.net/about/)说明当前功能与开始方式；[博客](https://app.open-geo.net/blog/)介绍可见度、证据与观察方法。线上工作台当前为示例预览。
 
+[CLI 本地教程](https://app.open-geo.net/blog/cli-local-quickstart/)使用已发布的 npm 包，演示创建任务、读取结果和取消；[Node 轮询教程](https://app.open-geo.net/blog/mock-to-job-quickstart/)提供可下载的完整示例。两者均无需 API Key。
+
 ### 版本路线
 
 | 版本 | 方向 | 计划交付 |
@@ -145,6 +147,8 @@ pnpm web:dev
 The default Mock endpoint is `http://localhost:8787`. The hosted workbench preview is available at <https://app.open-geo.net/>; local development uses the address printed by Vite.
 
 Read the [product introduction](https://app.open-geo.net/about/) for current capabilities and getting started, or the [blog](https://app.open-geo.net/blog/) for visibility and evidence methods. The hosted workbench currently uses demonstration data.
+
+The [CLI tutorial](https://app.open-geo.net/blog/cli-local-quickstart/) uses the published npm package to create, inspect and cancel local Jobs. The [Node polling tutorial](https://app.open-geo.net/blog/mock-to-job-quickstart/) includes a downloadable executable. Both use simulated data and require no API key; article bodies currently use Chinese.
 
 ### Version roadmap
 

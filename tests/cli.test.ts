@@ -1,9 +1,56 @@
 import { describe, expect, it, vi } from 'vitest';
 import { runCli } from '@sysiphus/cli';
+import { createMockServer } from '../apps/mock-api/src/mock-server';
 
 const io = () => { let value = ''; return { stream: { write(chunk: string) { value += chunk; } }, value: () => value }; };
 
+async function withMock(run: (call: (args: string[]) => Promise<{ code: number; stdout: string; stderr: string }>) => Promise<void>) {
+  const server = createMockServer();
+  await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+  const baseUrl = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+  try {
+    await run(async (args) => {
+      const stdout = io(); const stderr = io();
+      const code = await runCli([...args, '--base-url', baseUrl], { stdout: stdout.stream, stderr: stderr.stream, env: {} });
+      return { code, stdout: stdout.value(), stderr: stderr.value() };
+    });
+  } finally {
+    await new Promise<void>((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
+  }
+}
+
 describe('Community CLI', () => {
+  it('tracks a real local Job and its observations, preserving idempotency and terminal state', async () => {
+    await withMock(async (call) => {
+      const args = ['monitor', '--prompt', 'Demo Brand', '--idempotency-key', 'cli-local-001'];
+      const created = await call(args);
+      expect(created.code).toBe(0); expect(created.stderr).toBe('');
+      const job = JSON.parse(created.stdout);
+      expect(job.status).toBe('queued');
+      expect(JSON.parse((await call(args)).stdout).id).toBe(job.id);
+      expect(JSON.parse((await call(['items', job.id])).stdout).data).toEqual([]);
+      expect(JSON.parse((await call(['job', job.id])).stdout).status).toBe('running');
+      expect(JSON.parse((await call(['job', job.id])).stdout)).toMatchObject({ id: job.id, status: 'succeeded', result_state: 'complete' });
+      const items = JSON.parse((await call(['items', job.id])).stdout).data;
+      expect(items).toHaveLength(1); expect(items[0].job_id).toBe(job.id);
+      const lateCancel = await call(['cancel', job.id]);
+      expect(lateCancel.code).toBe(1); expect(lateCancel.stderr).toContain('job_terminal');
+      expect(JSON.parse((await call(['job', job.id])).stdout).status).toBe('succeeded');
+    });
+  });
+
+  it('cancels a newly created local Job and reports a conflicting idempotency key as failure', async () => {
+    await withMock(async (call) => {
+      const args = ['monitor', '--prompt', 'Cancel demo', '--idempotency-key', 'cli-local-cancel-001'];
+      const job = JSON.parse((await call(args)).stdout);
+      const conflict = await call(['monitor', '--prompt', 'Different prompt', '--idempotency-key', 'cli-local-cancel-001']);
+      expect(conflict.code).toBe(1); expect(conflict.stdout).toBe(''); expect(conflict.stderr).toContain('idempotency_conflict');
+      const cancelled = await call(['cancel', job.id]);
+      expect(cancelled.code).toBe(0); expect(JSON.parse(cancelled.stdout).status).toBe('cancelled');
+      expect(JSON.parse((await call(['job', job.id])).stdout).status).toBe('cancelled');
+      expect(JSON.parse((await call(['items', job.id])).stdout).data).toEqual([]);
+    });
+  });
   it('lists capabilities through the public client', async () => {
     const fetch = vi.fn(async (_input: RequestInfo | URL, _init?: RequestInit) => new Response(JSON.stringify({ data: [] }), { status: 200, headers: { 'content-type': 'application/json' } }));
     const stdout = io(); const stderr = io();
