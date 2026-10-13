@@ -20,7 +20,7 @@ const dateValid = (value: string) => /^\d{4}-\d{2}-\d{2}$/.test(value) && !Numbe
 
 function blockText(block: BlogBlock): string {
   if (typeof block === 'string') return block;
-  if (!block || typeof block.text !== 'string' || !['heading', 'code'].includes(block.kind) || (block.kind === 'code' && !['bash', 'javascript', 'json'].includes(block.language))) throw new Error('Invalid blog block');
+  if (!block || typeof block.text !== 'string' || !['heading', 'code'].includes(block.kind) || (block.kind === 'code' && !['bash', 'powershell', 'javascript', 'json'].includes(block.language))) throw new Error('Invalid blog block');
   return block.text;
 }
 function renderBlock(block: BlogBlock, index: number): string {

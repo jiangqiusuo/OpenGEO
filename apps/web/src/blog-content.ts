@@ -14,6 +14,35 @@ export type BlogPost = {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: 'cli-local-quickstart',
+    title: '用已发布的 CLI 创建、查询和取消本地任务',
+    titleEn: 'Create, inspect and cancel local Jobs with the published CLI',
+    excerpt: '从 npm 的 0.1.1 命令行工具开始，保存真实返回的 Job ID，读取模拟结果，再练习取消。无需 API Key。',
+    excerptEn: 'Use the published 0.1.1 CLI to track a local Job, read simulated results and practice cancellation without an API key.',
+    publishedAt: '2026-10-13', updatedAt: '2026-10-13', category: '教程', status: 'published', reviewedBy: 'OpenGEO maintainers',
+    body: [
+      '如果你想先试 OpenGEO 的命令行工具，这篇教程可以帮你完成一次本地任务。CLI 使用 npm 已发布的 @sysiphus/cli 0.1.1；服务端使用仓库里的 Mock。回答与品牌都是虚构数据，不需要申请 API Key，也不会执行真实监测。',
+      { kind: 'heading', text: '先启动本地 Mock' },
+      '需要 Node.js 22 或更高版本、Git 和 pnpm 11。在一个终端进入仓库并启动 Mock，保持这个终端打开。首次安装依赖以及获取 CLI 包需要网络，下面的任务请求只发往本机。',
+      { kind: 'code', language: 'bash', text: 'git clone https://github.com/jiangqiusuo/OpenGEO.git\ncd OpenGEO\npnpm install\npnpm mock' },
+      { kind: 'heading', text: '在第二个终端创建任务' },
+      '下面使用 Windows PowerShell。npm.cmd 避免 PowerShell 脚本执行策略拦截 npm.ps1。npm exec 临时运行指定版本，无需全局安装。所有命令都明确指定本机地址；已有其他项目的 OPENGEO_API_KEY 时，请使用一个未设置该变量的终端。',
+      { kind: 'code', language: 'powershell', text: '$job = npm.cmd exec --yes --package=@sysiphus/cli@0.1.1 -- opengeo monitor --prompt "Demo Brand" --idempotency-key "cli-local-001" --base-url http://127.0.0.1:8787 | ConvertFrom-Json\nif ($LASTEXITCODE -ne 0) { throw "创建任务失败" }\n$job.id\n$job.status' },
+      '默认配置为 search 和 best_effort，符合本地 Mock 的支持范围。第一次创建会得到 job_mock_* 和 queued。请保存响应中的 id；具体编号取决于当前 Mock 已创建的任务数量，不要把教程中的示意编号当成你自己的任务。',
+      { kind: 'heading', text: '用同一个 ID 读取进度与结果' },
+      { kind: 'code', language: 'powershell', text: 'npm.cmd exec --yes --package=@sysiphus/cli@0.1.1 -- opengeo job $job.id --base-url http://127.0.0.1:8787\nnpm.cmd exec --yes --package=@sysiphus/cli@0.1.1 -- opengeo job $job.id --base-url http://127.0.0.1:8787\nnpm.cmd exec --yes --package=@sysiphus/cli@0.1.1 -- opengeo items $job.id --base-url http://127.0.0.1:8787' },
+      '在全新的模拟任务上，第一次 job 查询推进到 running，第二次推进到 succeeded 与 complete。items 返回的每条观察结果，其 job_id 应与 $job.id 相同。若创建后直接读取 items，会得到空数组；空数组本身不能证明任务失败。',
+      '两次查询完成是 Mock 的教学规则。真实 API 需要按返回的状态处理，并设置轮询间隔和总等待上限。CLI 的 --wait 5 只发送单次请求的等待偏好，不会每五秒轮询，也不保证五秒内完成。',
+      { kind: 'heading', text: '重试与取消各练习一次' },
+      '保持问题和幂等键相同，重新执行创建命令，会得到同一个 Job。需要创建另一项任务时才使用新键；同一个键配不同问题会返回冲突。重启 Mock 会清空这些内存记录，所以这个练习要在同一次 Mock 运行中完成。',
+      { kind: 'code', language: 'powershell', text: '$cancelJob = npm.cmd exec --yes --package=@sysiphus/cli@0.1.1 -- opengeo monitor --prompt "Cancel demo" --idempotency-key "cli-local-cancel-001" --base-url http://127.0.0.1:8787 | ConvertFrom-Json\nif ($LASTEXITCODE -ne 0) { throw "创建待取消任务失败" }\nnpm.cmd exec --yes --package=@sysiphus/cli@0.1.1 -- opengeo cancel $cancelJob.id --base-url http://127.0.0.1:8787\nnpm.cmd exec --yes --package=@sysiphus/cli@0.1.1 -- opengeo job $cancelJob.id --base-url http://127.0.0.1:8787' },
+      '这里创建一项新任务并在读取进度前取消，随后状态应保持 cancelled。已经成功完成的任务不会因为再次取消而倒退到 cancelled。本地练习不涉及扣费或退款。',
+      { kind: 'heading', text: '遇到错误时先检查什么' },
+      '连接失败时，先检查 Mock 终端是否还在运行以及端口是否一致。若你调整了 OPEN_GEO_PORT，也要修改每条命令的 --base-url。HTTP 409 表示幂等键与请求冲突；422 表示请求了 Mock 不支持的配置；429 表示模拟任务数量达到上限，可在练习结束后重启 Mock 清空数据。',
+      'macOS 和 Linux 使用 npm 代替 npm.cmd；可以先直接运行 monitor，从 JSON 复制 id，再作为 job、items 或 cancel 的参数。仓库开发者也可以用 pnpm cli -- 执行相同子命令。完成后在 Mock 终端按 Ctrl+C 停止服务。CLI 参考和自动轮询的 Node 教程分别提供更完整的参数说明与代码。'
+    ]
+  },
+  {
     slug: 'mock-to-job-quickstart',
     title: '从本地 Mock 到一个完整的 Job',
     titleEn: 'From a local Mock to a completed Job',
@@ -63,4 +92,4 @@ export const BLOG_POSTS: BlogPost[] = [
 ];
 import { MOCK_TO_JOB_SOURCE } from '../example-source';
 
-export type BlogBlock = string | { kind: 'heading'; text: string } | { kind: 'code'; language: 'bash' | 'javascript' | 'json'; text: string };
+export type BlogBlock = string | { kind: 'heading'; text: string } | { kind: 'code'; language: 'bash' | 'powershell' | 'javascript' | 'json'; text: string };
