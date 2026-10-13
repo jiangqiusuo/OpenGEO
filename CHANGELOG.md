@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- 修复浏览器客户端调用原生 fetch 的接收者绑定，避免本地 Mock 读取触发 Illegal invocation 并回退 Fixture；默认与显式传入 fetch 均有回归。公共契约不变，npm 已发布 0.1.1 尚不包含此修复。
+
 - 保护博客代码块免受 CDN 邮箱混淆改写，保留 `package@version` 命令的静态文本与复制内容。
 
 - 新增已发布 0.1.1 CLI 的本地任务教程和 PowerShell 代码块，说明同 ID 查询、结果读取、幂等重试与取消；补充 CLI 到本机 HTTP Mock 的完整生命周期回归，明确 `--wait` 不自动轮询。无需发布新的 npm 包或改变公共契约。

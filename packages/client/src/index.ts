@@ -58,7 +58,7 @@ export class OpenGEORequestError extends Error {
 
 export class OpenGEOClient {
   private readonly request: typeof globalThis.fetch;
-  constructor(private readonly options: OpenGEOClientOptions) { this.request = options.fetch ?? globalThis.fetch; }
+  constructor(private readonly options: OpenGEOClientOptions) { this.request = (options.fetch ?? globalThis.fetch).bind(globalThis); }
   private endpoint(path: string): string { return `${this.options.baseUrl.replace(/\/$/, '')}${path}`; }
   private headers(initial: Record<string, string> = {}): Record<string, string> { return this.options.apiKey ? { ...initial, authorization: `Bearer ${this.options.apiKey}` } : initial; }
   private async json<T>(path: string, init?: RequestInit): Promise<T> {
