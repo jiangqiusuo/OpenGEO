@@ -33,8 +33,10 @@ function renderBlock(block: BlogBlock, index: number): string {
   return `<div class="code-example"><div class="code-toolbar"><span>${block.language}</span><button type="button" data-copy-code="code-${index}" aria-label="复制 ${block.language} 代码">复制</button></div><pre><code id="code-${index}"><!--email_off-->${text}<!--/email_off--></code></pre></div>`;
 }
 
-export interface MeasurementConfig { ga4Id?: string; clarityId?: string; clarityUpload?: string; }
+export interface MeasurementConfig { ga4Id?: string; clarityId?: string; clarityUpload?: string; indexNowKey?: string; }
 export function validateMeasurementConfig(config: MeasurementConfig): MeasurementConfig {
+  // IndexNow ownership proof is published as a text asset, not used for application authentication.
+  if (config.indexNowKey !== undefined && !/^[a-f0-9]{32}$/.test(config.indexNowKey)) throw new Error('Invalid IndexNow ownership key');
   if (config.ga4Id !== undefined && !/^G-[A-Z0-9]{6,15}$/.test(config.ga4Id)) throw new Error('Invalid GA4 measurement ID');
   if (config.clarityId !== undefined && !/^[a-z0-9]{6,20}$/.test(config.clarityId)) throw new Error('Invalid Clarity project ID');
   if (config.clarityUpload !== undefined && !/^https:\/\/[a-z0-9-]+\.clarity\.ms\/collect$/.test(config.clarityUpload)) throw new Error('Invalid Clarity upload URL');
@@ -76,6 +78,7 @@ export function generateContentSite(posts: BlogPost[], today: string, measuremen
   const assets = new Map<string, string>();
   const publicAssets = readPublicAssets();
   for (const asset of Object.values(publicAssets)) assets.set(asset.path, asset.source);
+  if (config.indexNowKey) assets.set('indexnow-verification.txt', config.indexNowKey);
   assets.set('homepage/index.html', renderHomepage('zh-CN', publicAssets, config.ga4Id));
   assets.set('en/index.html', renderHomepage('en', publicAssets, config.ga4Id));
   assets.set('home-sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${HOME}/</loc></url><url><loc>${HOME}/en/</loc></url></urlset>`);
