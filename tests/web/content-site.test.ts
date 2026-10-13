@@ -6,6 +6,18 @@ import { MOCK_TO_JOB_SOURCE } from '../../apps/web/example-source';
 const post = BLOG_POSTS[0];
 const today = '2026-10-13';
 describe('public content publishing boundaries', () => {
+  it('preserves version-pinned CLI code for static readers through the CDN email exclusion', () => {
+    const assets = generateContentSite(BLOG_POSTS, today);
+    const html = assets.get('blog/cli-local-quickstart/index.html')!;
+    const blocks = [...html.matchAll(/<code id="code-\d+">([\s\S]*?)<\/code>/g)].map((match) => match[1]);
+    expect(blocks).toHaveLength(4);
+    for (const block of blocks) {
+      expect(block.startsWith('<!--email_off-->')).toBe(true);
+      expect(block.endsWith('<!--/email_off-->')).toBe(true);
+    }
+    expect(html).toContain('--package=@sysiphus/cli@0.1.1');
+    expect(html).not.toContain('data-cfemail');
+  });
   it('keeps replay separately configured, masked and out of the 404 deployment', () => {
     const disabled = generateContentSite(BLOG_POSTS, today);
     expect(disabled.get('privacy/index.html')).toContain('data-replay-consent="granted" disabled');

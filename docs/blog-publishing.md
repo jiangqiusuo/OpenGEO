@@ -12,6 +12,8 @@
 
 阅读时间根据正文长度计算。正文支持纯文本段落、`heading` 标题和 `code` 代码块，HTML 标签均转义。代码块有独立于分析同意的复制按钮，禁止剪贴板时提示手动选择。修改 slug 会改变文章 URL，应保留旧路径重定向。
 
+代码块通过 Cloudflare 的 `email_off` 注释保护，避免 `package@version` 被当作邮箱改写。不要移除该边界；正式部署需要检查代码文本与构建产物一致，不能仅以 HTTP 200 判断教程可用。[Cloudflare 官方说明](https://developers.cloudflare.com/waf/tools/scrape-shield/email-address-obfuscation/)。
+
 Mock 教程的代码直接读取 `examples/mock-to-job.mjs`，下载文件也从同一内容生成。修改示例后必须通过真实本机 HTTP 执行测试，不能手工维护博客中的第二份代码。
 
 ## 页面与测量
