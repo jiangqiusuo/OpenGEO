@@ -57,7 +57,7 @@
     initialized = true;
     window[`ga-disable-${ga4Id}`] = false;
     window.dataLayer = [];
-    window.gtag = (...args) => { window.dataLayer.push(args); };
+    window.gtag = function () { window.dataLayer.push(arguments); };
     window.gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
     window.gtag('consent', 'update', { analytics_storage: 'granted', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
     window.gtag('js', new Date());

@@ -50,7 +50,8 @@ describe('consent-gated public analytics', () => {
     expect(b.appended).toHaveLength(1);
     expect(b.appended[0].src).toBe(`https://www.googletagmanager.com/gtag/js?id=${id}`);
     expect(b.appended[0].referrerPolicy).toBe('no-referrer');
-    expect(b.window.dataLayer[0]).toEqual(['consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' }]);
+    expect(Object.prototype.toString.call(b.window.dataLayer[0])).toBe('[object Arguments]');
+    expect(Array.from(b.window.dataLayer[0])).toEqual(['consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' }]);
     const config = b.window.dataLayer.find((entry) => entry[0] === 'config')![2];
     expect(config).toMatchObject({ send_page_view: false, page_location: 'https://app.open-geo.net/blog/', page_referrer: '', allow_google_signals: false, allow_ad_personalization_signals: false });
     expect(b.events).toHaveLength(1);
