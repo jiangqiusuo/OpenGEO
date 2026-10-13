@@ -111,6 +111,8 @@ main { margin-left: 252px; }
 .crumb, .slash { color: var(--subtle); }
 .slash { padding: 0 8px; }
 .top-actions { display: flex; align-items: center; gap: 5px; }
+.public-blog-link { padding: 7px 10px; color: var(--muted); border: 1px solid var(--line-soft); border-radius: 999px; text-decoration: none; font-size: 12px; }
+.public-blog-link:hover { color: var(--ink); border-color: var(--line); background: rgba(255,255,255,.72); }
 .icon-button { position: relative; width: 34px; height: 34px; border: 1px solid transparent; border-radius: 50%; display: grid; place-items: center; color: var(--muted); background: transparent; cursor: pointer; }
 .icon-button:hover { color: var(--ink); background: rgba(0, 0, 0, .06); }
 .planned-icon span { display: none; }
