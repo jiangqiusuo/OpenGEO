@@ -1,8 +1,32 @@
 import { describe, expect, it } from 'vitest';
-import { deriveWorkbenchView, loadWorkbenchView, parseAuditProjection } from '../apps/web/src/workbench-data.js';
+import { deriveWorkbenchView, loadWorkbenchView, parseAuditProjection, safeReferenceUrl } from '../apps/web/src/workbench-data.js';
 import { WORKBENCH_FIXTURE_V1 } from '../apps/web/src/workbench-fixture.v1.js';
 
 describe('Community workbench read model',()=>{
+  it('keeps each metric formula and supporting observation set aligned with its numerator',()=>{
+    const view=deriveWorkbenchView(WORKBENCH_FIXTURE_V1);
+    expect(view.metrics.map(item=>[item.id,item.supportIds.length])).toEqual([['mention',4],['top3',3],['owned',2],['valid',5]]);
+    const top3=view.metrics.find(item=>item.id==='top3')!;
+    expect(top3.supportIds).toEqual(['obs_workbench_1','obs_workbench_4','obs_workbench_5']);
+    expect(top3.formula).toContain('排名不大于 3');
+    expect(view.metrics.find(item=>item.id==='owned')!.definition).toContain('不等同回答明确引用');
+    expect(new Set(view.metrics.map(item=>item.formula)).size).toBe(4);
+  });
+  it('does not truncate metric evidence to the five-row overview preview',()=>{
+    const fixture=structuredClone(WORKBENCH_FIXTURE_V1);
+    fixture.observations.push({...structuredClone(fixture.observations[0]),id:'obs_sixth'});
+    const view=deriveWorkbenchView(fixture);
+    expect(view.observations).toHaveLength(6);
+    expect(view.metrics.find(item=>item.id==='mention')!.supportIds).toContain('obs_sixth');
+    expect(view.observations.find(item=>item.id==='obs_sixth')!.references[0]).toEqual({label:'lanzhou.example',url:'https://lanzhou.example/guides/1'});
+  });
+  it('does not turn unsafe or credential-bearing source URLs into links',()=>{
+    for(const value of ['javascript:alert(1)','data:text/html,test','https://user:pass@example.test','/relative',null])expect(safeReferenceUrl(value)).toBeNull();
+    expect(safeReferenceUrl('https://source.example/research')).toBe('https://source.example/research');
+    const fixture=structuredClone(WORKBENCH_FIXTURE_V1);
+    fixture.observations[0].retrieved_sources!.items[0].url='javascript:alert(1)';
+    expect(deriveWorkbenchView(fixture).observations[0].references[0].url).toBeNull();
+  });
   it('derives visible metrics from the versioned contract fixture',()=>{
     const view=deriveWorkbenchView(WORKBENCH_FIXTURE_V1);
     expect(view.fixtureVersion).toBe('workbench.v1');

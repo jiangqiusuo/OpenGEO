@@ -4,8 +4,9 @@ import { WORKBENCH_FIXTURE_V1, type WorkbenchFixture } from './workbench-fixture
 
 export type WorkbenchSource='fixture'|'mock-api'|'fixture-fallback';
 export type WorkbenchAuditSource='fixture'|'mock-api'|'fixture-fallback';
-export interface WorkbenchMetric { label:string;value:string;delta:string;tone:'blue'|'green'|'amber'|'ink';note:string }
-export interface WorkbenchEvidence { id:string;query:string;platform:string;brand:'已提及'|'未提及';rank:string;source:string;answer:string }
+export type WorkbenchMetricId='mention'|'top3'|'owned'|'valid';
+export interface WorkbenchMetric { id:WorkbenchMetricId;label:string;value:string;delta:string;tone:'blue'|'green'|'amber'|'ink';note:string;definition:string;formula:string;supportIds:string[];scope:string }
+export interface WorkbenchEvidence { id:string;query:string;platform:string;brand:'已提及'|'未提及';rank:string;source:string;answer:string;references:Array<{label:string;url:string|null}> }
 export interface WorkbenchRun { id:string;title:string;detail:string;completed:string;time:string;status:'success'|'waiting';canAnalyze:boolean }
 export interface WorkbenchAuditItem { id:string; action:string; operationKey:string; createdAt:string }
 export interface WorkbenchAuditSummary { version:'opengeo-audit-summary.v1'; source:WorkbenchAuditSource; status:'observed'|'fixture'|'fallback'|'not_available'; items:WorkbenchAuditItem[]; nextCursor:string|null; hasMore:boolean; note:string }
@@ -21,6 +22,10 @@ export interface WorkbenchLoadError { status?:number; code?:string; message?:str
 const percent=(value:number,total:number)=>total===0?'—':`${(value/total*100).toFixed(1)}%`;
 const observationMention=(item:Observation)=>item.brand_mentions?.some(mention=>mention.mentioned)??false;
 const observationRank=(item:Observation)=>item.rankings?.map(ranking=>ranking.rank).sort((a,b)=>a-b)[0]??null;
+export function safeReferenceUrl(value:unknown):string|null {
+  if(typeof value!=='string')return null;
+  try { const url=new URL(value);return ['https:','http:'].includes(url.protocol)&&!url.username&&!url.password?url.href:null; } catch { return null; }
+}
 const auditFromFixture=(fixture:WorkbenchFixture,source:WorkbenchAuditSource,note:string):WorkbenchAuditSummary=>({
   version:'opengeo-audit-summary.v1',source,status:source==='mock-api'?'observed':source==='fixture'?'fixture':'fallback',
   items:(fixture.audit?.items??[]).slice(0,10).map(item=>({id:item.id,action:item.action,operationKey:item.operationKey,createdAt:item.createdAt})),
@@ -32,7 +37,7 @@ export const deriveWorkbenchView=(fixture:WorkbenchFixture,source:WorkbenchSourc
   const mentioned=valid.filter(observationMention);
   const top3=valid.filter(item=>{const rank=observationRank(item);return rank!==null&&rank<=3;});
   const owned=valid.filter(item=>item.retrieved_sources?.items.some(sourceItem=>sourceItem.domain!==null&&sourceItem.domain!==undefined&&fixture.project.owned_domains.includes(sourceItem.domain)));
-  const observations=valid.slice(0,5).map(item=>{const rank=observationRank(item);const sources=item.retrieved_sources?.items.length??0;return {id:item.id,query:item.prompt.text,platform:`AI 回答 · ${item.target.surface==='mobile'?'移动端':'桌面端'}`,brand:observationMention(item)?'已提及' as const:'未提及' as const,rank:rank===null?'—':`第 ${rank} 位`,source:`${sources} 条来源`,answer:item.answer.text??'该样本没有可展示的回答正文。'};});
+  const observations=valid.map(item=>{const rank=observationRank(item);const sources=item.retrieved_sources?.items??[];return {id:item.id,query:item.prompt.text,platform:`AI 回答 · ${item.target.surface==='mobile'?'移动端':'桌面端'}`,brand:observationMention(item)?'已提及' as const:'未提及' as const,rank:rank===null?'—':`第 ${rank} 位`,source:`${sources.length} 条来源`,answer:item.answer.text??'该样本没有可展示的回答正文。',references:sources.map(source=>({label:source.domain??'参考来源',url:safeReferenceUrl(source.url)}))};});
   const runs=fixture.jobs.map((item,index)=>{const progress=item.progress;const total=progress?.total_items??0;const completed=progress?.completed_items??0;return {id:item.id,title:index===0?'品牌基础监测':'竞品补充监测',detail:`${total} 个样本 · 统一 Job`,completed:`${completed} / ${total}`,time:new Date(item.timestamps.updated_at).toLocaleString('zh-CN',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}),status:item.status==='succeeded'?'success' as const:'waiting' as const,canAnalyze:item.result_state==='sufficient'||item.result_state==='complete'||item.result_state==='finalized_partial'};});
   const validCount=valid.length;
   return {
@@ -40,13 +45,13 @@ export const deriveWorkbenchView=(fixture:WorkbenchFixture,source:WorkbenchSourc
     project:fixture.project,period:fixture.period,opportunity:fixture.opportunity,capabilities:fixture.capabilities.length,
     visibility:{value:percent(mentioned.length,validCount),count:`${mentioned.length} / ${validCount} 条有效回答`,trend:'演示基线'},
     metrics:[
-      {label:'品牌提及率',value:percent(mentioned.length,validCount),delta:'演示基线',tone:'blue',note:`${mentioned.length} / ${validCount} 条有效回答`},
-      {label:'绝对 Top 3',value:percent(top3.length,validCount),delta:'演示基线',tone:'green',note:`${top3.length} / ${validCount} 条有效回答`},
-      {label:'自有域名引用率',value:percent(owned.length,validCount),delta:'演示基线',tone:'amber',note:`${owned.length} / ${validCount} 条有效回答`},
-      {label:'有效样本',value:String(validCount),delta:percent(validCount,fixture.observations.length),tone:'ink',note:`${fixture.observations.length-validCount} 条无效样本`},
+      {id:'mention',label:'品牌提及率',value:percent(mentioned.length,validCount),delta:'模拟数据',tone:'blue',note:`${mentioned.length} / ${validCount} 条有效回答`,definition:'已加载的有效回答中，存在品牌提及的回答占比。',formula:'含品牌提及的有效回答 ÷ 已加载有效回答',supportIds:mentioned.map(item=>item.id),scope:`${validCount} 条已加载有效回答`},
+      {id:'top3',label:'绝对 Top 3',value:percent(top3.length,validCount),delta:'模拟数据',tone:'green',note:`${top3.length} / ${validCount} 条有效回答`,definition:'已加载的有效回答中，最佳记录排名不大于 3 的回答占比。',formula:'排名不大于 3 的有效回答 ÷ 已加载有效回答',supportIds:top3.map(item=>item.id),scope:`${validCount} 条已加载有效回答`},
+      {id:'owned',label:'自有域名引用率',value:percent(owned.length,validCount),delta:'模拟数据',tone:'amber',note:`${owned.length} / ${validCount} 条有效回答`,definition:'检索来源中包含本项目自有域名的有效回答占比；检索来源不等同回答明确引用。',formula:'检索来源包含自有域名的有效回答 ÷ 已加载有效回答',supportIds:owned.map(item=>item.id),scope:`${validCount} 条已加载有效回答`},
+      {id:'valid',label:'有效样本',value:String(validCount),delta:percent(validCount,fixture.observations.length),tone:'ink',note:`${fixture.observations.length-validCount} 条无效样本`,definition:'已加载观察中 quality.is_valid 为 true 的数量。比例为有效观察占已加载观察的比重，不是任务完成度。',formula:'有效观察数量；有效比例 = 有效观察 ÷ 已加载观察',supportIds:valid.map(item=>item.id),scope:`${fixture.observations.length} 条已加载观察`},
     ],
     workflow:[
-      {title:'设置问题',detail:`${validCount} 个演示问题`,state:'done'},
+      {title:'设置问题',detail:`${new Set(valid.map(item=>item.prompt.text)).size} 个演示问题`,state:'done'},
       {title:'执行监测',detail:`${validCount} 条有效回答`,state:'done'},
       {title:'理解表现',detail:`${fixture.capabilities.length} 项可用能力`,state:'current'},
       {title:'生成内容',detail:'规划中',state:'planned'},
