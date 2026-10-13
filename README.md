@@ -61,6 +61,8 @@ pnpm web:dev
 
 默认 Mock 地址为 `http://localhost:8787`。工作台预览地址为 <https://app.open-geo.net/>，本地开发时使用 Vite 输出的地址。
 
+[产品介绍](https://app.open-geo.net/about/)说明当前功能与开始方式；[博客](https://app.open-geo.net/blog/)介绍可见度、证据与观察方法。线上工作台当前为示例预览。
+
 ### 版本路线
 
 | 版本 | 方向 | 计划交付 |
@@ -141,6 +143,8 @@ pnpm web:dev
 ```
 
 The default Mock endpoint is `http://localhost:8787`. The hosted workbench preview is available at <https://app.open-geo.net/>; local development uses the address printed by Vite.
+
+Read the [product introduction](https://app.open-geo.net/about/) for current capabilities and getting started, or the [blog](https://app.open-geo.net/blog/) for visibility and evidence methods. The hosted workbench currently uses demonstration data.
 
 ### Version roadmap
 

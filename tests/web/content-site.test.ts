@@ -5,6 +5,18 @@ import { BLOG_POSTS } from '../../apps/web/src/blog-content';
 const post = BLOG_POSTS[0];
 const today = '2026-10-13';
 describe('public content publishing boundaries', () => {
+  it('renders a truthful static product introduction and keeps deployment IDs optional', () => {
+    const assets = generateContentSite([post], today);
+    expect(assets.get('about/index.html')).toContain('本地 Mock 无需 API Key');
+    expect(assets.get('about/index.html')).toContain('示例预览');
+    expect(assets.get('sitemap.xml')).toContain(`${SITE}/about/`);
+    expect(assets.get('about/index.html')).not.toContain('opengeo-ga4-id');
+    const enabled = generateContentSite([post], today, { ga4Id: 'G-TEST123456' });
+    expect(enabled.get('about/index.html')).toContain('name="opengeo-ga4-id" content="G-TEST123456"');
+    expect(enabled.get('privacy/index.html')).toContain('本部署已配置 Google Analytics 4');
+    expect(enabled.get('404.html')).not.toContain('opengeo-ga4-id');
+    expect(() => generateContentSite([post], today, { ga4Id: '"><script>' })).toThrow(/measurement ID/);
+  });
   it('keeps drafts and future publications out of HTML, feed and sitemap', () => {
     const assets = generateContentSite([post, { ...post, slug: 'private-draft', status: 'draft', title: 'PRIVATE DRAFT' }, { ...post, slug: 'future-post', title: 'FUTURE POST', publishedAt: '2026-11-01', updatedAt: '2026-11-01' }], today);
     expect(assets.has('blog/private-draft/index.html')).toBe(false);
