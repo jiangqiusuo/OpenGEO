@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { DEFAULT_WORKBENCH_VIEW, loadWorkbenchView } from './workbench-data';
+import { BlogApp } from './BlogApp';
 
 type IconName = 'overview'|'project'|'prompt'|'pulse'|'evidence'|'content'|'publish'|'compare'|'usage'|'settings'|'arrow'|'search'|'bell'|'chevron'|'spark'|'check'|'clock'|'external'|'close';
 
@@ -43,7 +44,7 @@ const auditActionLabel=(action:string)=>({
 }[action]??action);
 const auditTime=(value:string)=>new Date(value).toLocaleString('zh-CN',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
 
-export function App(){
+function WorkbenchApp(){
   const [drawerOpen,setDrawerOpen]=useState(false);
   const [toast,setToast]=useState('');
   const [workbench,setWorkbench]=useState(DEFAULT_WORKBENCH_VIEW);
@@ -216,4 +217,8 @@ export function App(){
     </div>}
     {toast&&<div className="toast" role="status"><span><Icon name="clock" size={16}/></span>{toast}</div>}
   </div>;
+}
+
+export function App(){
+  return window.location.pathname.startsWith('/blog') ? <BlogApp /> : <WorkbenchApp />;
 }

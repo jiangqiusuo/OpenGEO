@@ -30,6 +30,48 @@ button { color: inherit; }
 .drawer-open { overflow: hidden; }
 .shell { min-height: 100vh; }
 
+/* Public blog: an editorial layer over the quiet workbench, with a rust signal used only for content emphasis. */
+.blog-shell { min-height: 100vh; color: #20242b; background: #f6f5f1; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.blog-header { max-width: 1180px; margin: 0 auto; padding: 24px 32px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #d9d7d1; }
+.blog-brand { display: inline-flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; font-weight: 750; letter-spacing: -.04em; }
+.blog-brand img { width: 24px; height: 24px; }
+.blog-header nav { display: flex; align-items: center; gap: 24px; font-size: 13px; }
+.blog-header nav a { color: #5d626a; text-decoration: none; }
+.blog-header nav a:hover { color: #20242b; }
+.blog-cta { padding: 9px 14px; color: #fff !important; background: #20242b; border-radius: 999px; }
+.blog-main { max-width: 1180px; margin: 0 auto; padding: 0 32px 72px; }
+.blog-hero { max-width: 780px; padding: 112px 0 84px; }
+.blog-kicker, .post-category { color: #a34f31; font-size: 11px; font-weight: 750; letter-spacing: .13em; text-transform: uppercase; }
+.blog-hero h1 { margin: 18px 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(52px, 8vw, 96px); font-weight: 500; line-height: .96; letter-spacing: -.07em; }
+.blog-hero h1 em { color: #a34f31; font-style: normal; }
+.blog-hero p { max-width: 520px; color: #62666d; font-size: 18px; line-height: 1.6; }
+.blog-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.post-card { min-height: 290px; padding: 28px; display: flex; flex-direction: column; text-decoration: none; color: inherit; background: #fff; border: 1px solid #d9d7d1; border-radius: 18px; transition: transform .2s ease, box-shadow .2s ease; }
+.post-card:hover { transform: translateY(-3px); box-shadow: 0 18px 36px rgba(32,36,43,.09); }
+.post-card h2 { max-width: 500px; margin: 22px 0 12px; font-family: Georgia, "Times New Roman", serif; font-size: 34px; font-weight: 500; line-height: 1.08; letter-spacing: -.045em; }
+.post-card p { max-width: 520px; color: #62666d; line-height: 1.65; }
+.post-link { margin-top: auto; color: #a34f31; font-size: 13px; font-weight: 700; }
+.blog-subscribe { margin-top: 16px; padding: 32px; display: flex; align-items: end; justify-content: space-between; gap: 24px; color: #f6f5f1; background: #20242b; border-radius: 18px; }
+.blog-subscribe h2 { margin: 14px 0 8px; font-family: Georgia, "Times New Roman", serif; font-size: 36px; font-weight: 500; letter-spacing: -.04em; }
+.blog-subscribe p { max-width: 520px; margin: 0; color: #c8c8c2; line-height: 1.6; }
+.blog-subscribe a { flex: 0 0 auto; padding: 12px 16px; color: #20242b; background: #f6f5f1; border-radius: 999px; text-decoration: none; font-size: 13px; font-weight: 700; }
+.blog-article { max-width: 760px; padding: 70px 0 40px; }
+.back-link { color: #6b6e74; text-decoration: none; font-size: 13px; }
+.blog-article h1 { margin: 28px 0 12px; font-family: Georgia, "Times New Roman", serif; font-size: clamp(44px, 7vw, 76px); font-weight: 500; line-height: 1; letter-spacing: -.065em; }
+.blog-subtitle { margin: 0; color: #8a8a83; font-size: 19px; }
+.blog-meta { margin: 24px 0 56px; color: #8a8a83; font-size: 12px; }
+.article-body p { margin: 0 0 24px; color: #42464d; font-size: 18px; line-height: 1.82; }
+.article-note { margin-top: 48px; padding: 20px; display: grid; gap: 6px; border-left: 3px solid #a34f31; background: #ebe8df; }
+.article-note span { color: #62666d; line-height: 1.55; }
+.blog-footer { max-width: 1180px; margin: 0 auto; padding: 22px 32px 32px; display: flex; justify-content: space-between; gap: 20px; color: #8a8a83; font-size: 12px; }
+.consent-bar { position: fixed; right: 20px; bottom: 20px; z-index: 40; max-width: 520px; padding: 18px; display: flex; align-items: end; gap: 20px; color: #fff; background: #20242b; border-radius: 14px; box-shadow: 0 18px 40px rgba(0,0,0,.22); }
+.consent-bar p { margin: 6px 0 0; color: #c8c8c2; font-size: 12px; line-height: 1.5; }
+.consent-actions { display: flex; flex: 0 0 auto; gap: 8px; }
+.consent-actions button { padding: 9px 11px; color: #fff; background: transparent; border: 1px solid #62666d; border-radius: 999px; cursor: pointer; font-size: 12px; }
+.consent-actions .consent-primary { color: #20242b; background: #f6f5f1; border-color: #f6f5f1; }
+@media (max-width: 700px) { .blog-header, .blog-main, .blog-footer { padding-left: 18px; padding-right: 18px; } .blog-header nav a:not(.blog-cta) { display: none; } .blog-hero { padding: 72px 0 52px; } .blog-grid { grid-template-columns: 1fr; } .blog-subscribe, .blog-footer, .consent-bar { display: block; } .blog-subscribe a { display: inline-block; margin-top: 24px; } .consent-bar { right: 12px; bottom: 12px; left: 12px; } .consent-actions { margin-top: 14px; } }
+@media (prefers-reduced-motion: reduce) { .post-card { transition: none; } .post-card:hover { transform: none; } }
+
 /* The workbench uses a quiet, system-like shell: navigation recedes so evidence stays primary. */
 .sidebar {
   position: fixed; inset: 0 auto 0 0; z-index: 20; width: 252px; padding: 24px 16px 18px;
