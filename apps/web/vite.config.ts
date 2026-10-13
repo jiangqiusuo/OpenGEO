@@ -35,7 +35,7 @@ function contentSite(enableDeploymentConfig: boolean): Plugin {
     configurePreviewServer(server) {
       server.middlewares.use((request, response, next) => {
         const path = (request.url || '/').split('?')[0];
-        if ((path.startsWith('/blog/') || path.startsWith('/privacy/') || path.startsWith('/about/')) && !assets().has(path.slice(1).replace(/\/$/, '/index.html'))) {
+        if ((path.startsWith('/blog/') || path.startsWith('/privacy/') || path.startsWith('/about/') || path.startsWith('/homepage/')) && !assets().has(path.slice(1).replace(/\/$/, '/index.html'))) {
           response.statusCode = 404;
           response.setHeader('Content-Type', 'text/html; charset=utf-8');
           response.end(assets().get('404.html'));
