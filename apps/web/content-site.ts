@@ -27,7 +27,8 @@ function renderBlock(block: BlogBlock, index: number): string {
   const text = escape(blockText(block));
   if (typeof block === 'string') return `<p>${text}</p>`;
   if (block.kind === 'heading') return `<h2 id="section-${index}">${text}</h2>`;
-  return `<div class="code-example"><div class="code-toolbar"><span>${block.language}</span><button type="button" data-copy-code="code-${index}" aria-label="复制 ${block.language} 代码">复制</button></div><pre><code id="code-${index}">${text}</code></pre></div>`;
+  // Package@version is not an email address. Preserve code through Cloudflare HTML rewriting.
+  return `<div class="code-example"><div class="code-toolbar"><span>${block.language}</span><button type="button" data-copy-code="code-${index}" aria-label="复制 ${block.language} 代码">复制</button></div><pre><code id="code-${index}"><!--email_off-->${text}<!--/email_off--></code></pre></div>`;
 }
 
 export interface MeasurementConfig { ga4Id?: string; clarityId?: string; clarityUpload?: string; }
