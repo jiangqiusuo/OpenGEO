@@ -2,6 +2,18 @@ import { describe, expect, it, vi } from 'vitest';
 import { OpenGEOClient, OpenGEORequestError } from '@sysiphus/client';
 
 describe('Community client',()=>{
+  it.each(['default', 'injected'] as const)('preserves the browser fetch receiver for %s requests', async (mode) => {
+    const nativeLikeFetch: typeof fetch = function (this: typeof globalThis) {
+      if (this !== globalThis) throw new TypeError('Illegal invocation');
+      return Promise.resolve(Response.json({ data: [] }));
+    };
+    const original = globalThis.fetch;
+    try {
+      globalThis.fetch = nativeLikeFetch;
+      const client = new OpenGEOClient({ baseUrl: 'http://127.0.0.1:8787', ...(mode === 'injected' ? { fetch: nativeLikeFetch } : {}) });
+      await expect(client.capabilities()).resolves.toEqual({ data: [] });
+    } finally { globalThis.fetch = original; }
+  });
   it('creates a neutral overseas monitoring Job request without provider fields',async()=>{
     const request=vi.fn(async(_url:RequestInfo|URL,_init?:RequestInit)=>new Response(JSON.stringify({id:'job_demo_queued',status:'queued'}),{status:202,headers:{'content-type':'application/json'}}));
     const client=new OpenGEOClient({baseUrl:'https://api.opengeo.test',fetch:request});
