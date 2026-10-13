@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="224" viewBox="0 0 360 224" fill="none">
+  <rect width="360" height="224" rx="16" fill="#F5F8FC"/>
+  <rect x="40" y="28" width="280" height="168" rx="12" fill="#202329"/>
+  <path d="M40 59H320" stroke="#3A414D"/>
+  <circle cx="58" cy="44" r="3" fill="#8793A5"/><circle cx="70" cy="44" r="3" fill="#8793A5"/><circle cx="82" cy="44" r="3" fill="#8793A5"/>
+  <g font-family="monospace" font-size="12">
+    <text x="60" y="87" fill="#9DBFFA">$ opengeo monitor</text>
+    <text x="60" y="113" fill="#D2D9E4">job_mock_1</text>
+    <text x="60" y="151" fill="#9DBFFA">$ opengeo items</text>
+    <text x="60" y="177" fill="#D2D9E4">{ data: [...] }</text>
+  </g>
+  <path d="M262 172H271" stroke="#9DBFFA" stroke-width="2"/>
+</svg>
