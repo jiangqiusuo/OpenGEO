@@ -15,6 +15,12 @@
 
 在线预览：<https://app.open-geo.net/>（备用地址：<https://opengeo-workbench.pages.dev/>）
 
+品牌首页：<https://open-geo.net/>。首页使用静态 HTML，提供产品预览、工作流程、方法文章和 FAQ；所有数字来自公开 Fixture 并注明模拟数据，不代表客户或优化成果。现有工作台、介绍、博客和文档保留为独立入口。
+
+本地首页预览为 `/homepage/`。构建输出 `homepage/index.html`，部署时将品牌根域 `/` 重写到该静态路径；工作台域名的 `/` 继续使用 Vite 应用。首页 canonical 指向品牌根域，独立 `home-sitemap.xml` 只列根域首页，原博客地图保持原有 URL。
+
+品牌首页不加载访问统计或交互录屏脚本；现有公开介绍/博客的独立测量授权逻辑保持。后续如接线首页测量，需要单独验证同意、撤回、查询参数与来源隔离。
+
 工作台与公开介绍、博客、隐私页共用 `design-tokens.css` 的颜色、CJK 字体、代码字体、焦点和圆角。公共静态页面引用带内容指纹的同一份样式，工作台由 Vite 打包；阅读页面保留独立的正文尺寸与行宽。接口的部分结果处理见 [操作指南](../../docs/job-results.md)。
 
 公开博客：<https://app.open-geo.net/blog/>；RSS：<https://app.open-geo.net/rss.xml>。博客文章只使用公开方法和脱敏示例，不包含任务、客户或供应商数据。

@@ -6,6 +6,20 @@ import { MOCK_TO_JOB_SOURCE } from '../../apps/web/example-source';
 const post = BLOG_POSTS[0];
 const today = '2026-10-13';
 describe('public content publishing boundaries', () => {
+  it('keeps the root homepage crawlable, linked and distinct from the app measurement surface', () => {
+    const assets = generateContentSite(BLOG_POSTS, today, { ga4Id: 'G-TEST123456', clarityId: 'test123456', clarityUpload: 'https://test.clarity.ms/collect' });
+    const html = assets.get('homepage/index.html')!;
+    expect(html.match(/<h1[\s>]/g)).toHaveLength(1);
+    expect(html).toContain('href="https://open-geo.net/"');
+    expect(html).toContain('模拟数据 · 非真实监测');
+    expect(html).toContain('https://app.open-geo.net/');
+    expect(html).toContain('https://app.open-geo.net/blog/');
+    expect(html).not.toMatch(/opengeo-ga4-id|opengeo-clarity-id|gtag|<script[^>]+src=/);
+    const schema = JSON.parse(html.match(/<script type="application\/ld\+json">(.*?)<\/script>/)![1]);
+    expect(schema['@graph'].map((node: { '@type': string }) => node['@type'])).toEqual(['Organization', 'WebSite', 'WebPage', 'SoftwareSourceCode']);
+    expect(JSON.stringify(schema)).not.toMatch(/aggregateRating|reviewCount|offers/);
+    expect(assets.get('home-sitemap.xml')).toContain('<loc>https://open-geo.net/</loc>');
+  });
   it('preserves version-pinned CLI code for static readers through the CDN email exclusion', () => {
     const assets = generateContentSite(BLOG_POSTS, today);
     const html = assets.get('blog/cli-local-quickstart/index.html')!;
