@@ -16,12 +16,14 @@ Mock 教程的代码直接读取 `examples/mock-to-job.mjs`，下载文件也从
 
 ## 页面与测量
 
-正文直接存在于 HTML 中，禁用 JavaScript 也可阅读。真实静态页面共享 `/public-site.js`、`/content.css` 和 `/privacy/` 设置入口；不存在的路径由 `404.html` 返回错误页面。
+正文直接存在于 HTML 中，禁用 JavaScript 也可阅读。真实静态页面共享构建时按内容指纹命名的样式/脚本和 `/privacy/` 设置入口；不存在的路径由 `404.html` 返回错误页面。不要手工固定资源路径或覆盖生成产物。
 
 构建默认不配置分析收集器。部署时可通过 `OPENGEO_PUBLIC_GA4_ID` 配置 GA4 ID，不在公开源码中硬编码。开发与 Pages 预览域名不加载分析；实际发布域名上，也只有 v2 明确同意后才在 `/about/` 和真实博客页面加载 Google 脚本。旧 v1 授权不会自动升级。
 
 固定事件为 `landing_view`、`blog_index_view`、`blog_article_view`、`docs_click`、`github_click` 和 `workbench_click`，另发送显式 `page_view`。调用参数中的页面地址无查询参数或片段，来源字段为空；带参数/片段的访问、工作台、API、设置页和 404 不启动收集器。不会把输入、API Key 或任务数据写入事件。
 
-存储不可用、Do Not Track 或 Global Privacy Control 时不启用分析。撤回先禁用事件、清理本部署分析 Cookie，再重载文档以卸载 SDK。第三方脚本被屏蔽时页面仍可使用。GA4 会处理设备、网络信息与分析 Cookie，不能描述为“完全匿名”；Microsoft Clarity 录屏仍未启用。
+存储不可用、Do Not Track 或 Global Privacy Control 时不启用分析。撤回先禁用事件、清理本部署分析 Cookie，再重载文档以卸载 SDK。第三方脚本被屏蔽时页面仍可使用。GA4 会处理设备、网络信息与分析 Cookie，不能描述为“完全匿名”。
+
+可选录屏通过 `OPENGEO_PUBLIC_CLARITY_ID` 与 `OPENGEO_PUBLIC_CLARITY_UPLOAD` 一起配置，默认关闭。选择使用独立 `opengeo:public-replay:v1`，不继承 GA4 v2。所有静态正文显式屏蔽，录屏排除来源地址非空、带参数/片段、嵌入页面、工作台、隐私页、404、预览域名；同意与广告存储信号也分别处理。下载官方固定版本 SDK 后再次检查选择，只有仍允许时才启动；撤回停止 SDK、清理对应 Cookie 并重载。发布前需独立验证真实网络和后台回放，不能只靠本地测试宣称录屏已可用。
 
 接线依据：[Google 同意模式](https://developers.google.com/tag-platform/security/guides/consent)、[手动 page_view 与关闭默认 page_view](https://developers.google.com/analytics/devguides/collection/ga4/views)。浏览器请求成功不等同后台报表已出现，后台验收需另记录。
