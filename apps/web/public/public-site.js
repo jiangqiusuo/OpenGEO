@@ -64,7 +64,9 @@
       if (status) status.textContent = message + (loadFailed ? english ? ' Analytics could not load. The page still works.' : ' 分析脚本加载失败，页面仍可正常使用。' : '');
     }
     const panel = document.getElementById('consent-panel');
-    if (panel) panel.hidden = !(ga4Id && collectorContext() && consent === 'unknown');
+    // Display preferences independently of collection eligibility (including campaign URLs and previews).
+    if (panel) panel.hidden = !(ga4Id && ['landing', 'blog_index', 'blog_article'].includes(pageKind) && storageAvailable && consent === 'unknown');
+    document.querySelectorAll('[data-consent="granted"]').forEach(button => { button.disabled = !ga4Id || privacySignal() || !storageAvailable; });
   };
   const start = () => {
     if (initialized || consent !== 'granted' || !ga4Id || !collectorContext()) return;

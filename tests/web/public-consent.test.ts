@@ -41,6 +41,24 @@ function browser(stored: string | null, options: { path?: string; kind?: string;
   return { events, handlers, storage, listeners, status, panel, appended, window, deletedCookies, reload, modal, analytics };
 }
 describe('consent-gated public analytics', () => {
+  it.each([{ path: '/' }, { path: '/en/', english: true }, { path: '/', search: '?utm_source=test' }, { path: '/', hash: '#product' }])('shows first-visit choices even when URL-based collection is excluded: %j', options => {
+    const b = browser(null, { host: 'open-geo.net', kind: 'landing', home: true, ...options });
+    expect(b.panel.hidden).toBe(false);
+    expect(b.appended).toHaveLength(0);
+    b.handlers['consent:denied']();
+    expect(b.panel.hidden).toBe(true);
+    const returning = browser('denied', { host: 'open-geo.net', kind: 'landing', home: true, ...options });
+    expect(returning.panel.hidden).toBe(true);
+    expect(returning.appended).toHaveLength(0);
+  });
+  it('allows real first-visit UI on a fresh preview origin without enabling a collector there', () => {
+    const b = browser(null, { host: 'fresh.opengeo-workbench.pages.dev', path: '/en/', kind: 'landing', modal: true });
+    expect(b.panel.hidden).toBe(false);
+    b.handlers['consent:granted']();
+    expect(b.panel.hidden).toBe(true);
+    expect(b.appended).toHaveLength(0);
+    expect(b.events).toHaveLength(0);
+  });
   it('opening preferences and closing unsaved edits does not grant consent or load analytics', () => {
     const b = browser(null, { modal: true });
     b.handlers['[data-cookie-settings]']();
