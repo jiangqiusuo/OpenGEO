@@ -38,6 +38,16 @@ function browser(stored: string | null, options: { path?: string; kind?: string;
   return { events, handlers, storage, listeners, status, panel, appended, window, deletedCookies, reload };
 }
 describe('consent-gated public analytics', () => {
+  it('keeps English analytics on the app origin and withdraws root English privacy consent separately', () => {
+    const app = browser('granted', { path: '/en/blog/cli-local-quickstart/', kind: 'blog_article', english: true });
+    expect(app.appended).toHaveLength(1);
+    expect(app.window.dataLayer.find(entry => entry[0] === 'config')![2]).toMatchObject({ page_location: 'https://app.open-geo.net/en/blog/cli-local-quickstart/' });
+    const root = browser('granted', { host: 'open-geo.net', path: '/en/privacy/', kind: 'other', home: true, english: true });
+    expect(root.appended).toHaveLength(0);
+    root.handlers['consent:denied']();
+    expect(root.storage.get('opengeo:homepage-consent:v1')).toBe('denied');
+    expect(root.storage.has(key)).toBe(false);
+  });
   it.each(['/', '/en/'])('requires a separate homepage opt-in at %s and sends the actual canonical origin', (path) => {
     const options = { host: 'open-geo.net', path, kind: 'landing', english: path === '/en/' };
     const prior = browser('granted', options);

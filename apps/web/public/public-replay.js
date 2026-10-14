@@ -7,7 +7,7 @@
   const id = /^[a-z0-9]{6,20}$/.test(rawId) ? rawId : '';
   const rawUpload = document.querySelector('meta[name="opengeo-clarity-upload"]')?.getAttribute('content') || '';
   const upload = /^https:\/\/[a-z0-9-]+\.clarity\.ms\/collect$/.test(rawUpload) ? rawUpload : '';
-  const paths = /^\/(?:about\/|blog\/(?:[a-z0-9-]+\/)?)$/;
+  const paths = /^\/(?:en\/)?(?:about\/|blog\/(?:[a-z0-9-]+\/)?)$/;
   let consent = 'unknown';
   let storageAvailable = true;
   let started = false;
@@ -50,6 +50,15 @@
   };
   const render = () => {
     const status = document.getElementById('replay-status');
+    const en = document.documentElement?.lang === 'en';
+    if (en && status) {
+      status.textContent = !storageAvailable ? 'Your recording preference could not be saved. Recording remains off.'
+        : consent === 'denied' ? 'Public-page recording is disabled.'
+        : consent === 'granted' ? id ? 'Public-page recording is allowed only on eligible public pages.' : 'Recording is not configured. No recording service will load.'
+        : 'No choice yet. Recording is off by default.';
+      if (loadFailed) status.textContent += ' The recording script failed to load. You can still use this page.';
+      return;
+    }
     if (status) status.textContent = !storageAvailable ? '无法保存录屏选择，录屏保持关闭。'
       : consent === 'denied' ? '已拒绝公开页录屏。'
       : consent === 'granted' ? id ? '已允许公开页录屏；仅在符合条件的公开页面运行。' : '录屏尚未启用，当前不会加载录屏服务。'

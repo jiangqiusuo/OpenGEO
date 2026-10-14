@@ -5,11 +5,11 @@
   document.querySelectorAll('button[data-copy-code]').forEach((button) => button.addEventListener('click', async () => {
     const text = document.getElementById(button.getAttribute('data-copy-code'))?.textContent;
     if (!text) return;
-    try { await window.navigator.clipboard.writeText(text); button.textContent = '已复制'; }
-    catch { button.textContent = '无法复制，请手动选择'; }
+    try { await window.navigator.clipboard.writeText(text); button.textContent = document.documentElement?.lang === 'en' ? 'Copied' : '已复制'; }
+    catch { button.textContent = document.documentElement?.lang === 'en' ? 'Could not copy; select the code manually.' : '无法复制，请手动选择'; }
   }));
   // Homepage opt-in is separate from previous app/blog consent.
-  const homepageScope = window.location.hostname === 'open-geo.net' && ['/', '/en/', '/privacy/'].includes(window.location.pathname);
+  const homepageScope = window.location.hostname === 'open-geo.net' && ['/', '/en/', '/privacy/', '/en/privacy/'].includes(window.location.pathname);
   const key = homepageScope ? 'opengeo:homepage-consent:v1' : 'opengeo:public-consent:v2';
   const english = document.documentElement?.lang === 'en';
   const id = document.querySelector('meta[name="opengeo-ga4-id"]')?.getAttribute('content') || '';
@@ -21,7 +21,7 @@
   let script;
   let viewed = false;
   let loadFailed = false;
-  const publicPath = /^\/(?:about\/|blog\/(?:[a-z0-9-]+\/)?)$/;
+  const publicPath = /^\/(?:en\/)?(?:about\/|blog\/(?:[a-z0-9-]+\/)?)$/;
   const events = new Set(['landing_view', 'blog_index_view', 'blog_article_view', 'docs_click', 'github_click', 'workbench_click']);
   const privacySignal = () => window.navigator?.globalPrivacyControl === true || window.navigator?.doNotTrack === '1';
   const publicPage = () => ['landing', 'blog_index', 'blog_article'].includes(pageKind) && (

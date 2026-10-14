@@ -50,6 +50,10 @@ function browser(replay: string | null, options: Options = {}) {
 }
 
 describe('separate opt-in public replay', () => {
+  it('permits translated public content but excludes translated privacy and homepage routes', () => {
+    expect(browser('granted', { path: '/en/blog/cli-local-quickstart/', kind: 'blog_article' }).appended).toHaveLength(1);
+    for (const path of ['/en/', '/en/privacy/']) expect(browser('granted', { path }).appended).toHaveLength(0);
+  });
   it('does not inherit analytics consent or load before a separate grant', () => {
     for (const consent of [null, 'denied', 'invalid']) expect(browser(consent, { analytics: 'granted' }).appended).toHaveLength(0);
     const b = browser(null, { analytics: 'denied' }); b.handlers.granted(); b.handlers.granted();
