@@ -50,6 +50,15 @@ describe('complete public-language journeys', () => {
     expect(html).toContain('loading="lazy"');
     expect(html).toContain('width="960" height="640"');
   });
+  it('uses separate article covers instead of repeating the feature concepts in either language', () => {
+    const assets = generateContentSite(BLOG_POSTS, '2026-10-14');
+    for (const path of ['homepage/index.html', 'en/index.html']) {
+      const html = assets.get(path)!;
+      const section = html.split('class="home-section home-resources"')[1].split('</section>')[0];
+      expect(section).not.toContain('/concepts/');
+      for (const name of ['journal-evidence', 'journal-cli', 'journal-partial']) expect(section).toContain(`/journal/${name}-480.webp`);
+    }
+  });
 });
 
 describe('optional site interactions', () => {
