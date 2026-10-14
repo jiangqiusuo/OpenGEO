@@ -53,11 +53,12 @@ describe('complete public-language journeys', () => {
 });
 
 describe('optional site interactions', () => {
-  it('honors reduced motion, manual pause, background tabs and keyboard escape without analytics', () => {
+  it('honors reduced motion, persistent disclosure pause, background tabs and keyboard escape without analytics', () => {
     const listeners: Record<string, () => void> = {};
     const classes = new Set<string>();
-    const control = { hidden: true, textContent: '', setAttribute: vi.fn(), addEventListener: (_: string, fn: () => void) => { listeners.pause = fn; } };
     const focus = vi.fn();
+    let platformEscape: (event: { key: string }) => void = () => {};
+    const disclosure = { open: false, querySelector: () => ({ focus }), addEventListener: (name: string, fn: (() => void) | typeof platformEscape) => { if (name === 'toggle') listeners.toggle = fn as () => void; else platformEscape = fn; } };
     let escape: (event: { key: string }) => void = () => {};
     let choose: () => void = () => {};
     const menu = { open: true, contains: () => false, querySelector: () => ({ focus }), addEventListener: (_: string, fn: typeof escape) => { escape = fn; } };
@@ -66,21 +67,21 @@ describe('optional site interactions', () => {
     const document = {
       hidden: false, documentElement: { lang: 'en' },
       querySelectorAll: (selector: string) => selector === '.locale-switcher' ? [menu] : [{ getAttribute: () => 'en', addEventListener: (_: string, fn: () => void) => { choose = fn; } }],
-      querySelector: () => ({ querySelector: () => control, classList: { toggle: (name: string, on: boolean) => on ? classes.add(name) : classes.delete(name) } }),
+      querySelector: () => ({ querySelector: () => disclosure, classList: { toggle: (name: string, on: boolean) => on ? classes.add(name) : classes.delete(name) } }),
       addEventListener: (name: string, fn: () => void) => { listeners[name] = fn; }
     };
     const window = { matchMedia: () => media, localStorage: { setItem: (key: string, value: string) => storage.set(key, value) } };
     runInNewContext(readFileSync(new URL('../../apps/web/public/site-interactions.js', import.meta.url), 'utf8'), { document, window });
-    expect(control.hidden).toBe(false); expect(classes.has('motion-ready')).toBe(false);
-    expect(control.textContent).toBe('Start carousel');
-    listeners.pause(); expect(classes.has('motion-ready')).toBe(true);
-    expect(control.textContent).toBe('Pause animation');
+    expect(classes.has('motion-ready')).toBe(false);
     media.matches = false; listeners.motion();
-    expect(control.hidden).toBe(false); expect(classes.has('motion-ready')).toBe(true);
-    listeners.pause(); expect(classes.has('motion-paused')).toBe(true); expect(control.textContent).toBe('Resume animation');
-    listeners.pause(); document.hidden = true; listeners.visibilitychange(); expect(classes.has('motion-paused')).toBe(true);
+    expect(classes.has('motion-ready')).toBe(true);
+    disclosure.open = true; listeners.toggle(); expect(classes.has('motion-paused')).toBe(true);
+    // Focus can leave the platform list while it remains open and motion remains stopped.
+    listeners.visibilitychange(); expect(classes.has('motion-paused')).toBe(true);
+    platformEscape({ key: 'Escape' }); expect(disclosure.open).toBe(false); expect(classes.has('motion-paused')).toBe(false);
+    document.hidden = true; listeners.visibilitychange(); expect(classes.has('motion-paused')).toBe(true);
     document.hidden = false; listeners.visibilitychange(); expect(classes.has('motion-paused')).toBe(false);
-    escape({ key: 'Escape' }); expect(menu.open).toBe(false); expect(focus).toHaveBeenCalledOnce();
+    escape({ key: 'Escape' }); expect(menu.open).toBe(false); expect(focus).toHaveBeenCalledTimes(2);
     choose(); expect([...storage]).toEqual([['opengeo:site-locale:v1', 'en']]);
   });
   it('does not allow hover or button focus to prevent explicit resume', () => {

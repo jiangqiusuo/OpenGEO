@@ -14,24 +14,16 @@
     document.addEventListener('click', event => { if (!menu.contains(event.target)) menu.open = false; });
   });
   const band = document.querySelector('[data-platform-band]');
-  const control = band?.querySelector('[data-motion-toggle]');
-  if (!band || !control) return;
+  const disclosure = band?.querySelector('.platform-disclosure');
+  if (!band || !disclosure) return;
   const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const english = document.documentElement.lang === 'en';
-  let paused = false;
-  let motionRequested = false;
   const render = () => {
-    const enabled = !motion.matches || motionRequested;
-    band.classList.toggle('motion-ready', enabled);
-    band.classList.toggle('motion-paused', paused || document.hidden);
-    control.hidden = false;
-    control.setAttribute('aria-pressed', String(paused));
-    control.textContent = !enabled ? english ? 'Start carousel' : '开启轮播' : english ? paused ? 'Resume animation' : 'Pause animation' : paused ? '继续轮播' : '暂停轮播';
+    band.classList.toggle('motion-ready', !motion.matches);
+    band.classList.toggle('motion-paused', disclosure.open || document.hidden);
   };
-  control.addEventListener('click', () => {
-    if (motion.matches && !motionRequested) { motionRequested = true; paused = false; }
-    else paused = !paused;
-    render();
+  disclosure.addEventListener('toggle', render);
+  disclosure.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && disclosure.open) { disclosure.open = false; disclosure.querySelector('summary')?.focus(); render(); }
   });
   document.addEventListener('visibilitychange', render);
   motion.addEventListener('change', render);
