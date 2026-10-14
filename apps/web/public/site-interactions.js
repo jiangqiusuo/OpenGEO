@@ -19,14 +19,20 @@
   const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const english = document.documentElement.lang === 'en';
   let paused = false;
+  let motionRequested = false;
   const render = () => {
-    band.classList.toggle('motion-ready', !motion.matches);
+    const enabled = !motion.matches || motionRequested;
+    band.classList.toggle('motion-ready', enabled);
     band.classList.toggle('motion-paused', paused || document.hidden);
-    control.hidden = motion.matches;
+    control.hidden = false;
     control.setAttribute('aria-pressed', String(paused));
-    control.textContent = english ? paused ? 'Resume animation' : 'Pause animation' : paused ? '继续轮播' : '暂停轮播';
+    control.textContent = !enabled ? english ? 'Start carousel' : '开启轮播' : english ? paused ? 'Resume animation' : 'Pause animation' : paused ? '继续轮播' : '暂停轮播';
   };
-  control.addEventListener('click', () => { paused = !paused; render(); });
+  control.addEventListener('click', () => {
+    if (motion.matches && !motionRequested) { motionRequested = true; paused = false; }
+    else paused = !paused;
+    render();
+  });
   document.addEventListener('visibilitychange', render);
   motion.addEventListener('change', render);
   render();
