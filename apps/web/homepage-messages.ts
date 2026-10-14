@@ -1,10 +1,20 @@
 import { localText, type SiteLocale } from './site-i18n';
 
 const messages = {
+  heroLabel: ['开源 GEO · AI 搜索可见度', 'OPEN SOURCE · GENERATIVE ENGINE OPTIMIZATION'],
+  valueLabel: ['从可见度到回答证据', 'FROM VISIBILITY TO EVIDENCE'], loopLabel: ['一次完整的观察流程', 'A CLEARER OBSERVATION LOOP'], audienceLabel: ['适合你的工作方式', 'BUILT FOR YOUR WAY OF WORKING'], journalLabel: ['OpenGEO 方法与工程', 'OPENGEO JOURNAL'], faqLabel: ['常见问题', 'QUESTIONS, ANSWERED'], closeLabel: ['让每次观察都有依据', 'MAKE EVERY OBSERVATION COUNT'],
+  previewQuestion: ['适合小团队的协作工具有哪些？', 'Which collaboration tools suit small teams?'],
+  previewLabel: ['回答证据预览', 'ANSWER EVIDENCE PREVIEW'],
+  previewAnswer: ['澜舟科技提供任务看板与团队协作功能。选择工具时，还应比较团队规模、工作流程和现有系统。', 'Lanzhou Labs offers task boards and team collaboration. Compare team size, workflow and existing systems when choosing a tool.'],
+  previewAnswerLabel: ['示例回答', 'Example answer'], previewMention: ['品牌已提及', 'Brand mentioned'], previewSource: ['来源记录', 'Source record'], previewSourceBody: ['澜舟科技产品介绍 · 虚构来源', 'Lanzhou Labs product overview · Fictional source'], previewNote: ['虚构品牌与回答，仅展示证据阅读方式。', 'Fictional brand and answer, showing how evidence is reviewed.'],
+  developerLabel: ['为开发者准备', 'BUILT FOR DEVELOPERS'], developerTitle: ['先跑通一次，再接入你的流程。', 'Run it locally. Then build your workflow.'], developerBody: ['公开契约、已发布客户端和本地示例，帮助你验证输入、任务状态与结果。', 'Use the public contract, published client and local examples to verify requests, job states and results.'],
+  startLabel: ['本地开始', 'Start locally'], startBody: ['安装 CLI，运行本地 Mock，不需要 API Key。', 'Run the CLI with a local Mock. No API key required.'], apiLabel: ['接入 API', 'Integrate the API'], apiBody: ['查看鉴权、能力目录、异步任务与错误处理。真实请求使用受控环境提供的凭据。', 'Read authentication, capabilities, asynchronous jobs and errors. Live requests require credentials from a controlled environment.'],
+  availabilityTitle: ['现在可用，接下来做什么。', 'Available today. What comes next.'], availabilityNow: ['已可使用', 'Available now'], availabilityLater: ['后续迭代', 'Planned'], availabilityNowBody: ['公共契约与指标、Client / CLI、本地 Mock、只读工作台预览。', 'Public contract and metrics, client / CLI, local Mock and read-only workbench preview.'], availabilityLaterBody: ['真实登录和在线任务创建、内容生成与发布、监测复测。', 'Live sign-in and job creation, content generation and publishing, and retesting.'],
+
   title: ['开源 GEO 工具与 AI 搜索可见度工作台 · OpenGEO', 'Open-source GEO tools for AI search visibility · OpenGEO'],
   description: ['OpenGEO 是开源 GEO 工具，用问题、品牌提及、排名与回答证据理解 AI 搜索可见度。查看工作台示例，使用 Client、CLI 和本地 Mock 跑通观察流程，再按公开 API 契约接入。', 'Understand brand mentions, rankings and answer evidence in AI search with OpenGEO. Explore the demo workbench and build locally with the open contract, client, CLI and Mock.'],
   skip: ['跳到正文', 'Skip to content'], product: ['产品', 'Product'], workflow: ['工作流程', 'Workflow'], blog: ['博客', 'Blog'], docs: ['文档', 'Docs'], home: ['OpenGEO 首页', 'OpenGEO home'], navigation: ['首页导航', 'Main navigation'], github: ['GitHub 开源仓库', 'GitHub repository'], open: ['打开工作台', 'Open demo'],
-  hero: ['理解品牌在 <span class="hero-ai">AI 搜索</span>中的位置。<br><span class="hero-muted">让每个结果都有依据。</span>', 'See where your brand stands<br>in <span class="hero-ai">AI search.</span><br><span class="hero-muted">Trace every result to its evidence.</span>'],
+  hero: ['看见品牌在<br><span class="hero-ai">AI 搜索</span>中的表现。', 'See your brand<br>in <span class="hero-ai">AI search.</span>'],
   lead: ['从用户提问到品牌提及，从排名位置到回答来源。<br>OpenGEO 把 AI 可见度和证据放在同一张工作台上。', 'From user questions to brand mentions. From rankings to answer sources. <br>OpenGEO brings visibility and evidence into one workbench.'],
   explore: ['探索工作台预览', 'Explore the demo'], viewCode: ['查看开源项目', 'View on GitHub'], note: ['当前工作台使用模拟数据。开发者可在本地开始，无需 API Key。', 'The workbench uses simulated data and its interface is currently in Chinese. Start locally without an API key.'],
   project: ['澜舟科技', 'Lanzhou Labs'], overview: ['监测总览', 'Overview'], demo: ['模拟数据 · 非真实监测', 'Simulated data · Not live monitoring'], recent: ['最近监测', 'Recent jobs'], answerEvidence: ['回答证据', 'Answer evidence'], breadcrumb: ['指标 → 样本 → 来源', 'Metric → Sample → Source'],

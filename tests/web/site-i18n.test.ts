@@ -69,7 +69,10 @@ describe('optional site interactions', () => {
     };
     const window = { matchMedia: () => media, localStorage: { setItem: (key: string, value: string) => storage.set(key, value) } };
     runInNewContext(readFileSync(new URL('../../apps/web/public/site-interactions.js', import.meta.url), 'utf8'), { document, window });
-    expect(control.hidden).toBe(true); expect(classes.has('motion-ready')).toBe(false);
+    expect(control.hidden).toBe(false); expect(classes.has('motion-ready')).toBe(false);
+    expect(control.textContent).toBe('Start carousel');
+    listeners.pause(); expect(classes.has('motion-ready')).toBe(true);
+    expect(control.textContent).toBe('Pause animation');
     media.matches = false; listeners.motion();
     expect(control.hidden).toBe(false); expect(classes.has('motion-ready')).toBe(true);
     listeners.pause(); expect(classes.has('motion-paused')).toBe(true); expect(control.textContent).toBe('Resume animation');
@@ -77,5 +80,22 @@ describe('optional site interactions', () => {
     document.hidden = false; listeners.visibilitychange(); expect(classes.has('motion-paused')).toBe(false);
     escape({ key: 'Escape' }); expect(menu.open).toBe(false); expect(focus).toHaveBeenCalledOnce();
     choose(); expect([...storage]).toEqual([['opengeo:site-locale:v1', 'en']]);
+  });
+  it('does not allow hover or button focus to prevent explicit resume', () => {
+    const css = readFileSync(new URL('../../apps/web/public/home.css', import.meta.url), 'utf8');
+    expect(css).not.toContain('.platform-band:focus-within .platform-track');
+    expect(css).not.toContain('.platform-band:hover .platform-track');
+    expect(css).toContain('platform-scroll 32s linear infinite');
+  });
+  it('localizes every section label and includes corresponding developer and availability content', () => {
+    const assets = generateContentSite(BLOG_POSTS, '2026-10-14');
+    const zh = assets.get('homepage/index.html')!;
+    const en = assets.get('en/index.html')!;
+    expect(zh).not.toMatch(/FROM VISIBILITY TO EVIDENCE|AI ANSWERS, ACROSS PLATFORMS|QUESTIONS, ANSWERED/);
+    expect(zh).toContain('现在可用，接下来做什么。');
+    expect(en).toContain('Available today. What comes next.');
+    expect(en).toContain('https://app.open-geo.net/en/blog/cli-local-quickstart/');
+    expect(zh).toContain('虚构品牌与回答');
+    expect(en).toContain('Fictional brand and answer');
   });
 });
