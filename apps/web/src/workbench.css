@@ -123,7 +123,7 @@ button:active {
   font-size: 12px;
   font-style: normal;
   color: var(--muted);
-  background: #f0f2f5;
+  background: var(--brand-soft);
   border-radius: 4px;
   padding: 1px 5px;
 }
@@ -231,9 +231,9 @@ main {
   align-items: flex-start;
   gap: 12px;
   padding: 14px 16px;
-  border: 1px solid #ccdcef;
+  border: 1px solid var(--line);
   border-radius: 10px;
-  background: #f0f5fc;
+  background: var(--brand-tint);
   margin-bottom: 24px;
 }
 .source-notice p {
@@ -298,7 +298,7 @@ main {
 }
 .primary:hover {
   text-decoration: none;
-  background: #1057b9;
+  background: var(--brand-hover);
 }
 .quiet {
   border: 1px solid var(--line);
@@ -307,8 +307,8 @@ main {
 }
 .planned-button span {
   font-size: 12px;
-  color: #606974;
-  background: #f0f2f5;
+  color: var(--muted);
+  background: var(--brand-soft);
   padding: 1px 5px;
   border-radius: 4px;
 }
@@ -475,7 +475,7 @@ main {
 .table-head {
   font-size: 12px;
   color: var(--muted);
-  background: #f9fafc;
+  background: var(--brand-soft);
 }
 .query-cell {
   min-width: 0;
@@ -514,7 +514,7 @@ main {
 }
 .mention.no {
   color: var(--muted);
-  background: #f0f2f5;
+  background: var(--brand-soft);
 }
 .rank-cell {
   font-variant-numeric: tabular-nums;
@@ -568,11 +568,11 @@ main {
   height: 140px;
 }
 .grid {
-  stroke: #e4e7ec;
+  stroke: var(--line);
   stroke-width: 1;
 }
 .area {
-  fill: #e8f1ff;
+  fill: var(--brand-tint);
 }
 .line {
   fill: none;
@@ -811,7 +811,7 @@ main {
   max-width: calc(100% - 32px);
   padding: 12px 16px;
   border-radius: 10px;
-  background: #202329;
+  background: var(--brand-deep);
   color: white;
   font-size: 13px;
   z-index: 50;
@@ -832,7 +832,7 @@ main {
 }
 @media(hover:hover) and (pointer:fine) {
   .nav-item:hover,.metric-card:hover,.table-row:not(.table-head):hover,.sample-button:hover {
-    background: #f2f6fd;
+    background: var(--brand-tint);
   }
   .quiet:hover {
     background: var(--canvas);

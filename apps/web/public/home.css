@@ -215,7 +215,7 @@ section[id] {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  background: #f9fafb;
+  background: var(--brand-soft);
   padding: 14px 22px;
   border-bottom: 1px solid var(--line);
 }
@@ -239,7 +239,7 @@ section[id] {
   width: 25px;
   height: 25px;
   border-radius: 7px;
-  background: #e8eef8;
+  background: var(--brand-tint);
   color: var(--blue);
   font-size: 12px;
   font-weight: 650;
@@ -265,7 +265,7 @@ section[id] {
   display: flex;
   flex-direction: column;
   gap: 9px;
-  background: #fafbfc;
+  background: var(--brand-soft);
   border-right: 1px solid var(--line);
   color: var(--muted);
   font-size: 12px;
@@ -447,7 +447,7 @@ section[id] {
   color: var(--muted);
   font-size: 11px;
   line-height: 1.7;
-  background: #fafbfc;
+  background: var(--brand-soft);
 }
 
 .home-proof {
@@ -515,7 +515,7 @@ section[id] {
   width: 100%;
   height: auto;
   border-radius: 12px;
-  border: 1px solid #e5ecf5;
+  border: 1px solid var(--line);
 }
 
 .value-grid h3 {
@@ -997,7 +997,7 @@ section[id] {
 }
 
 /* Kumo-inspired roles: canvas, base, recessed, hairline, primary and secondary text. */
-:root { --home-canvas: var(--canvas); --home-base: var(--surface); --home-recessed: #eef0f8; --home-text: var(--ink); --home-secondary: var(--muted); --home-hairline: var(--line); background: var(--home-canvas); }
+:root { --home-canvas: var(--canvas); --home-base: var(--surface); --home-recessed: var(--brand-tint); --home-text: var(--ink); --home-secondary: var(--muted); --home-hairline: var(--line); background: var(--home-canvas); }
 body { color: var(--home-text); }
 .home-header { min-height: 72px; max-width: 1240px; border-color: var(--home-hairline); }
 .home-brand { font-size: 21px; }
@@ -1005,7 +1005,7 @@ body { color: var(--home-text); }
 .home-button { min-height: 44px; border-radius: 8px; background: var(--home-base); transition: transform 150ms ease-out, background-color 150ms ease-out; }
 .home-button:active { transform: scale(.98); }
 .home-button.primary { background: var(--blue); border-color: var(--blue); }
-.home-button.primary:hover { background: #4338ca; }
+.home-button.primary:hover { background: var(--brand-hover); }
 .home-hero { max-width: 1184px; display: grid; grid-template-columns: 1fr 1.06fr; gap: 56px; text-align: left; align-items: center; padding: 64px 24px 52px; }
 .hero-copy { min-width: 0; }
 .home-hero .home-eyebrow,.home-hero .home-actions { justify-content: flex-start; }
@@ -1044,7 +1044,12 @@ body { color: var(--home-text); }
 .inspector-source { border-left: 2px solid var(--green); padding-left: 14px; margin-top: 6px; }
 .inspector-source>span { color: var(--green); }
 .inspector-question>span { color: var(--blue); }
-.home-close { background: var(--hover); border: 1px solid var(--line); border-radius: 16px; }
+.home-close { background: var(--brand-deep); color: #fff; border: 1px solid var(--brand-deep); border-radius: 16px; }
+.home-close .home-eyebrow { color: #d8c4f5; }
+.home-close .home-button { color: #fff; border-color: #806499; background: transparent; }
+.home-close .home-button:hover { background: #42265f; }
+.home-close .home-button.primary { background: #fff; color: var(--brand-primary); border-color: #fff; }
+.home-close .home-button.primary:hover { background: var(--brand-tint); }
 .home-eyebrow { color: var(--blue); }
 .footer-bottom [data-cookie-settings] { text-decoration: underline; text-underline-offset: 3px; min-height: 32px; display: inline-flex; align-items: center; }
 .home-resources { background: var(--brand-tint); border-radius: 16px; padding-top: 40px; padding-bottom: 40px; }
