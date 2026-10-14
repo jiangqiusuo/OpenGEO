@@ -14,7 +14,7 @@ function contentSite(enableDeploymentConfig: boolean): Plugin {
     configureServer(server) {
       server.middlewares.use((request, response, next) => {
         const path = (request.url || '/').split('?')[0];
-        if (path === '/blog' || path === '/privacy' || path === '/about' || path === '/en' || path === '/docs/portal') {
+        if (/^\/(?:en\/)?(?:blog|privacy|about)$/.test(path) || path === '/en' || path === '/docs/portal') {
           response.statusCode = 301;
           response.setHeader('Location', `${path}/`);
           response.end();
@@ -29,7 +29,7 @@ function contentSite(enableDeploymentConfig: boolean): Plugin {
         } else if (path.startsWith('/blog/') || path.startsWith('/privacy/') || path.startsWith('/about/') || path.startsWith('/en/')) {
           response.statusCode = 404;
           response.setHeader('Content-Type', 'text/html; charset=utf-8');
-          response.end(assets().get('404.html'));
+          response.end(assets().get(path.startsWith('/en/') ? 'en/404.html' : '404.html'));
         } else next();
       });
     },
@@ -39,7 +39,7 @@ function contentSite(enableDeploymentConfig: boolean): Plugin {
         if ((path.startsWith('/blog/') || path.startsWith('/privacy/') || path.startsWith('/about/') || path.startsWith('/homepage/') || path.startsWith('/en/')) && !assets().has(path.slice(1).replace(/\/$/, '/index.html'))) {
           response.statusCode = 404;
           response.setHeader('Content-Type', 'text/html; charset=utf-8');
-          response.end(assets().get('404.html'));
+          response.end(assets().get(path.startsWith('/en/') ? 'en/404.html' : '404.html'));
         } else next();
       });
     },

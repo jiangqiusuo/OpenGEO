@@ -55,7 +55,8 @@ describe('public content publishing boundaries', () => {
     expect(assets.get('home-sitemap.xml')?.match(/<loc>/g)).toHaveLength(2);
     const english = assets.get('en/index.html')!;
     expect(english).toContain('Simulated data · Not live monitoring');
-    expect(english).toContain('Blog (中文)');
+    expect(english).toContain('https://app.open-geo.net/en/blog/');
+    expect(english).not.toContain('Blog (中文)');
     expect(english).not.toContain('第 ');
     expect(english).toContain('data-event="github_click"');
     expect(english).toContain('data-event="workbench_click"');
