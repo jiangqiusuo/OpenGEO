@@ -44,7 +44,9 @@ describe('complete public-language journeys', () => {
     expect(SUPPORTED_PLATFORMS).toHaveLength(14);
     for (const platform of SUPPORTED_PLATFORMS) expect(html).toContain(platform.name[1]);
     expect(html).toContain('aria-hidden="true"');
-    expect(html).toContain('AI-generated concept');
+    expect(html).toContain('illustrate these concepts');
+    expect(html).not.toContain('AI concept');
+    expect(html).not.toContain('<figcaption>');
     expect(html).toContain('loading="lazy"');
     expect(html).toContain('width="960" height="640"');
   });

@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 const script = readFileSync(new URL('../../apps/web/public/public-site.js', import.meta.url), 'utf8');
 const key = 'opengeo:public-consent:v2';
 const id = 'G-TEST123456';
-function browser(stored: string | null, options: { path?: string; kind?: string; blocked?: boolean; search?: string; hash?: string; host?: string; id?: string; dnt?: string; gpc?: boolean; legacy?: boolean; home?: boolean; english?: boolean } = {}) {
+function browser(stored: string | null, options: { path?: string; kind?: string; blocked?: boolean; search?: string; hash?: string; host?: string; id?: string; dnt?: string; gpc?: boolean; legacy?: boolean; home?: boolean; english?: boolean; modal?: boolean } = {}) {
   const events: unknown[] = [];
   const handlers: Record<string, () => void> = {};
   const status = { textContent: '' };
@@ -15,6 +15,9 @@ function browser(stored: string | null, options: { path?: string; kind?: string;
   const appended: Array<{ src: string; onerror: () => void; remove: () => void; referrerPolicy: string }> = [];
   const deletedCookies: string[] = [];
   const reload = vi.fn();
+  const analytics = { type: 'checkbox', checked: false, disabled: false };
+  const modal = { open: false, showModal: vi.fn(() => { modal.open = true; }), close: vi.fn(() => { modal.open = false; }), addEventListener: vi.fn() };
+  const cookieControl = (kind: string) => [{ addEventListener: (_: string, callback: (event: { preventDefault: () => void }) => void) => { handlers[kind] = () => callback({ preventDefault: vi.fn() }); } }];
   const controls = (values: string[], kind: string) => values.map((value) => ({ getAttribute: () => value, addEventListener: (_: string, callback: () => void) => { handlers[`${kind}:${value}`] = callback; } }));
   const window = {
     location: { pathname: options.path ?? '/blog/', search: options.search ?? '', hash: options.hash ?? '', hostname: options.host ?? 'app.open-geo.net', reload },
@@ -27,17 +30,54 @@ function browser(stored: string | null, options: { path?: string; kind?: string;
   };
   const document = {
     title: 'Public article', documentElement: { lang: options.english ? 'en' : 'zh-CN' }, body: { dataset: { publicPage: options.kind ?? 'blog_index' } },
-    getElementById: (name: string) => name === 'consent-panel' ? panel : status,
+    getElementById: (name: string) => options.modal && name === 'analytics-settings' ? modal : options.modal && name === 'cookie-analytics' ? analytics : name === 'consent-panel' ? panel : status,
     querySelector: () => ({ getAttribute: () => options.id ?? id }),
-    querySelectorAll: (selector: string) => selector === 'button[data-copy-code]' ? [] : selector === '[data-consent]' ? controls(['granted', 'denied'], 'consent') : controls(['github_click', 'arbitrary_secret_event'], 'link'),
+    querySelectorAll: (selector: string) => selector.startsWith('[data-cookie-') ? cookieControl(selector) : selector === 'button[data-copy-code]' ? [] : selector === '[data-consent]' ? controls(['granted', 'denied'], 'consent') : controls(['github_click', 'arbitrary_secret_event'], 'link'),
     createElement: () => ({ src: '', onerror: () => {}, remove: vi.fn(), referrerPolicy: '' }),
     head: { appendChild: (node: typeof appended[number]) => appended.push(node) }
   };
   Object.defineProperty(document, 'cookie', { get: () => `_ga=a; _ga_TEST123456=b; session=private`, set: (value: string) => deletedCookies.push(value) });
   runInNewContext(script, { window, document, CustomEvent: class { constructor(public name: string, public data: { detail: unknown }) {} get detail() { return this.data.detail; } } });
-  return { events, handlers, storage, listeners, status, panel, appended, window, deletedCookies, reload };
+  return { events, handlers, storage, listeners, status, panel, appended, window, deletedCookies, reload, modal, analytics };
 }
 describe('consent-gated public analytics', () => {
+  it('opening preferences and closing unsaved edits does not grant consent or load analytics', () => {
+    const b = browser(null, { modal: true });
+    b.handlers['[data-cookie-settings]']();
+    expect(b.modal.open).toBe(true);
+    expect(b.analytics.checked).toBe(false);
+    b.analytics.checked = true;
+    b.handlers['[data-cookie-close]']();
+    expect(b.storage.has(key)).toBe(false);
+    expect(b.appended).toHaveLength(0);
+    b.handlers['[data-cookie-settings]']();
+    expect(b.analytics.checked).toBe(false);
+    b.handlers['[data-cookie-save]']();
+    expect(b.storage.get(key)).toBe('denied');
+    expect(b.appended).toHaveLength(0);
+  });
+  it('saves explicit modal consent, restores it on reopening and withdraws through the same controls', () => {
+    const b = browser(null, { modal: true });
+    b.handlers['[data-cookie-settings]'](); b.analytics.checked = true;
+    b.handlers['[data-cookie-save]']();
+    expect(b.storage.get(key)).toBe('granted');
+    expect(b.appended).toHaveLength(1);
+    expect(b.modal.open).toBe(false);
+    b.handlers['[data-cookie-settings]']();
+    expect(b.analytics.checked).toBe(true);
+    b.analytics.checked = false; b.handlers['[data-cookie-save]']();
+    expect(b.storage.get(key)).toBe('denied');
+    expect(b.reload).toHaveBeenCalledOnce();
+    expect(b.deletedCookies).toHaveLength(4);
+  });
+  it.each([{ gpc: true }, { dnt: '1' }, { blocked: true }, { id: '' }])('modal cannot enable collection when privacy or configuration blocks it: %j', options => {
+    const b = browser(null, { modal: true, ...options });
+    b.handlers['[data-cookie-settings]']();
+    expect(b.analytics.disabled).toBe(true);
+    b.analytics.checked = true; b.handlers['[data-cookie-save]']();
+    expect(b.storage.get(key)).not.toBe('granted');
+    expect(b.appended).toHaveLength(0);
+  });
   it('keeps English analytics on the app origin and withdraws root English privacy consent separately', () => {
     const app = browser('granted', { path: '/en/blog/cli-local-quickstart/', kind: 'blog_article', english: true });
     expect(app.appended).toHaveLength(1);

@@ -59,7 +59,7 @@
     const message = english
       ? !storageAvailable ? 'Storage is unavailable. Analytics stays off.' : privacySignal() ? 'Your browser requests no tracking. Analytics stays off.' : consent === 'granted' ? 'Public-page analytics allowed.' : consent === 'denied' ? 'Analytics declined.' : 'No choice saved. Analytics is off by default.'
       : !storageAvailable ? '浏览器禁止保存选择，测量保持关闭。' : privacySignal() ? '浏览器已要求不跟踪，测量保持关闭。' : consent === 'granted' ? '已允许公开页面测量。' : consent === 'denied' ? '已拒绝测量。' : '未选择，默认不测量。';
-    for (const name of ['consent-status', 'consent-notice']) {
+    for (const name of ['consent-status', 'consent-notice', 'privacy-consent-status']) {
       const status = document.getElementById(name);
       if (status) status.textContent = message + (loadFailed ? english ? ' Analytics could not load. The page still works.' : ' 分析脚本加载失败，页面仍可正常使用。' : '');
     }
@@ -93,9 +93,10 @@
     viewed = true;
     track(pageKind === 'landing' ? 'landing_view' : pageKind === 'blog_index' ? 'blog_index_view' : 'blog_article_view');
   };
-  read(); render(); start(); view();
-  document.querySelectorAll('[data-consent]').forEach((button) => button.addEventListener('click', () => {
-    const value = button.getAttribute('data-consent');
+  const settings = document.getElementById('analytics-settings');
+  const analytics = document.getElementById('cookie-analytics');
+  const closeSettings = () => { if (settings?.open && typeof settings.close === 'function') settings.close(); };
+  const applyConsent = (value) => {
     if (value !== 'granted' && value !== 'denied') return;
     consent = value;
     let saved = true;
@@ -107,7 +108,32 @@
     if (value === 'denied' || !saved) stop(saved);
     render();
     if (saved && value === 'granted') { start(); view(); }
-  }));
+    closeSettings();
+  };
+  read(); render(); start(); view();
+  document.querySelectorAll('[data-consent]').forEach((button) => button.addEventListener('click', () => applyConsent(button.getAttribute('data-consent'))));
+  if (typeof settings?.showModal === 'function' && analytics?.type === 'checkbox') {
+    document.querySelectorAll('[data-cookie-settings]').forEach((link) => link.addEventListener('click', (event) => {
+      event.preventDefault();
+      read(); render();
+      analytics.checked = consent === 'granted' && !privacySignal() && storageAvailable;
+      analytics.disabled = !ga4Id || privacySignal() || !storageAvailable;
+      if (!settings.open) settings.showModal();
+    }));
+    document.querySelectorAll('[data-cookie-close]').forEach((button) => button.addEventListener('click', closeSettings));
+    document.querySelectorAll('[data-cookie-save]').forEach((button) => button.addEventListener('click', () => applyConsent(analytics.checked && !analytics.disabled ? 'granted' : 'denied')));
+    settings.addEventListener('keydown', (event) => {
+      if (event.key !== 'Tab') return;
+      const controls = [...settings.querySelectorAll('a[href],button,input')].filter(control => !control.disabled);
+      const first = controls[0]; const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+    });
+    settings.addEventListener('click', (event) => { if (event.target === settings) {
+      const bounds = settings.getBoundingClientRect();
+      if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) closeSettings();
+    } });
+  }
   document.querySelectorAll('a[data-event]').forEach((link) => link.addEventListener('click', () => track(link.getAttribute('data-event'))));
   window.addEventListener('storage', (event) => {
     if (event.key !== key && event.key !== null) return;
