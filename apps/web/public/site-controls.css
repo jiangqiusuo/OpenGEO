@@ -1,12 +1,12 @@
-.locale-switcher { position: relative; flex: 0 0 auto; font-size: 13px; color: #334155; }
+.locale-switcher { position: relative; flex: 0 0 auto; font-size: 13px; color: var(--ink); }
 .locale-switcher summary { display: flex; align-items: center; gap: 6px; min-height: 40px; padding: 6px 8px; border: 1px solid transparent; border-radius: 8px; cursor: pointer; list-style: none; }
 .locale-switcher summary::-webkit-details-marker { display: none; }
-.locale-switcher summary:hover { background: #f8fafc; }
+.locale-switcher summary:hover { background: var(--brand-soft); }
 .locale-switcher>nav,.home-header .locale-switcher>nav { position: absolute; z-index: 30; inset: calc(100% + 6px) 0 auto auto; width: 160px; order: initial; display: flex; flex-direction: column; gap: 2px; padding: 6px; margin: 0; border: 1px solid #e2e8f0; border-radius: 10px; background: #fff; box-shadow: 0 8px 24px #0f172a12; }
 .locale-switcher:not([open])>nav { display: none; }
 .locale-switcher>nav a,.home-header .locale-switcher>nav a { width: 100%; min-height: 40px; padding: 8px 10px; display: flex; align-items: center; text-decoration: none; border-radius: 6px; }
 .locale-switcher>nav a[aria-current] { color: var(--blue); background: var(--hover); }
-.locale-switcher a:focus-visible,.locale-switcher summary:focus-visible { outline: 2px solid #1263e8; outline-offset: 3px; }
+.locale-switcher a:focus-visible,.locale-switcher summary:focus-visible { outline: 2px solid var(--brand-primary); outline-offset: 3px; }
 @media(max-width:700px) { .locale-switcher summary>span { display: none; } .locale-switcher summary { padding: 6px 8px; } }
 
 /* Cookie controls share the same appearance on the homepage and content pages. */
@@ -38,7 +38,7 @@
 .cookie-category h3,.cookie-category label { font-size: 14px; font-weight: 650; margin: 0; cursor: default; }
 .cookie-category p { font-size: 12px; line-height: 1.7; margin: 6px 0 0; }
 .cookie-always { font-size: 11px; color: var(--green); background: #e7f5f1; padding: 3px 8px; border-radius: 5px; flex-shrink: 0; }
-.cookie-category input { appearance: none; flex: 0 0 40px; width: 40px; height: 24px; border: 1px solid #8b93a7; border-radius: 20px; background: #e8ebf3; margin: 0; cursor: pointer; }
+.cookie-category input { appearance: none; flex: 0 0 40px; width: 40px; height: 24px; border: 1px solid var(--muted); border-radius: 20px; background: var(--brand-tint); margin: 0; cursor: pointer; }
 .cookie-category input::before { content: ''; display: block; height: 18px; width: 18px; margin: 2px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px #20243a30; transition: transform 160ms ease-out; }
 .cookie-category input:checked { background: var(--blue); border-color: var(--blue); }
 .cookie-category input:checked::before { transform: translateX(16px); }
@@ -47,7 +47,7 @@
 .cookie-dialog .cookie-detail { font-size: 11px; }
 .cookie-dialog-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 22px; }
 .cookie-dialog .cookie-save { background: var(--blue); color: white; border-color: var(--blue); }
-.cookie-dialog .cookie-save:hover { background: #4338ca; }
+.cookie-dialog .cookie-save:hover { background: var(--brand-hover); }
 .cookie-policy { display: block; width: fit-content; padding: 14px 0 0; }
 .cookie-banner button:disabled,.cookie-dialog button:disabled { opacity: .5; cursor: default; }
 .cookie-banner :focus-visible,.cookie-dialog :focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }

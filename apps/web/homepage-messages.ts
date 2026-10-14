@@ -41,9 +41,9 @@ export const AUDIENCES = [
   { label: ['开发者与研究者', 'DEVELOPERS AND RESEARCHERS'], title: ['把观察接入自己的流程。', 'Bring observations into your workflow.'], body: ['使用公开契约、Client、CLI 与 Mock，构建可复查的工具和受控测试。', 'Build reviewable tools and controlled tests with the public contract, client, CLI and Mock.'], cta: ['阅读快速开始', 'Read the quickstart'] },
 ] as const;
 export const RESOURCES = [
-  { slug: 'geo-visibility-and-evidence', image: 'journal-evidence', category: ['方法', 'METHOD'], title: ['GEO 可见度为什么必须和证据一起看', 'Why visibility needs evidence'], body: ['先固定问题、样本与证据，再讨论优化。', 'Define questions, samples and evidence before discussing optimization.'] },
-  { slug: 'cli-local-quickstart', image: 'journal-cli', category: ['教程', 'TUTORIAL'], title: ['用 CLI 跑通一次本地任务', 'Run a local job with the CLI'], body: ['创建、读取和取消，全程使用虚构数据。', 'Create, read and cancel using fictional data throughout.'] },
-  { slug: 'partial-results-and-retries', image: 'journal-partial', category: ['工程', 'ENGINEERING'], title: ['任务没完成，已有结果怎么用？', 'Use results before a job is complete'], body: ['区分等待、定稿、取消和安全重试。', 'Distinguish waiting, finalizing, cancelling and safe retries.'] },
+  { slug: 'geo-visibility-and-evidence', category: ['方法', 'METHOD'], title: ['GEO 可见度为什么必须和证据一起看', 'Why visibility needs evidence'], body: ['先固定问题、样本与证据，再讨论优化。', 'Define questions, samples and evidence before discussing optimization.'] },
+  { slug: 'cli-local-quickstart', category: ['教程', 'TUTORIAL'], title: ['用 CLI 跑通一次本地任务', 'Run a local job with the CLI'], body: ['创建、读取和取消，全程使用虚构数据。', 'Create, read and cancel using fictional data throughout.'] },
+  { slug: 'partial-results-and-retries', category: ['工程', 'ENGINEERING'], title: ['任务没完成，已有结果怎么用？', 'Use results before a job is complete'], body: ['区分等待、定稿、取消和安全重试。', 'Distinguish waiting, finalizing, cancelling and safe retries.'] },
 ] as const;
 export const FAQ = [
   { question: ['GEO 是什么？OpenGEO 做什么？', 'What is GEO, and what does OpenGEO do?'], answer: ['GEO（Generative Engine Optimization，生成式引擎优化）关注品牌和内容在生成式搜索、AI 回答中的可见性。OpenGEO 提供开源工具，把问题、观察结果、品牌提及、排名与证据组织成可复查的流程。', 'Generative Engine Optimization concerns brand and content visibility in generative search and AI answers. OpenGEO organizes questions, observations, brand mentions, rankings and evidence into a reviewable workflow.'] },

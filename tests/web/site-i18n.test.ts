@@ -56,7 +56,7 @@ describe('complete public-language journeys', () => {
       const html = assets.get(path)!;
       const section = html.split('class="home-section home-resources"')[1].split('</section>')[0];
       expect(section).not.toContain('/concepts/');
-      for (const name of ['journal-evidence', 'journal-cli', 'journal-partial']) expect(section).toContain(`/journal/${name}-480.webp`);
+      for (const name of ['landscape-lake', 'landscape-forest', 'landscape-dunes']) expect(section).toContain(`/journal/${name}-480.webp`);
     }
   });
 });

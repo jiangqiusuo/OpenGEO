@@ -16,13 +16,13 @@
 }
 .dark-mode {
   color-scheme: dark;
-  --ink: #e8edf5;
-  --muted: #aab5c4;
-  --line: #343b46;
-  --blue: #8fb8ff;
-  --canvas: #111316;
-  --surface: #1c2027;
-  --hover: #25354d;
+  --ink: #f2eafb;
+  --muted: #c1b2d2;
+  --line: #443352;
+  --blue: #c4a5f6;
+  --canvas: #191122;
+  --surface: #251b31;
+  --hover: #372546;
   --scalar-color-1: var(--ink);
   --scalar-color-2: var(--muted);
   --scalar-color-3: var(--muted);
@@ -57,7 +57,7 @@ h1 { max-width: 780px; margin: 16px 0; font-size: clamp(30px, 4vw, 44px); line-h
 .steps { max-width: 820px; margin-top: 36px; }
 .step { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 16px; padding: 24px 0; border-top: 1px solid var(--line); }
 .number { display: grid; place-items: center; width: 28px; height: 28px; border-radius: var(--radius-control); color: var(--blue); background: var(--hover); font-size: 14px; font-weight: 650; }
-pre { max-width: 100%; overflow-x: auto; padding: 18px; border: 1px solid #28384f; border-radius: var(--radius-control); color: #e8edf5; background: #152032; font: 13px/1.75 var(--font-code); }
+pre { max-width: 100%; overflow-x: auto; padding: 18px; border: 1px solid #443352; border-radius: var(--radius-control); color: #f2eafb; background: #21132f; font: 13px/1.75 var(--font-code); }
 code { font-family: var(--font-code); overflow-wrap: anywhere; }
 .portal-footer { padding-top: 28px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
 @media (max-width: 700px) {
