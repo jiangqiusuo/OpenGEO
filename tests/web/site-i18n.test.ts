@@ -97,5 +97,6 @@ describe('optional site interactions', () => {
     expect(en).toContain('https://app.open-geo.net/en/blog/cli-local-quickstart/');
     expect(zh).toContain('虚构品牌与回答');
     expect(en).toContain('Fictional brand and answer');
+    for (const html of [zh, en]) expect(html).toContain('<code><!--email_off-->npm exec --yes --package=@sysiphus/cli@0.1.1 -- opengeo --help<!--/email_off--></code>');
   });
 });
