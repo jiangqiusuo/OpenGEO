@@ -57,21 +57,34 @@ This is a repository command, not a feature of the published `@sysiphus/cli@0.1.
 pnpm demo:local
 ```
 
-The command starts a temporary local Mock, creates, polls, reads and cancels fictional jobs, then shuts down the service. No API key or external spending. Imported analysis, this Mock flow and the hosted demo are separate paths. [Local demo guide](docs/local-demo.md)
+The command demonstrates creating, polling, reading and cancelling jobs, then shuts down its temporary service. It uses fictional data and requires no API key. [Local demo guide](docs/local-demo.md)
 
-## Metrics with evidence
+## From saved answers to reviewable results
 
-```mermaid
-flowchart LR
-  A[Questions and saved answers] --> B[Observation]
-  B --> C[Mentions and known ranks]
-  C --> D[Versioned metrics]
-  D --> E[Review original answers]
-```
+### 01 · Import your saved answers
 
-Metrics include Answer Rate, Mention Rate, Top 1, absolute/conditional Top 3, Average Rank and Result Completeness. Unavailable answers, absent mentions and unknown ranks are distinct; zero denominators return `null`. [Metric definitions](packages/metrics/README.md) · [Public contract](openapi/openapi.json)
+Provide your brand, questions and AI answers. Include any known rankings and citation records. Each record retains its original answer for review.
 
-Keep questions, engines, language, time windows and sample sizes fixed when comparing runs. OpenGEO records observations; it does not guarantee citations, recommendations or ranking improvements.
+### 02 · See where your brand appears
+
+Review answer availability, brand mention rate and supplied ranks. In the sample, **50%** means **1 of 2 valid answers mentions the brand**. Counts appear alongside percentages.
+
+### 03 · Check the original evidence
+
+Inspect which answers mention the brand, which rankings you supplied and which citations were recorded. Missing answers and absent mentions remain distinct so you can decide what data to collect next.
+
+<details>
+<summary>Metric definitions, calculation rules and comparison conditions</summary>
+
+- **Answer availability**: Answer Rate and Result Completeness.
+- **Brand presence**: Mention Rate.
+- **Supplied ranking distribution**: Top 1, absolute/conditional Top 3 and Average Rank; missing ranks are not inferred.
+
+Zero denominators return `null`. Keep questions, engines, language, time windows and sample sizes fixed when comparing runs. OpenGEO records observations; it does not guarantee citations, recommendations or ranking improvements.
+
+[Metric definitions](packages/metrics/README.md) · [Public contract](openapi/openapi.json)
+
+</details>
 
 ## How does it differ from monitoring platforms?
 

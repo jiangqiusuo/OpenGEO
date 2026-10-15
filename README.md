@@ -51,27 +51,40 @@ pnpm analyze:answers --input examples/answers.sample.json
 
 这是仓库命令，尚未包含在已发布的 `@sysiphus/cli@0.1.1` 中。
 
-## 再跑通一次任务流程
+## 体验任务的完整流程
 
 ```bash
 pnpm demo:local
 ```
 
-自动启动临时本地 Mock，创建、查询、读取和取消虚构任务，结束后关闭服务。无需 API Key，不消费外部余额。它和导入分析、线上示例是三条独立路径。[操作说明](docs/local-demo.md)
+这条命令演示任务的创建、查询、读取和取消，结束后自动关闭临时服务。全程使用虚构数据，无需 API Key。[操作说明](docs/local-demo.md)
 
-## 指标与证据
+## 从回答到可复核的结果
 
-```mermaid
-flowchart LR
-  A[问题与回答样本] --> B[Observation]
-  B --> C[提及与已知排名]
-  C --> D[版本化指标]
-  D --> E[回到原回答复核]
-```
+### 01 · 导入你保存的回答
 
-指标包括 Answer Rate、Mention Rate、Top 1、绝对/条件 Top 3、Average Rank、Result Completeness。不可用回答、未提及和没有已知排名分别处理，零分母返回 `null`。[指标定义](packages/metrics/README.md) · [公共契约](openapi/openapi.json)
+提供品牌、问题和 AI 回答；已有的排名与引用可以一并保留。每条记录都有对应的原文，方便核对。
 
-比较前需要固定问题、模型、语言、时间窗口和样本数量。OpenGEO 用于记录与分析观察，不保证 AI 引用、推荐或排名提升。
+### 02 · 看清品牌出现在哪里
+
+查看有效回答比例、品牌提及率和已知排名。比如示例中的 **50%**，表示 **2 条有效回答中有 1 条提到品牌**，样本数量和比例一起展示。
+
+### 03 · 回到原文检查依据
+
+逐条查看哪些回答提到了品牌、排名是否由你提供、记录了哪些引用。把“没有提及”和“没有获取到回答”分开，方便判断下一步需要补什么数据。
+
+<details>
+<summary>查看指标、计算口径与比较条件</summary>
+
+- **回答是否可用**：Answer Rate、Result Completeness。
+- **品牌是否出现**：Mention Rate。
+- **已有排名如何分布**：Top 1、绝对/条件 Top 3、Average Rank；不推断缺失的排名。
+
+零分母返回 `null`。比较前应固定问题、模型、语言、时间窗口和样本数量。OpenGEO 记录与分析观察，不保证 AI 引用、推荐或排名提升。
+
+[指标定义](packages/metrics/README.md) · [公共契约](openapi/openapi.json)
+
+</details>
 
 ## 与完整监测平台如何区别
 
