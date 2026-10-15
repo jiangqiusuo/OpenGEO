@@ -65,7 +65,7 @@ ci(policy): validate pull request titles
 
 ## 安全和公开边界
 
-凭据、客户数据、供应商秘密、私有路由、采购成本和未修复漏洞不能进入公开 Issue、PR、日志或测试 Fixture。未修复漏洞使用 GitHub 私有漏洞报告；不要在公开 Issue 中讨论可利用细节。
+凭据、个人或客户数据，以及未经授权公开的信息不能进入公开 Issue、PR、日志或测试 Fixture。示例使用虚构或脱敏数据；未修复漏洞使用 GitHub 私有漏洞报告。
 
 ## 维护者应急路径
 

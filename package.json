@@ -24,6 +24,7 @@
     "cli": "tsx packages/cli/src/bin.ts",
     "demo": "tsx packages/cli/src/bin.ts",
     "demo:local": "tsx scripts/local-demo.ts",
+    "analyze:answers": "tsx scripts/analyze-answers.ts",
     "web:dev": "pnpm --filter @sysiphus/web dev",
     "web:build": "pnpm --filter @sysiphus/web build"
   },

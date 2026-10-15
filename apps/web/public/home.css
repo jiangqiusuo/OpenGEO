@@ -145,6 +145,15 @@ section[id] { scroll-margin-top: 24px; }
 .resource-grid p { padding: 0 20px; font-size: 13px; line-height: 1.8; color: var(--muted); }
 .resource-grid b { display: block; padding: 4px 20px 20px; color: var(--muted); text-align: right; font-weight: 400; }
 .home-faq { display: grid; grid-template-columns: 1fr 1.4fr; gap: 48px; }
+.project-evaluation { border: 1px solid var(--line); border-radius: 12px; padding: clamp(20px,4vw,36px); background: var(--canvas); }
+.project-evaluation h2 { font-size: clamp(24px,3vw,30px); line-height: 1.4; letter-spacing: -.03em; font-weight: 550; margin: 10px 0 14px; }
+.project-evaluation p { color: var(--muted); font-size: 13px; line-height: 1.8; }
+.project-evaluation .home-eyebrow { color: var(--brand-accent); font-size: 10px; }
+.project-evaluation .home-actions { flex-wrap: wrap; }
+.project-evaluation button { font-family: inherit; cursor: pointer; }
+.project-evaluation details { border-top: 1px solid var(--line); margin-top: 18px; }
+.project-evaluation summary { min-height: 44px; padding: 14px 0; font-size: 12px; cursor: pointer; }
+.project-evaluation pre { margin: 0; padding: 16px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); white-space: pre-wrap; overflow-wrap: anywhere; font: 12px/1.9 var(--font-code); }
 .home-faq details { border-top: 1px solid var(--line); }
 .home-faq summary { padding: 18px 0; min-height: 44px; font-size: 13px; font-weight: 550; cursor: pointer; }
 .home-faq details p { color: var(--muted); font-size: 13px; line-height: 1.9; margin-top: 0; }

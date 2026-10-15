@@ -1,0 +1,27 @@
+{
+  "brand": "Northstar Labs",
+  "aliases": ["Northstar"],
+  "observed_at": "2026-10-15T08:00:00Z",
+  "answers": [
+    {
+      "id": "obs_sample_answer_1",
+      "prompt": "Which fictional tools help small teams?",
+      "engine": "example-engine",
+      "answer": "1. Harbor Tools. 2. Northstar Labs provides project boards.",
+      "rank": 2,
+      "citations": ["https://example.com/fictional-tools"]
+    },
+    {
+      "id": "obs_sample_answer_2",
+      "prompt": "Which fictional tools support weekly planning?",
+      "engine": "example-engine",
+      "answer": "Harbor Tools and Meadow are two examples."
+    },
+    {
+      "id": "obs_sample_answer_3",
+      "prompt": "Which fictional tools support research teams?",
+      "engine": "example-engine",
+      "answer": null
+    }
+  ]
+}
