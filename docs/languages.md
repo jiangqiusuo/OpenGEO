@@ -58,7 +58,7 @@ curl -X POST "http://localhost:8787/v1/monitor-runs" \
 ## 生成约束
 
 - 生成器的输入只能是版本化 OpenAPI 文件。
-- 示例不能包含真实凭据、供应商字段、采购成本或客户数据。
+- 示例使用虚构或脱敏数据，只使用公共契约字段，不包含凭据及未经授权公开的信息。
 - 生成客户端的错误类型必须保留 HTTP 状态和 Job 层状态的区别。
 - 客户端新增字段前，先更新契约和 Fixture，再更新生成产物和文档。
 - 运行 `pnpm examples:generate` 重新生成全部四种无依赖示例，`pnpm examples:check` 会在 CI 中阻止漂移。
