@@ -41,6 +41,17 @@ OpenGEO 当前的产品形态是 **工作台 + 可组合工作流**。工作台�
 
 要求 Node.js 22+ 与 pnpm 11。
 
+先体验一次完整 CLI 流程，无需 API Key 或额外终端：
+
+```bash
+pnpm install
+pnpm demo:local
+```
+
+程序自动创建、查询、读取并取消虚构任务，结束后关闭临时 Mock。详见[本地试用说明](docs/local-demo.md)。网页预览与这次本地任务是独立示例。
+
+继续开发时运行工程检查：
+
 ```bash
 pnpm install
 pnpm lint
@@ -128,6 +139,17 @@ This Community repository contains public contracts and developer tools. The liv
 
 Node.js 22+ and pnpm 11 are required.
 
+Try the complete CLI flow without an API key or a second terminal:
+
+```bash
+pnpm install
+pnpm demo:local
+```
+
+The command creates, polls, reads and cancels fictional jobs, then shuts down its temporary loopback Mock. See the [local demo guide](docs/local-demo.md). The hosted preview is a separate example and does not display these local jobs.
+
+For development, run the project checks:
+
 ```bash
 pnpm install
 pnpm lint
@@ -152,7 +174,7 @@ The default Mock endpoint is `http://localhost:8787`. The hosted workbench previ
 
 Read the [product introduction](https://app.open-geo.net/about/) for current capabilities and getting started, or the [blog](https://app.open-geo.net/blog/) for visibility and evidence methods. The hosted workbench currently uses demonstration data.
 
-The [CLI tutorial](https://app.open-geo.net/blog/cli-local-quickstart/) uses the published npm package to create, inspect and cancel local Jobs. The [Node polling tutorial](https://app.open-geo.net/blog/mock-to-job-quickstart/) includes a downloadable executable. Both use simulated data and require no API key; article bodies currently use Chinese.
+The [CLI tutorial](https://app.open-geo.net/en/blog/cli-local-quickstart/) uses the published npm package to create, inspect and cancel local Jobs. The [Node polling tutorial](https://app.open-geo.net/en/blog/mock-to-job-quickstart/) includes a downloadable executable. Both use simulated data and require no API key.
 
 ### Version roadmap
 
