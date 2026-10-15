@@ -35,6 +35,8 @@ OpenGEO 当前的产品形态是 **工作台 + 可组合工作流**。工作台�
 
 所有公开示例均为虚构或脱敏数据。仓库不会要求开发者提交访问令牌、客户信息或外部服务凭据。
 
+本 Community 仓库包含公共契约和开发工具；真实监测运行后端不包含在本仓库中。本地 Mock 用于理解任务与结果，真实监测需要接入相应的 OpenGEO API 环境。
+
 ### 快速开始
 
 要求 Node.js 22+ 与 pnpm 11。
@@ -119,6 +121,8 @@ The current product shape is a **workbench plus composable workflows**. The work
 - **Developer documentation** covering Quickstart, API Reference, webhooks and polling, errors and limits, language examples, and versioning.
 
 Public examples use fictional or sanitized data. The repository does not require contributors to commit access tokens, customer data, or external service credentials.
+
+This Community repository contains public contracts and developer tools. The live monitoring backend is not included. Local mocks demonstrate jobs and results; live monitoring requires access to an appropriate OpenGEO API environment.
 
 ### Quickstart
 

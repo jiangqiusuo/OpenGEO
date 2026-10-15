@@ -16,6 +16,8 @@
       <h1>先用一条虚构请求跑通 OpenGEO。</h1>
       <p class="lede">这份 Quickstart 使用仓库内置 Mock API，帮助你验证 Job、幂等键和结果查询。它不会连接真实供应商，也不会产生费用。</p>
       <div class="notice"><strong>当前范围：</strong>本页只演示本地 Mock。真实部署的 API key、供应商调用和计费流程不属于这份公开示例。</div>
+      <section class="notice" aria-label="自动本地试用"><h2>先用一条命令体验 CLI</h2><p>在 Community 仓库根目录安装依赖后运行。程序自动创建、查询、读取和取消虚构任务，结束后关闭临时 Mock，无需 API Key 或额外终端。</p><pre>pnpm install
+pnpm demo:local</pre><p><a href="https://github.com/jiangqiusuo/OpenGEO/blob/main/docs/local-demo.md">阅读本地试用说明 →</a></p></section>
       <section class="grid" aria-label="入口">
         <article class="card"><h2>API Reference</h2><p>查看由 OpenAPI 3.1 契约生成的参数、Schema 和响应。</p><a href="./">打开 Scalar Reference →</a></article>
         <article class="card"><h2>公开契约</h2><p>机器可读的稳定契约，适合生成客户端和校验请求。</p><a href="../../openapi/openapi.json">打开 openapi.json →</a></article>

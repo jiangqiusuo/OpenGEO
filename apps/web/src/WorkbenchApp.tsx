@@ -7,6 +7,7 @@ type Selection={kind:'metric';id:WorkbenchMetricId}|{kind:'observation';id:strin
 const plannedNavigation=[['项目','project'],['提示词','prompt'],['监测任务管理','pulse'],['证据库管理','evidence'],['内容','content'],['发布','publish'],['复测与对比','compare'],['用量与钱包','usage'],['设置','settings']] as const;
 const auditActionLabel=(action:string)=>({'workspace.created':'创建工作区','workspace.member_added':'添加成员','workspace.api_key_created':'创建 API Key','workspace.api_key_revoked':'撤销 API Key'}[action]??action);
 const auditTime=(value:string)=>new Date(value).toLocaleString('zh-CN',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+const currentSection=()=>['overview','runs','evidence'].includes(window.location.hash.slice(1))?window.location.hash.slice(1):'overview';
 
 function ObservationContent({item}:{item:WorkbenchEvidence}) {
   return <>
@@ -22,10 +23,12 @@ function ObservationContent({item}:{item:WorkbenchEvidence}) {
 export function App() {
   const [selection,setSelection]=useState<Selection|null>(null);
   const [navigationOpen,setNavigationOpen]=useState(false);
+  const [activeSection,setActiveSection]=useState(currentSection);
   const [toast,setToast]=useState('');
   const [workbench,setWorkbench]=useState(DEFAULT_WORKBENCH_VIEW);
   const detailTrigger=useRef<HTMLElement|null>(null);
   const menuTrigger=useRef<HTMLButtonElement>(null);
+  useEffect(()=>{const update=()=>setActiveSection(currentSection());window.addEventListener('hashchange',update);return()=>window.removeEventListener('hashchange',update);},[]);
   useEffect(()=>{let active=true;void loadWorkbenchView({baseUrl:import.meta.env.VITE_OPEN_GEO_API_URL,activityOverviewUrl:import.meta.env.VITE_OPEN_GEO_ACTIVITY_URL}).then(value=>{if(active)setWorkbench(value);});return()=>{active=false;};},[]);
   useEffect(()=>{if(!toast)return;const timer=window.setTimeout(()=>setToast(''),2600);return()=>window.clearTimeout(timer);},[toast]);
   const planned=(label:string)=>setToast(`${label}尚未接入，已标记为规划中。`);
@@ -36,7 +39,7 @@ export function App() {
   const analyzableRun=workbench.runs.find(run=>run.status==='waiting'&&run.canAnalyze);
   const navigation=(mobile=false)=><nav aria-label={mobile?'移动导航':'主导航'}>
     <p className="nav-caption">查看当前结果</p>
-    {([['总览','overview','overview'],['最近监测','pulse','runs'],['最近证据','evidence','evidence']] as const).map(([label,icon,id])=><a className="nav-item" href={`#${id}`} key={id} onClick={()=>setNavigationOpen(false)}><Icon name={icon}/><span>{label}</span></a>)}
+    {([['总览','overview','overview'],['最近监测','pulse','runs'],['最近证据','evidence','evidence']] as const).map(([label,icon,id])=><a className="nav-item" href={`#${id}`} aria-current={activeSection===id?'location':undefined} key={id} onClick={()=>{setActiveSection(id);setNavigationOpen(false);}}><Icon name={icon}/><span>{label}</span></a>)}
     <details className="planned-nav"><summary>规划中的功能</summary>{plannedNavigation.map(([label,icon])=><button className="nav-item" key={label} onClick={()=>{planned(label);if(mobile)setNavigationOpen(false);}}><Icon name={icon}/><span>{label}</span><em>规划中</em></button>)}</details>
   </nav>;
   return <div className="shell">
