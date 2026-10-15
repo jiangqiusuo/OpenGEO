@@ -23,6 +23,7 @@
     "tutorial:mock": "node examples/mock-to-job.mjs",
     "cli": "tsx packages/cli/src/bin.ts",
     "demo": "tsx packages/cli/src/bin.ts",
+    "demo:local": "tsx scripts/local-demo.ts",
     "web:dev": "pnpm --filter @sysiphus/web dev",
     "web:build": "pnpm --filter @sysiphus/web build"
   },

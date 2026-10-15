@@ -83,8 +83,8 @@ button:active {
   flex-shrink: 0;
   width: 32px;
   height: 32px;
-  background: var(--blue);
-  color: white;
+  background: var(--recessed);
+  color: var(--ink);
   border-radius: var(--radius-control);
 }
 .project-switch>span:last-child {
@@ -292,7 +292,7 @@ main {
   border-radius: var(--radius-control);
 }
 .primary {
-  background: var(--blue);
+  background: var(--brand-primary);
   color: white;
   font-weight: 600;
 }
@@ -1002,3 +1002,7 @@ main {
     scroll-behavior: auto!important;
   }
 }
+.nav-item[aria-current="location"] { background: var(--recessed); color: var(--ink); box-shadow: inset 2px 0 var(--brand-accent); }
+.nav-item[aria-current="location"] svg { color: var(--brand-accent); }
+.source-notice { background: var(--canvas); }
+.metric-delta { color: var(--link); }
